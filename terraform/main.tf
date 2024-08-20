@@ -28,3 +28,19 @@ module "us_east_1" {
   prefix             = local.prefix
   allow_ip_addresses = var.allow_ip_addresses
 }
+
+
+module "database" {
+  source = "./database"
+  prefix = local.prefix
+}
+
+
+module "app" {
+  source               = "./app"
+  prefix               = local.prefix
+  bucket_file_arn      = module.database.bucket_file_arn
+  bucket_name_file     = module.database.bucket_name_file
+  bucket_name_material = module.database.bucket_name_material
+  dynamodb_table_name  = module.database.dynamodb_table_name
+}
