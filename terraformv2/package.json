@@ -1,0 +1,13 @@
+{
+  "name": "terraform",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "init": "terraform init",
+    "start": "npm run init && terraform apply -auto-approve",
+    "plan": "npm run init && terraform plan",
+    "generate": "terraform plan -generate-config-out=generated.tf",
+    "destroy": "terraform apply -destroy -auto-approve"
+  }
+}
