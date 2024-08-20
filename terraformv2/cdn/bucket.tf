@@ -9,15 +9,16 @@ resource "aws_s3_bucket" "frontend" {
 # Amazon S3 Bucket Policy - Frontend
 # ----------------------------------------------------------------------------------------------
 resource "aws_s3_bucket_policy" "frontend" {
-  depends_on = [aws_cloudfront_origin_access_identity.this]
-  bucket     = aws_s3_bucket.frontend.id
-  policy     = data.aws_iam_policy_document.frontend.json
+  bucket = aws_s3_bucket.frontend.id
+  policy = data.aws_iam_policy_document.frontend.json
 }
 
 # ----------------------------------------------------------------------------------------------
 # IAM Policy Document - Frontend
 # ----------------------------------------------------------------------------------------------
 data "aws_iam_policy_document" "frontend" {
+  depends_on = [aws_cloudfront_distribution.this]
+
   statement {
     effect = "Allow"
 

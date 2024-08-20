@@ -2,13 +2,12 @@
 # AWS CloudFront Distribution
 # ------------------------------------------------------------------------------------------------
 resource "aws_cloudfront_distribution" "this" {
-  depends_on          = [aws_acm_certificate_validation.global]
   enabled             = true
   default_root_object = local.default_root_object
   # aliases             = ["www.${local.domain_name}"]
 
   origin {
-    domain_name              = data.aws_s3_bucket.frontend.bucket_regional_domain_name
+    domain_name              = aws_s3_bucket.frontend.bucket_regional_domain_name
     origin_id                = aws_s3_bucket.frontend.bucket
     origin_access_control_id = aws_cloudfront_origin_access_control.this.id
   }

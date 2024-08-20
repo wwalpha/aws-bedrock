@@ -49,3 +49,12 @@ module "cdn" {
   suffix      = local.suffix
   web_acl_arn = module.waf.web_acl_arn_ip_restrictions
 }
+
+# ----------------------------------------------------------------------------------------------
+# REST API
+# ----------------------------------------------------------------------------------------------
+module "api" {
+  source               = "./api"
+  prefix               = local.prefix
+  bucket_name_artifact = aws_s3_bucket.artifact.bucket
+}
