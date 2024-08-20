@@ -66,7 +66,7 @@ resource "aws_apigatewayv2_vpc_link" "this" {
 }
 
 # ---------------------------------------------------------------------------------------------
-# API Gateway Integration - Chat
+# API Gateway Integration - Chat Service
 # ---------------------------------------------------------------------------------------------
 resource "aws_apigatewayv2_integration" "chat" {
   api_id             = aws_apigatewayv2_api.this.id
@@ -75,9 +75,100 @@ resource "aws_apigatewayv2_integration" "chat" {
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
   integration_uri    = aws_service_discovery_service.chat.arn
+}
 
-  # request_parameters = {
-  #   "append:header.username" = "$context.authorizer.username"
-  #   "append:header.guardian" = "$context.authorizer.guardian"
-  # }
+# ---------------------------------------------------------------------------------------------
+# API Gateway Integration - File Service
+# ---------------------------------------------------------------------------------------------
+resource "aws_apigatewayv2_integration" "file" {
+  api_id             = aws_apigatewayv2_api.this.id
+  connection_type    = "VPC_LINK"
+  connection_id      = aws_apigatewayv2_vpc_link.this.id
+  integration_method = "ANY"
+  integration_type   = "HTTP_PROXY"
+  integration_uri    = aws_service_discovery_service.file.arn
+}
+
+# ---------------------------------------------------------------------------------------------
+# API Gateway Integration - Image Service
+# ---------------------------------------------------------------------------------------------
+resource "aws_apigatewayv2_integration" "image" {
+  api_id             = aws_apigatewayv2_api.this.id
+  connection_type    = "VPC_LINK"
+  connection_id      = aws_apigatewayv2_vpc_link.this.id
+  integration_method = "ANY"
+  integration_type   = "HTTP_PROXY"
+  integration_uri    = aws_service_discovery_service.image.arn
+}
+
+# ---------------------------------------------------------------------------------------------
+# API Gateway Integration - Predict Service
+# ---------------------------------------------------------------------------------------------
+resource "aws_apigatewayv2_integration" "predict" {
+  api_id             = aws_apigatewayv2_api.this.id
+  connection_type    = "VPC_LINK"
+  connection_id      = aws_apigatewayv2_vpc_link.this.id
+  integration_method = "ANY"
+  integration_type   = "HTTP_PROXY"
+  integration_uri    = aws_service_discovery_service.predict.arn
+}
+
+# ---------------------------------------------------------------------------------------------
+# API Gateway Integration - Rag Service
+# ---------------------------------------------------------------------------------------------
+resource "aws_apigatewayv2_integration" "rag" {
+  api_id             = aws_apigatewayv2_api.this.id
+  connection_type    = "VPC_LINK"
+  connection_id      = aws_apigatewayv2_vpc_link.this.id
+  integration_method = "ANY"
+  integration_type   = "HTTP_PROXY"
+  integration_uri    = aws_service_discovery_service.rag.arn
+}
+
+# ---------------------------------------------------------------------------------------------
+# API Gateway Integration - Share Service
+# ---------------------------------------------------------------------------------------------
+resource "aws_apigatewayv2_integration" "share" {
+  api_id             = aws_apigatewayv2_api.this.id
+  connection_type    = "VPC_LINK"
+  connection_id      = aws_apigatewayv2_vpc_link.this.id
+  integration_method = "ANY"
+  integration_type   = "HTTP_PROXY"
+  integration_uri    = aws_service_discovery_service.share.arn
+}
+
+# ---------------------------------------------------------------------------------------------
+# API Gateway Integration - SystemContexts Service
+# ---------------------------------------------------------------------------------------------
+resource "aws_apigatewayv2_integration" "systemcontexts" {
+  api_id             = aws_apigatewayv2_api.this.id
+  connection_type    = "VPC_LINK"
+  connection_id      = aws_apigatewayv2_vpc_link.this.id
+  integration_method = "ANY"
+  integration_type   = "HTTP_PROXY"
+  integration_uri    = aws_service_discovery_service.systemcontexts.arn
+}
+
+# ---------------------------------------------------------------------------------------------
+# API Gateway Integration - Transcribe Service
+# ---------------------------------------------------------------------------------------------
+resource "aws_apigatewayv2_integration" "transcribe" {
+  api_id             = aws_apigatewayv2_api.this.id
+  connection_type    = "VPC_LINK"
+  connection_id      = aws_apigatewayv2_vpc_link.this.id
+  integration_method = "ANY"
+  integration_type   = "HTTP_PROXY"
+  integration_uri    = aws_service_discovery_service.transcribe.arn
+}
+
+# ---------------------------------------------------------------------------------------------
+# API Gateway Integration - Webtext Service
+# ---------------------------------------------------------------------------------------------
+resource "aws_apigatewayv2_integration" "webtext" {
+  api_id             = aws_apigatewayv2_api.this.id
+  connection_type    = "VPC_LINK"
+  connection_id      = aws_apigatewayv2_vpc_link.this.id
+  integration_method = "ANY"
+  integration_type   = "HTTP_PROXY"
+  integration_uri    = aws_service_discovery_service.webtext.arn
 }

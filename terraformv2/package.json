@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "init": "terraform init",
-    "start": "npm run init && terraform apply -auto-approve",
-    "plan": "npm run init && terraform plan",
+    "start": "npm run init && terraform apply -parallelism=50 -auto-approve",
+    "plan": "npm run init && terraform plan -parallelism=50",
     "generate": "terraform plan -generate-config-out=generated.tf",
     "destroy": "terraform apply -destroy -auto-approve"
   }
