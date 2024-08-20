@@ -57,18 +57,27 @@ resource "aws_apigatewayv2_stage" "this" {
 }
 
 # ---------------------------------------------------------------------------------------------
-# API Gateway Integration - Backend
+# API Gateway VPC Link
 # ---------------------------------------------------------------------------------------------
-# resource "aws_apigatewayv2_integration" "backend" {
-#   api_id             = aws_apigatewayv2_api.this.id
-#   connection_type    = "VPC_LINK"
-#   connection_id      = aws_apigatewayv2_vpc_link.this.id
-#   integration_method = "ANY"
-#   integration_type   = "HTTP_PROXY"
-#   integration_uri    = aws_service_discovery_service.auth.arn
+resource "aws_apigatewayv2_vpc_link" "this" {
+  name               = "${var.prefix}-vpclink"
+  security_group_ids = [aws_security_group.private_link.id]
+  subnet_ids         = module.vpc.private_subnets
+}
 
-#   request_parameters = {
-#     "append:header.username" = "$context.authorizer.username"
-#     "append:header.guardian" = "$context.authorizer.guardian"
-#   }
-# }
+# ---------------------------------------------------------------------------------------------
+# API Gateway Integration - Chat
+# ---------------------------------------------------------------------------------------------
+resource "aws_apigatewayv2_integration" "chat" {
+  api_id             = aws_apigatewayv2_api.this.id
+  connection_type    = "VPC_LINK"
+  connection_id      = aws_apigatewayv2_vpc_link.this.id
+  integration_method = "ANY"
+  integration_type   = "HTTP_PROXY"
+  integration_uri    = aws_service_discovery_service.chat.arn
+
+  # request_parameters = {
+  #   "append:header.username" = "$context.authorizer.username"
+  #   "append:header.guardian" = "$context.authorizer.guardian"
+  # }
+}
