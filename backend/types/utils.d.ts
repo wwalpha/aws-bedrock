@@ -2,7 +2,7 @@ import {
   GenerateImageParams,
   Model,
   UnrecordedMessage,
-} from 'generative-ai-use-cases-jp';
+} from 'typings';
 
 export type InvokeInterface = (
   model: Model,
