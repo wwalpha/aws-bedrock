@@ -5,9 +5,9 @@ on:
     paths:
       - backend/**
       - .github/workflows/backend.yml
-    branches-ignore:
-      - releases/**
-      - master
+    # branches-ignore:
+    #   - releases/**
+    #   - master
 
 jobs:
   ChatService:
