@@ -1,4 +1,4 @@
-name: Backend Build and Deploy
+name: Backend
 
 on:
   push:
@@ -13,6 +13,7 @@ jobs:
   ChatService:
     uses: ./.github/workflows/reuse_ecs_cicd.yml
     with:
+      region: ap-northeast-1
       working-directory: backend/chat
       ECR_REPOSITORY: bedrock-chat
       ECS_CLUSTER_NAME: bedrock-cluster

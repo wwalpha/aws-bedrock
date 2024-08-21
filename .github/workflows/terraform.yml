@@ -1,4 +1,4 @@
-name: Terraform Build and Deploy
+name: Terraform
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ env.working-directory }}
+        working-directory: ${{ env.WORKING_DIRECTORY }}
 
     steps:
       # source checkout
