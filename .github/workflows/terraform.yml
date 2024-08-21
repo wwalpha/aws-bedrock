@@ -47,5 +47,5 @@ jobs:
       - name: Apply Terraform 
         run: |
           terraform init
-          terraform plan -out=terraform -compact-warnings
-          terraform apply "terraform"
+          terraform plan -parallelism=50 -out=terraform -compact-warnings
+          terraform apply -parallelism=50 "terraform"
