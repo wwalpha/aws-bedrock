@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "postbuild": "aws s3 cp dist s3://bedrock-frontend-61331c --recursive",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

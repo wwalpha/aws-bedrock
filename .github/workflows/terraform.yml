@@ -1,4 +1,4 @@
-name: Terraform
+name: PUSH) Terraform
 
 on:
   push:
@@ -21,7 +21,7 @@ env:
   WORKING_DIRECTORY: terraformv2
 
 jobs:
-  Apply:
+  Terraform:
     runs-on: ubuntu-latest
     defaults:
       run:
