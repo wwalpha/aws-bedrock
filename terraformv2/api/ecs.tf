@@ -27,7 +27,7 @@ resource "aws_ecs_service" "chat" {
   cluster                            = aws_ecs_cluster.this.id
   desired_count                      = 1
   platform_version                   = "LATEST"
-  task_definition                    = aws_ecs_task_definition.chat.arn
+  task_definition                    = data.aws_ecs_task_definition.chat.arn
   deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 100
   health_check_grace_period_seconds  = 0
@@ -66,11 +66,11 @@ resource "aws_ecs_service" "chat" {
   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
   # }
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     desired_count
-  #   ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      desired_count
+    ]
+  }
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -100,6 +100,13 @@ resource "aws_ecs_task_definition" "chat" {
 }
 
 # ----------------------------------------------------------------------------------------------
+# AWS ECS Service - Chat Service Task Definition
+# ----------------------------------------------------------------------------------------------
+data "aws_ecs_task_definition" "chat" {
+  task_definition = aws_ecs_task_definition.chat.family
+}
+
+# ----------------------------------------------------------------------------------------------
 # ECS Service - File Service
 # ----------------------------------------------------------------------------------------------
 resource "aws_ecs_service" "file" {
@@ -107,7 +114,7 @@ resource "aws_ecs_service" "file" {
   cluster                            = aws_ecs_cluster.this.id
   desired_count                      = 1
   platform_version                   = "LATEST"
-  task_definition                    = aws_ecs_task_definition.file.arn
+  task_definition                    = data.aws_ecs_task_definition.file.arn
   deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 100
   health_check_grace_period_seconds  = 0
@@ -146,11 +153,11 @@ resource "aws_ecs_service" "file" {
   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
   # }
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     desired_count
-  #   ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      desired_count
+    ]
+  }
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -180,6 +187,13 @@ resource "aws_ecs_task_definition" "file" {
 }
 
 # ----------------------------------------------------------------------------------------------
+# AWS ECS Service - File Service Task Definition
+# ----------------------------------------------------------------------------------------------
+data "aws_ecs_task_definition" "file" {
+  task_definition = aws_ecs_task_definition.file.family
+}
+
+# ----------------------------------------------------------------------------------------------
 # ECS Service - Image Service
 # ----------------------------------------------------------------------------------------------
 resource "aws_ecs_service" "image" {
@@ -187,7 +201,7 @@ resource "aws_ecs_service" "image" {
   cluster                            = aws_ecs_cluster.this.id
   desired_count                      = 1
   platform_version                   = "LATEST"
-  task_definition                    = aws_ecs_task_definition.image.arn
+  task_definition                    = data.aws_ecs_task_definition.image.arn
   deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 100
   health_check_grace_period_seconds  = 0
@@ -226,11 +240,11 @@ resource "aws_ecs_service" "image" {
   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
   # }
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     desired_count
-  #   ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      desired_count
+    ]
+  }
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -257,6 +271,13 @@ resource "aws_ecs_task_definition" "image" {
       container_port  = 80
     }
   )
+}
+
+# ----------------------------------------------------------------------------------------------
+# AWS ECS Service - Image Service Task Definition
+# ----------------------------------------------------------------------------------------------
+data "aws_ecs_task_definition" "image" {
+  task_definition = aws_ecs_task_definition.image.family
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -306,11 +327,11 @@ resource "aws_ecs_service" "predict" {
   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
   # }
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     desired_count
-  #   ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      desired_count
+    ]
+  }
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -386,11 +407,11 @@ resource "aws_ecs_service" "rag" {
   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
   # }
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     desired_count
-  #   ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      desired_count
+    ]
+  }
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -466,11 +487,11 @@ resource "aws_ecs_service" "share" {
   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
   # }
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     desired_count
-  #   ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      desired_count
+    ]
+  }
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -546,11 +567,11 @@ resource "aws_ecs_service" "systemcontexts" {
   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
   # }
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     desired_count
-  #   ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      desired_count
+    ]
+  }
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -626,11 +647,11 @@ resource "aws_ecs_service" "transcribe" {
   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
   # }
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     desired_count
-  #   ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      desired_count
+    ]
+  }
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -706,11 +727,11 @@ resource "aws_ecs_service" "webtext" {
   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
   # }
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     desired_count
-  #   ]
-  # }
+  lifecycle {
+    ignore_changes = [
+      desired_count
+    ]
+  }
 }
 
 # ----------------------------------------------------------------------------------------------
