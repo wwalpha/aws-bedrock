@@ -5,10 +5,13 @@ on:
     paths:
       - frontend/**
       - .github/workflows/frontend.yml
-    branches-ignore:
-      - releases/**
+  workflow_run:
+    workflows:
+      - PUSH) Terraform
+    branches:
       - master
-  workflow_dispatch:
+    types:
+      - completed
 
 env:
   AWS_DEFAULT_REGION: ap-northeast-1

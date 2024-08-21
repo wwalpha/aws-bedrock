@@ -5,12 +5,9 @@ on:
     paths:
       - terraformv2/**
       - .github/workflows/terraform.yml
-    branches-ignore:
-      - releases/**
-      - master
   workflow_run:
     workflows:
-      - Backend Build and Deploy
+      - PUSH) Backend
     branches:
       - master
     types:
