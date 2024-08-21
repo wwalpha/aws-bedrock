@@ -8,14 +8,13 @@ on:
     branches-ignore:
       - releases/**
       - master
-  # workflow_run:
-  #   workflows:
-  #     - PUSH_B) Lambda Build
-  #     - PUSH_B) Batch Build
-  #   branches:
-  #     - master
-  #   types:
-  #     - completed
+  workflow_run:
+    workflows:
+      - Backend Build and Deploy
+    branches:
+      - master
+    types:
+      - completed
 
 env:
   AWS_DEFAULT_REGION: ap-northeast-1
