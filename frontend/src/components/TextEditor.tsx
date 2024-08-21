@@ -7,7 +7,7 @@ import ButtonIcon from './ButtonIcon';
 import { ErrorBoundary } from './ErrorBoundary';
 import { PiTrash } from 'react-icons/pi';
 import HighlightWithinTextarea from 'react-highlight-within-textarea';
-import 'draft-js/dist/Draft.css';
+// import 'draft-js/dist/Draft.css';
 import ButtonCopy from './ButtonCopy';
 
 type Props = RowItemProps & {

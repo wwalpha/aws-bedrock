@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "postbuild": "aws s3 cp dist s3://bedrock-frontend-61331c --recursive",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -24,6 +25,7 @@
     "axios": "^1.6.8",
     "buffer": "^6.0.3",
     "copy-to-clipboard": "^3.3.3",
+    "draft-js": "^0.11.7",
     "file-type": "^19.2.0",
     "immer": "^10.0.4",
     "immutability-helper": "^3.1.1",
@@ -47,6 +49,7 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.12",
     "@types/lodash.debounce": "^4.0.9",
     "@types/react": "^18.2.77",
@@ -69,6 +72,7 @@
     "typescript": "^5.4.5",
     "vite": "^5.2.8",
     "vite-plugin-node-polyfills": "^0.21.0",
+    "vite-plugin-pwa": "^0.20.1",
     "vite-plugin-svgr": "^4.2.0"
   }
 }

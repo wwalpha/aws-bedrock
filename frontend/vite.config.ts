@@ -7,6 +7,16 @@ import { VitePWA } from 'vite-plugin-pwa';
 // https://vitejs.dev/config/
 export default defineConfig({
   resolve: { alias: { './runtimeConfig': './runtimeConfig.browser' } },
+  build:{
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom','react-color','react-highlight-within-textarea','react-icons'],
+          amplify:['aws-amplify','@aws-amplify/ui-react']
+        }
+      }
+    }
+  },
   plugins: [
     react(),
     svgr(),

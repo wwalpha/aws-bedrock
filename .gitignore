@@ -38,3 +38,7 @@ generative-ai-use-cases-jp
 
 # Node.js
 node_modules
+
+# React
+frontend/dist
+frontend/.env

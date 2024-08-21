@@ -1,5 +1,5 @@
 output "api_endpoint" {
-  value = module.api_gateway.api_endpoint
+  value = module.api.api_endpoint
 }
 
 output "region" {
@@ -18,9 +18,22 @@ output "identity_pool_id" {
   value = module.auth.cognito_identity_pool_id
 }
 
-output "predict_stream_function_arn" {
-  value = module.predict_stream.function_arn
+output "bucket_name_artifacts" {
+  value = aws_s3_bucket.artifact.bucket
 }
+
+output "bucket_name_frontend" {
+  value = module.cdn.bucket_name_frontend
+}
+
+output "cloudfront_url" {
+  value = "https://${module.cdn.cloudfront_url}"
+}
+
+# output "predict_stream_function_arn" {
+#   value = module.predict_stream.function_arn
+# }
+
 
 # output "rag_enabled" {
 #   value = var.rag_enabled
