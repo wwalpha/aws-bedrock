@@ -1,0 +1,55 @@
+name: Terraform Build and Deploy
+
+on:
+  push:
+    paths:
+      - terraformv2/**
+      - .github/workflows/terraform.yml
+    branches-ignore:
+      - releases/**
+      - master
+  # workflow_run:
+  #   workflows:
+  #     - PUSH_B) Lambda Build
+  #     - PUSH_B) Batch Build
+  #   branches:
+  #     - master
+  #   types:
+  #     - completed
+
+env:
+  AWS_DEFAULT_REGION: ap-northeast-1
+  WORKING_DIRECTORY: terraformv2
+
+jobs:
+  Apply:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.working-directory }}
+
+    steps:
+      # source checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # AWS Credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+      # Install the latest version of Terraform CLI 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.2
+
+      # Terraform execution
+      - name: Apply Terraform 
+        run: |
+          terraform init
+          terraform plan -out=terraform -compact-warnings
+          terraform apply "terraform"
