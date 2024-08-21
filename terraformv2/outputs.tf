@@ -30,6 +30,16 @@ output "cloudfront_url" {
   value = "https://${module.cdn.cloudfront_url}"
 }
 
+output "ecr_repo_name_chat" {
+  value = module.api.ecr_repo_name_chat
+}
+
+
+output "ecs_cluster_name" {
+  value = module.api.ecs_cluster_name
+}
+
+
 # output "predict_stream_function_arn" {
 #   value = module.predict_stream.function_arn
 # }

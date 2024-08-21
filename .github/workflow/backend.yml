@@ -1,0 +1,22 @@
+name: PUSH) Backend Build
+
+on:
+  push:
+    paths:
+      - backend/**
+      - .github/workflows/backend.yml
+    branches-ignore:
+      - releases/**
+      - master
+
+jobs:
+  ChatService:
+    uses: ./.github/workflows/reuse_ecs_cicd.yml
+    with:
+      working-directory: backend/chat
+      ECR_REPOSITORY: bedrock-chat
+      ECS_CLUSTER_NAME: bedrock-cluster
+      ECS_SERVICE_NAME: bedrock-chat
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
