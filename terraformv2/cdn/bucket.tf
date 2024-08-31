@@ -2,7 +2,8 @@
 # Amazon S3 Bucket - Frontend
 # ----------------------------------------------------------------------------------------------
 resource "aws_s3_bucket" "frontend" {
-  bucket = local.bucket_name_frontend
+  bucket        = local.bucket_name_frontend
+  force_destroy = true
 }
 
 # ----------------------------------------------------------------------------------------------
