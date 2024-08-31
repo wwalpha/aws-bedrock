@@ -1,25 +1,24 @@
 import { Request } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
-import { Chat } from '../../types/chat';
-import { RecordedMessage, ToBeRecordedMessage } from '../../types/message';
+import { Chat, SystemContext } from '../../types/index';
 
 export namespace APIs {
   type Callback = (req: Request<any>) => Promise<any>;
 
   // ------------------------------------------------------------
-  // List Chats
+  // Chat List
   // ------------------------------------------------------------
   interface ChatListRequest {}
   type ChatListResponse = Chat[];
 
   // ------------------------------------------------------------
-  // Regist Chat
+  // Chat Regist
   // ------------------------------------------------------------
   interface ChatRegistRequest {}
   type ChatRegistResponse = Chat;
 
   // ------------------------------------------------------------
-  // Delete Chat
+  // Chat Delete
   // ------------------------------------------------------------
   interface ChatDeleteRequest {}
   interface ChatDeleteParams {
@@ -28,7 +27,7 @@ export namespace APIs {
   type ChatDeleteResponse = void;
 
   // ------------------------------------------------------------
-  // Get Chat
+  // Chat Get
   // ------------------------------------------------------------
   interface ChatGetRequest {}
   interface ChatGetParams {
@@ -51,7 +50,7 @@ export namespace APIs {
   }
 
   // ------------------------------------------------------------
-  // List Messages
+  // Message List
   // ------------------------------------------------------------
   interface MessageListRequest {}
   interface MessageListParams {
@@ -62,7 +61,7 @@ export namespace APIs {
   }
 
   // ------------------------------------------------------------
-  // Regist Messages
+  // Message Regist
   // ------------------------------------------------------------
   interface MessageRegistRequest {
     messages: ToBeRecordedMessage[];
@@ -75,15 +74,49 @@ export namespace APIs {
   }
 
   // ------------------------------------------------------------
-  // Update Title
+  // Chat Title Update
   // ------------------------------------------------------------
-  interface TitleUpdateRequest {
+  interface ChatTitleUpdateRequest {
     title: string;
   }
-  interface TitleUpdateParams {
+  interface ChatTitleUpdateParams {
     chatId: string;
   }
-  interface TitleUpdateResponse {
+  interface ChatTitleUpdateResponse {
     chat: Chat;
+  }
+
+  // ------------------------------------------------------------
+  // SystemContext List
+  // ------------------------------------------------------------
+  interface SystemContextListRequest {}
+  type SystemContextListResponse = SystemContext[];
+
+  // ------------------------------------------------------------
+  // SystemContext Regist
+  // ------------------------------------------------------------
+  interface SystemContextRegistRequest extends SystemContext {}
+  type SystemContextRegistResponse = SystemContext;
+
+  // ------------------------------------------------------------
+  // SystemContext Delete
+  // ------------------------------------------------------------
+  interface SystemContextDeleteRequest {}
+  interface SystemContextDeleteParams {
+    systemContextId: string;
+  }
+  type SystemContextDeleteResponse = void;
+
+  // ------------------------------------------------------------
+  // SystemContext Title Update
+  // ------------------------------------------------------------
+  interface SystemContextTitleUpdateRequest {
+    title: string;
+  }
+  interface SystemContextTitleUpdateParams {
+    systemContextId: string;
+  }
+  interface SystemContextTitleUpdateResponse {
+    systemContext: SystemContext;
   }
 }

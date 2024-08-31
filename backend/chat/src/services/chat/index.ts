@@ -1,5 +1,4 @@
 import * as crypto from 'crypto';
-import { BatchWriteItemCommand } from '@aws-sdk/client-dynamodb';
 import * as Queries from './queries';
 import { DataNotfoundError, DBHelper } from '@utils';
 import { Chat, RecordedMessage, ToBeRecordedMessage } from 'typings';

@@ -4,8 +4,8 @@ import { APIs } from 'typings';
 import { DataNotfoundError } from '@utils';
 
 export default async (
-  req: Request<APIs.TitleUpdateParams, any, APIs.TitleUpdateRequest, any>
-): Promise<APIs.TitleUpdateResponse> => {
+  req: Request<APIs.ChatTitleUpdateParams, any, APIs.ChatTitleUpdateRequest, any>
+): Promise<APIs.ChatTitleUpdateResponse> => {
   const userId: string = req.headers['username'] as string;
   const { chatId } = req.params;
   const { title } = req.body;
