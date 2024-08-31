@@ -77,7 +77,7 @@ resource "aws_apigatewayv2_integration" "file" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_file_arn
+  integration_uri    = var.service_discovery_service_functions_arn
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ resource "aws_apigatewayv2_integration" "image" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_image_arn
+  integration_uri    = var.service_discovery_service_functions_arn
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ resource "aws_apigatewayv2_integration" "predict" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_predict_arn
+  integration_uri    = var.service_discovery_service_functions_arn
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -125,20 +125,20 @@ resource "aws_apigatewayv2_integration" "share" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_share_arn
+  integration_uri    = var.service_discovery_service_functions_arn
 }
 
-# ---------------------------------------------------------------------------------------------
-# API Gateway Integration - SystemContexts Service
-# ---------------------------------------------------------------------------------------------
-resource "aws_apigatewayv2_integration" "systemcontexts" {
-  api_id             = aws_apigatewayv2_api.this.id
-  connection_type    = "VPC_LINK"
-  connection_id      = aws_apigatewayv2_vpc_link.this.id
-  integration_method = "ANY"
-  integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_systemcontexts_arn
-}
+# # ---------------------------------------------------------------------------------------------
+# # API Gateway Integration - SystemContexts Service
+# # ---------------------------------------------------------------------------------------------
+# resource "aws_apigatewayv2_integration" "systemcontexts" {
+#   api_id             = aws_apigatewayv2_api.this.id
+#   connection_type    = "VPC_LINK"
+#   connection_id      = aws_apigatewayv2_vpc_link.this.id
+#   integration_method = "ANY"
+#   integration_type   = "HTTP_PROXY"
+#   integration_uri    = var.service_discovery_service_systemcontexts_arn
+# }
 
 # ---------------------------------------------------------------------------------------------
 # API Gateway Integration - Transcribe Service
@@ -149,7 +149,7 @@ resource "aws_apigatewayv2_integration" "transcribe" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_transcribe_arn
+  integration_uri    = var.service_discovery_service_functions_arn
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -161,5 +161,5 @@ resource "aws_apigatewayv2_integration" "webtext" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_webtext_arn
+  integration_uri    = var.service_discovery_service_functions_arn
 }

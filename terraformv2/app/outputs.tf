@@ -14,37 +14,37 @@ output "service_discovery_service_chat_arn" {
   value = aws_service_discovery_service.chat.arn
 }
 
-output "service_discovery_service_webtext_arn" {
-  value = aws_service_discovery_service.webtext.arn
+output "service_discovery_service_functions_arn" {
+  value = aws_service_discovery_service.functions.arn
 }
 
-output "service_discovery_service_transcribe_arn" {
-  value = aws_service_discovery_service.transcribe.arn
-}
+# output "service_discovery_service_transcribe_arn" {
+#   value = aws_service_discovery_service.transcribe.arn
+# }
 
-output "service_discovery_service_systemcontexts_arn" {
-  value = aws_service_discovery_service.systemcontexts.arn
-}
+# output "service_discovery_service_systemcontexts_arn" {
+#   value = aws_service_discovery_service.systemcontexts.arn
+# }
 
-output "service_discovery_service_share_arn" {
-  value = aws_service_discovery_service.share.arn
-}
+# output "service_discovery_service_share_arn" {
+#   value = aws_service_discovery_service.share.arn
+# }
 
 output "service_discovery_service_rag_arn" {
   value = aws_service_discovery_service.rag.arn
 }
 
-output "service_discovery_service_predict_arn" {
-  value = aws_service_discovery_service.predict.arn
-}
+# output "service_discovery_service_predict_arn" {
+#   value = aws_service_discovery_service.predict.arn
+# }
 
-output "service_discovery_service_image_arn" {
-  value = aws_service_discovery_service.image.arn
-}
+# output "service_discovery_service_image_arn" {
+#   value = aws_service_discovery_service.image.arn
+# }
 
-output "service_discovery_service_file_arn" {
-  value = aws_service_discovery_service.file.arn
-}
+# output "service_discovery_service_file_arn" {
+#   value = aws_service_discovery_service.file.arn
+# }
 
 output "vpc_id" {
   value = module.vpc.vpc_id

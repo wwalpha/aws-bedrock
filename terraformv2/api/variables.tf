@@ -10,35 +10,11 @@ variable "service_discovery_service_chat_arn" {
   type = string
 }
 
-variable "service_discovery_service_webtext_arn" {
-  type = string
-}
-
-variable "service_discovery_service_transcribe_arn" {
-  type = string
-}
-
-variable "service_discovery_service_systemcontexts_arn" {
-  type = string
-}
-
-variable "service_discovery_service_share_arn" {
+variable "service_discovery_service_functions_arn" {
   type = string
 }
 
 variable "service_discovery_service_rag_arn" {
-  type = string
-}
-
-variable "service_discovery_service_predict_arn" {
-  type = string
-}
-
-variable "service_discovery_service_image_arn" {
-  type = string
-}
-
-variable "service_discovery_service_file_arn" {
   type = string
 }
 

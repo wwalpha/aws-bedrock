@@ -76,18 +76,12 @@ module "app" {
 # REST API
 # ----------------------------------------------------------------------------------------------
 module "api" {
-  source                                       = "./api"
-  prefix                                       = local.prefix
-  vpc_id                                       = module.app.vpc_id
-  vpc_private_subnets                          = module.app.vpc_private_subnets
-  bucket_name_artifact                         = aws_s3_bucket.artifact.bucket
-  service_discovery_service_chat_arn           = module.app.service_discovery_service_chat_arn
-  service_discovery_service_webtext_arn        = module.app.service_discovery_service_webtext_arn
-  service_discovery_service_transcribe_arn     = module.app.service_discovery_service_transcribe_arn
-  service_discovery_service_systemcontexts_arn = module.app.service_discovery_service_systemcontexts_arn
-  service_discovery_service_share_arn          = module.app.service_discovery_service_share_arn
-  service_discovery_service_rag_arn            = module.app.service_discovery_service_rag_arn
-  service_discovery_service_predict_arn        = module.app.service_discovery_service_predict_arn
-  service_discovery_service_image_arn          = module.app.service_discovery_service_image_arn
-  service_discovery_service_file_arn           = module.app.service_discovery_service_file_arn
+  source                                  = "./api"
+  prefix                                  = local.prefix
+  vpc_id                                  = module.app.vpc_id
+  vpc_private_subnets                     = module.app.vpc_private_subnets
+  bucket_name_artifact                    = aws_s3_bucket.artifact.bucket
+  service_discovery_service_chat_arn      = module.app.service_discovery_service_chat_arn
+  service_discovery_service_functions_arn = module.app.service_discovery_service_functions_arn
+  service_discovery_service_rag_arn       = module.app.service_discovery_service_rag_arn
 }

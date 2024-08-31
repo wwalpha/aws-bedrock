@@ -106,15 +106,16 @@ data "aws_ecs_task_definition" "chat" {
   task_definition = aws_ecs_task_definition.chat.family
 }
 
+
 # ----------------------------------------------------------------------------------------------
-# ECS Service - File Service
+# ECS Service - Functions Service
 # ----------------------------------------------------------------------------------------------
-resource "aws_ecs_service" "file" {
-  name                               = aws_ecs_task_definition.file.family
+resource "aws_ecs_service" "functions" {
+  name                               = aws_ecs_task_definition.functions.family
   cluster                            = aws_ecs_cluster.this.id
   desired_count                      = 1
   platform_version                   = "LATEST"
-  task_definition                    = data.aws_ecs_task_definition.file.arn
+  task_definition                    = data.aws_ecs_task_definition.functions.arn
   deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 100
   health_check_grace_period_seconds  = 0
@@ -144,7 +145,7 @@ resource "aws_ecs_service" "file" {
   }
 
   service_registries {
-    registry_arn = aws_service_discovery_service.file.arn
+    registry_arn = aws_service_discovery_service.functions.arn
     port         = 8080
   }
 
@@ -161,10 +162,10 @@ resource "aws_ecs_service" "file" {
 }
 
 # ----------------------------------------------------------------------------------------------
-# AWS ECS Service - File Service Task Definition
+# AWS ECS Service - Functions Service Task Definition
 # ----------------------------------------------------------------------------------------------
-resource "aws_ecs_task_definition" "file" {
-  family             = "${var.prefix}-file"
+resource "aws_ecs_task_definition" "functions" {
+  family             = "${var.prefix}-functions"
   task_role_arn      = aws_iam_role.ecs_task.arn
   execution_role_arn = aws_iam_role.ecs_task_exec.arn
   network_mode       = "awsvpc"
@@ -179,185 +180,18 @@ resource "aws_ecs_task_definition" "file" {
     "${path.module}/taskdefs/definition.tpl",
     {
       aws_region      = local.region
-      container_name  = "${var.prefix}-file"
-      container_image = "${module.ecr_file.repository_url}:latest"
+      container_name  = "${var.prefix}-functions"
+      container_image = "${module.ecr_chat.repository_url}:latest"
       container_port  = 80
     }
   )
 }
 
 # ----------------------------------------------------------------------------------------------
-# AWS ECS Service - File Service Task Definition
+# AWS ECS Service - Functions Service Task Definition
 # ----------------------------------------------------------------------------------------------
-data "aws_ecs_task_definition" "file" {
-  task_definition = aws_ecs_task_definition.file.family
-}
-
-# ----------------------------------------------------------------------------------------------
-# ECS Service - Image Service
-# ----------------------------------------------------------------------------------------------
-resource "aws_ecs_service" "image" {
-  name                               = aws_ecs_task_definition.image.family
-  cluster                            = aws_ecs_cluster.this.id
-  desired_count                      = 1
-  platform_version                   = "LATEST"
-  task_definition                    = data.aws_ecs_task_definition.image.arn
-  deployment_maximum_percent         = 200
-  deployment_minimum_healthy_percent = 100
-  health_check_grace_period_seconds  = 0
-  wait_for_steady_state              = false
-  scheduling_strategy                = "REPLICA"
-  enable_ecs_managed_tags            = true
-
-  capacity_provider_strategy {
-    base              = 0
-    weight            = 1
-    capacity_provider = "FARGATE_SPOT"
-  }
-
-  deployment_circuit_breaker {
-    enable   = false
-    rollback = false
-  }
-
-  deployment_controller {
-    type = "ECS"
-  }
-
-  network_configuration {
-    assign_public_ip = false
-    subnets          = module.vpc.private_subnets
-    security_groups  = [aws_security_group.ecs_default_sg.id]
-  }
-
-  service_registries {
-    registry_arn = aws_service_discovery_service.image.arn
-    port         = 8080
-  }
-
-  # provisioner "local-exec" {
-  #   when    = destroy
-  #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
-  # }
-
-  lifecycle {
-    ignore_changes = [
-      desired_count
-    ]
-  }
-}
-
-# ----------------------------------------------------------------------------------------------
-# AWS ECS Service - Image Service Task Definition
-# ----------------------------------------------------------------------------------------------
-resource "aws_ecs_task_definition" "image" {
-  family             = "${var.prefix}-image"
-  task_role_arn      = aws_iam_role.ecs_task.arn
-  execution_role_arn = aws_iam_role.ecs_task_exec.arn
-  network_mode       = "awsvpc"
-  cpu                = "256"
-  memory             = "512"
-
-  requires_compatibilities = [
-    "FARGATE"
-  ]
-
-  container_definitions = templatefile(
-    "${path.module}/taskdefs/definition.tpl",
-    {
-      aws_region      = local.region
-      container_name  = "${var.prefix}-image"
-      container_image = "${module.ecr_image.repository_url}:latest"
-      container_port  = 80
-    }
-  )
-}
-
-# ----------------------------------------------------------------------------------------------
-# AWS ECS Service - Image Service Task Definition
-# ----------------------------------------------------------------------------------------------
-data "aws_ecs_task_definition" "image" {
-  task_definition = aws_ecs_task_definition.image.family
-}
-
-# ----------------------------------------------------------------------------------------------
-# ECS Service - Predict Service
-# ----------------------------------------------------------------------------------------------
-resource "aws_ecs_service" "predict" {
-  name                               = aws_ecs_task_definition.predict.family
-  cluster                            = aws_ecs_cluster.this.id
-  desired_count                      = 1
-  platform_version                   = "LATEST"
-  task_definition                    = aws_ecs_task_definition.predict.arn
-  deployment_maximum_percent         = 200
-  deployment_minimum_healthy_percent = 100
-  health_check_grace_period_seconds  = 0
-  wait_for_steady_state              = false
-  scheduling_strategy                = "REPLICA"
-  enable_ecs_managed_tags            = true
-
-  capacity_provider_strategy {
-    base              = 0
-    weight            = 1
-    capacity_provider = "FARGATE_SPOT"
-  }
-
-  deployment_circuit_breaker {
-    enable   = false
-    rollback = false
-  }
-
-  deployment_controller {
-    type = "ECS"
-  }
-
-  network_configuration {
-    assign_public_ip = false
-    subnets          = module.vpc.private_subnets
-    security_groups  = [aws_security_group.ecs_default_sg.id]
-  }
-
-  service_registries {
-    registry_arn = aws_service_discovery_service.predict.arn
-    port         = 8080
-  }
-
-  # provisioner "local-exec" {
-  #   when    = destroy
-  #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
-  # }
-
-  lifecycle {
-    ignore_changes = [
-      desired_count
-    ]
-  }
-}
-
-# ----------------------------------------------------------------------------------------------
-# AWS ECS Service - Predict Service Task Definition
-# ----------------------------------------------------------------------------------------------
-resource "aws_ecs_task_definition" "predict" {
-  family             = "${var.prefix}-predict"
-  task_role_arn      = aws_iam_role.ecs_task.arn
-  execution_role_arn = aws_iam_role.ecs_task_exec.arn
-  network_mode       = "awsvpc"
-  cpu                = "256"
-  memory             = "512"
-
-  requires_compatibilities = [
-    "FARGATE"
-  ]
-
-  container_definitions = templatefile(
-    "${path.module}/taskdefs/definition.tpl",
-    {
-      aws_region      = local.region
-      container_name  = "${var.prefix}-predict"
-      container_image = "${module.ecr_predict.repository_url}:latest"
-      container_port  = 80
-    }
-  )
+data "aws_ecs_task_definition" "functions" {
+  task_definition = aws_ecs_task_definition.functions.family
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -368,7 +202,7 @@ resource "aws_ecs_service" "rag" {
   cluster                            = aws_ecs_cluster.this.id
   desired_count                      = 1
   platform_version                   = "LATEST"
-  task_definition                    = aws_ecs_task_definition.rag.arn
+  task_definition                    = data.aws_ecs_task_definition.rag.arn
   deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 100
   health_check_grace_period_seconds  = 0
@@ -441,323 +275,584 @@ resource "aws_ecs_task_definition" "rag" {
 }
 
 # ----------------------------------------------------------------------------------------------
-# ECS Service - Share Service
+# AWS ECS Service - Rag Service Task Definition
 # ----------------------------------------------------------------------------------------------
-resource "aws_ecs_service" "share" {
-  name                               = aws_ecs_task_definition.share.family
-  cluster                            = aws_ecs_cluster.this.id
-  desired_count                      = 1
-  platform_version                   = "LATEST"
-  task_definition                    = aws_ecs_task_definition.share.arn
-  deployment_maximum_percent         = 200
-  deployment_minimum_healthy_percent = 100
-  health_check_grace_period_seconds  = 0
-  wait_for_steady_state              = false
-  scheduling_strategy                = "REPLICA"
-  enable_ecs_managed_tags            = true
-
-  capacity_provider_strategy {
-    base              = 0
-    weight            = 1
-    capacity_provider = "FARGATE_SPOT"
-  }
-
-  deployment_circuit_breaker {
-    enable   = false
-    rollback = false
-  }
-
-  deployment_controller {
-    type = "ECS"
-  }
-
-  network_configuration {
-    assign_public_ip = false
-    subnets          = module.vpc.private_subnets
-    security_groups  = [aws_security_group.ecs_default_sg.id]
-  }
-
-  service_registries {
-    registry_arn = aws_service_discovery_service.rag.arn
-    port         = 8080
-  }
-
-  # provisioner "local-exec" {
-  #   when    = destroy
-  #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
-  # }
-
-  lifecycle {
-    ignore_changes = [
-      desired_count
-    ]
-  }
+data "aws_ecs_task_definition" "rag" {
+  task_definition = aws_ecs_task_definition.rag.family
 }
 
-# ----------------------------------------------------------------------------------------------
-# AWS ECS Service - Share Service Task Definition
-# ----------------------------------------------------------------------------------------------
-resource "aws_ecs_task_definition" "share" {
-  family             = "${var.prefix}-share"
-  task_role_arn      = aws_iam_role.ecs_task.arn
-  execution_role_arn = aws_iam_role.ecs_task_exec.arn
-  network_mode       = "awsvpc"
-  cpu                = "256"
-  memory             = "512"
+# # ----------------------------------------------------------------------------------------------
+# # ECS Service - File Service
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_ecs_service" "file" {
+#   name                               = aws_ecs_task_definition.file.family
+#   cluster                            = aws_ecs_cluster.this.id
+#   desired_count                      = 1
+#   platform_version                   = "LATEST"
+#   task_definition                    = data.aws_ecs_task_definition.file.arn
+#   deployment_maximum_percent         = 200
+#   deployment_minimum_healthy_percent = 100
+#   health_check_grace_period_seconds  = 0
+#   wait_for_steady_state              = false
+#   scheduling_strategy                = "REPLICA"
+#   enable_ecs_managed_tags            = true
 
-  requires_compatibilities = [
-    "FARGATE"
-  ]
+#   capacity_provider_strategy {
+#     base              = 0
+#     weight            = 1
+#     capacity_provider = "FARGATE_SPOT"
+#   }
 
-  container_definitions = templatefile(
-    "${path.module}/taskdefs/definition.tpl",
-    {
-      aws_region      = local.region
-      container_name  = "${var.prefix}-share"
-      container_image = "${module.ecr_share.repository_url}:latest"
-      container_port  = 80
-    }
-  )
-}
+#   deployment_circuit_breaker {
+#     enable   = false
+#     rollback = false
+#   }
 
-# ----------------------------------------------------------------------------------------------
-# ECS Service - SystemContexts Service
-# ----------------------------------------------------------------------------------------------
-resource "aws_ecs_service" "systemcontexts" {
-  name                               = aws_ecs_task_definition.systemcontexts.family
-  cluster                            = aws_ecs_cluster.this.id
-  desired_count                      = 1
-  platform_version                   = "LATEST"
-  task_definition                    = aws_ecs_task_definition.systemcontexts.arn
-  deployment_maximum_percent         = 200
-  deployment_minimum_healthy_percent = 100
-  health_check_grace_period_seconds  = 0
-  wait_for_steady_state              = false
-  scheduling_strategy                = "REPLICA"
-  enable_ecs_managed_tags            = true
+#   deployment_controller {
+#     type = "ECS"
+#   }
 
-  capacity_provider_strategy {
-    base              = 0
-    weight            = 1
-    capacity_provider = "FARGATE_SPOT"
-  }
+#   network_configuration {
+#     assign_public_ip = false
+#     subnets          = module.vpc.private_subnets
+#     security_groups  = [aws_security_group.ecs_default_sg.id]
+#   }
 
-  deployment_circuit_breaker {
-    enable   = false
-    rollback = false
-  }
+#   service_registries {
+#     registry_arn = aws_service_discovery_service.file.arn
+#     port         = 8080
+#   }
 
-  deployment_controller {
-    type = "ECS"
-  }
+#   # provisioner "local-exec" {
+#   #   when    = destroy
+#   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
+#   # }
 
-  network_configuration {
-    assign_public_ip = false
-    subnets          = module.vpc.private_subnets
-    security_groups  = [aws_security_group.ecs_default_sg.id]
-  }
+#   lifecycle {
+#     ignore_changes = [
+#       desired_count
+#     ]
+#   }
+# }
 
-  service_registries {
-    registry_arn = aws_service_discovery_service.systemcontexts.arn
-    port         = 8080
-  }
+# # ----------------------------------------------------------------------------------------------
+# # AWS ECS Service - File Service Task Definition
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_ecs_task_definition" "file" {
+#   family             = "${var.prefix}-file"
+#   task_role_arn      = aws_iam_role.ecs_task.arn
+#   execution_role_arn = aws_iam_role.ecs_task_exec.arn
+#   network_mode       = "awsvpc"
+#   cpu                = "256"
+#   memory             = "512"
 
-  # provisioner "local-exec" {
-  #   when    = destroy
-  #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
-  # }
+#   requires_compatibilities = [
+#     "FARGATE"
+#   ]
 
-  lifecycle {
-    ignore_changes = [
-      desired_count
-    ]
-  }
-}
+#   container_definitions = templatefile(
+#     "${path.module}/taskdefs/definition.tpl",
+#     {
+#       aws_region      = local.region
+#       container_name  = "${var.prefix}-file"
+#       container_image = "${module.ecr_file.repository_url}:latest"
+#       container_port  = 80
+#     }
+#   )
+# }
 
-# ----------------------------------------------------------------------------------------------
-# AWS ECS Service - SystemContexts Service Task Definition
-# ----------------------------------------------------------------------------------------------
-resource "aws_ecs_task_definition" "systemcontexts" {
-  family             = "${var.prefix}-systemcontexts"
-  task_role_arn      = aws_iam_role.ecs_task.arn
-  execution_role_arn = aws_iam_role.ecs_task_exec.arn
-  network_mode       = "awsvpc"
-  cpu                = "256"
-  memory             = "512"
+# # ----------------------------------------------------------------------------------------------
+# # AWS ECS Service - File Service Task Definition
+# # ----------------------------------------------------------------------------------------------
+# data "aws_ecs_task_definition" "file" {
+#   task_definition = aws_ecs_task_definition.file.family
+# }
 
-  requires_compatibilities = [
-    "FARGATE"
-  ]
+# # ----------------------------------------------------------------------------------------------
+# # ECS Service - Image Service
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_ecs_service" "image" {
+#   name                               = aws_ecs_task_definition.image.family
+#   cluster                            = aws_ecs_cluster.this.id
+#   desired_count                      = 1
+#   platform_version                   = "LATEST"
+#   task_definition                    = data.aws_ecs_task_definition.image.arn
+#   deployment_maximum_percent         = 200
+#   deployment_minimum_healthy_percent = 100
+#   health_check_grace_period_seconds  = 0
+#   wait_for_steady_state              = false
+#   scheduling_strategy                = "REPLICA"
+#   enable_ecs_managed_tags            = true
 
-  container_definitions = templatefile(
-    "${path.module}/taskdefs/definition.tpl",
-    {
-      aws_region      = local.region
-      container_name  = "${var.prefix}-systemcontexts"
-      container_image = "${module.ecr_systemcontexts.repository_url}:latest"
-      container_port  = 80
-    }
-  )
-}
+#   capacity_provider_strategy {
+#     base              = 0
+#     weight            = 1
+#     capacity_provider = "FARGATE_SPOT"
+#   }
 
-# ----------------------------------------------------------------------------------------------
-# ECS Service - Transcribe Service
-# ----------------------------------------------------------------------------------------------
-resource "aws_ecs_service" "transcribe" {
-  name                               = aws_ecs_task_definition.transcribe.family
-  cluster                            = aws_ecs_cluster.this.id
-  desired_count                      = 1
-  platform_version                   = "LATEST"
-  task_definition                    = aws_ecs_task_definition.transcribe.arn
-  deployment_maximum_percent         = 200
-  deployment_minimum_healthy_percent = 100
-  health_check_grace_period_seconds  = 0
-  wait_for_steady_state              = false
-  scheduling_strategy                = "REPLICA"
-  enable_ecs_managed_tags            = true
+#   deployment_circuit_breaker {
+#     enable   = false
+#     rollback = false
+#   }
 
-  capacity_provider_strategy {
-    base              = 0
-    weight            = 1
-    capacity_provider = "FARGATE_SPOT"
-  }
+#   deployment_controller {
+#     type = "ECS"
+#   }
 
-  deployment_circuit_breaker {
-    enable   = false
-    rollback = false
-  }
+#   network_configuration {
+#     assign_public_ip = false
+#     subnets          = module.vpc.private_subnets
+#     security_groups  = [aws_security_group.ecs_default_sg.id]
+#   }
 
-  deployment_controller {
-    type = "ECS"
-  }
+#   service_registries {
+#     registry_arn = aws_service_discovery_service.image.arn
+#     port         = 8080
+#   }
 
-  network_configuration {
-    assign_public_ip = false
-    subnets          = module.vpc.private_subnets
-    security_groups  = [aws_security_group.ecs_default_sg.id]
-  }
+#   # provisioner "local-exec" {
+#   #   when    = destroy
+#   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
+#   # }
 
-  service_registries {
-    registry_arn = aws_service_discovery_service.transcribe.arn
-    port         = 8080
-  }
+#   lifecycle {
+#     ignore_changes = [
+#       desired_count
+#     ]
+#   }
+# }
 
-  # provisioner "local-exec" {
-  #   when    = destroy
-  #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
-  # }
+# # ----------------------------------------------------------------------------------------------
+# # AWS ECS Service - Image Service Task Definition
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_ecs_task_definition" "image" {
+#   family             = "${var.prefix}-image"
+#   task_role_arn      = aws_iam_role.ecs_task.arn
+#   execution_role_arn = aws_iam_role.ecs_task_exec.arn
+#   network_mode       = "awsvpc"
+#   cpu                = "256"
+#   memory             = "512"
 
-  lifecycle {
-    ignore_changes = [
-      desired_count
-    ]
-  }
-}
+#   requires_compatibilities = [
+#     "FARGATE"
+#   ]
 
-# ----------------------------------------------------------------------------------------------
-# AWS ECS Service - Transcribe Service Task Definition
-# ----------------------------------------------------------------------------------------------
-resource "aws_ecs_task_definition" "transcribe" {
-  family             = "${var.prefix}-transcribe"
-  task_role_arn      = aws_iam_role.ecs_task.arn
-  execution_role_arn = aws_iam_role.ecs_task_exec.arn
-  network_mode       = "awsvpc"
-  cpu                = "256"
-  memory             = "512"
+#   container_definitions = templatefile(
+#     "${path.module}/taskdefs/definition.tpl",
+#     {
+#       aws_region      = local.region
+#       container_name  = "${var.prefix}-image"
+#       container_image = "${module.ecr_image.repository_url}:latest"
+#       container_port  = 80
+#     }
+#   )
+# }
 
-  requires_compatibilities = [
-    "FARGATE"
-  ]
+# # ----------------------------------------------------------------------------------------------
+# # AWS ECS Service - Image Service Task Definition
+# # ----------------------------------------------------------------------------------------------
+# data "aws_ecs_task_definition" "image" {
+#   task_definition = aws_ecs_task_definition.image.family
+# }
 
-  container_definitions = templatefile(
-    "${path.module}/taskdefs/definition.tpl",
-    {
-      aws_region      = local.region
-      container_name  = "${var.prefix}-transcribe"
-      container_image = "${module.ecr_rag.repository_url}:latest"
-      container_port  = 80
-    }
-  )
-}
+# # ----------------------------------------------------------------------------------------------
+# # ECS Service - Predict Service
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_ecs_service" "predict" {
+#   name                               = aws_ecs_task_definition.predict.family
+#   cluster                            = aws_ecs_cluster.this.id
+#   desired_count                      = 1
+#   platform_version                   = "LATEST"
+#   task_definition                    = aws_ecs_task_definition.predict.arn
+#   deployment_maximum_percent         = 200
+#   deployment_minimum_healthy_percent = 100
+#   health_check_grace_period_seconds  = 0
+#   wait_for_steady_state              = false
+#   scheduling_strategy                = "REPLICA"
+#   enable_ecs_managed_tags            = true
 
-# ----------------------------------------------------------------------------------------------
-# ECS Service - Webtext Service
-# ----------------------------------------------------------------------------------------------
-resource "aws_ecs_service" "webtext" {
-  name                               = aws_ecs_task_definition.webtext.family
-  cluster                            = aws_ecs_cluster.this.id
-  desired_count                      = 1
-  platform_version                   = "LATEST"
-  task_definition                    = aws_ecs_task_definition.webtext.arn
-  deployment_maximum_percent         = 200
-  deployment_minimum_healthy_percent = 100
-  health_check_grace_period_seconds  = 0
-  wait_for_steady_state              = false
-  scheduling_strategy                = "REPLICA"
-  enable_ecs_managed_tags            = true
+#   capacity_provider_strategy {
+#     base              = 0
+#     weight            = 1
+#     capacity_provider = "FARGATE_SPOT"
+#   }
 
-  capacity_provider_strategy {
-    base              = 0
-    weight            = 1
-    capacity_provider = "FARGATE_SPOT"
-  }
+#   deployment_circuit_breaker {
+#     enable   = false
+#     rollback = false
+#   }
 
-  deployment_circuit_breaker {
-    enable   = false
-    rollback = false
-  }
+#   deployment_controller {
+#     type = "ECS"
+#   }
 
-  deployment_controller {
-    type = "ECS"
-  }
+#   network_configuration {
+#     assign_public_ip = false
+#     subnets          = module.vpc.private_subnets
+#     security_groups  = [aws_security_group.ecs_default_sg.id]
+#   }
 
-  network_configuration {
-    assign_public_ip = false
-    subnets          = module.vpc.private_subnets
-    security_groups  = [aws_security_group.ecs_default_sg.id]
-  }
+#   service_registries {
+#     registry_arn = aws_service_discovery_service.predict.arn
+#     port         = 8080
+#   }
 
-  service_registries {
-    registry_arn = aws_service_discovery_service.webtext.arn
-    port         = 8080
-  }
+#   # provisioner "local-exec" {
+#   #   when    = destroy
+#   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
+#   # }
 
-  # provisioner "local-exec" {
-  #   when    = destroy
-  #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
-  # }
+#   lifecycle {
+#     ignore_changes = [
+#       desired_count
+#     ]
+#   }
+# }
 
-  lifecycle {
-    ignore_changes = [
-      desired_count
-    ]
-  }
-}
+# # ----------------------------------------------------------------------------------------------
+# # AWS ECS Service - Predict Service Task Definition
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_ecs_task_definition" "predict" {
+#   family             = "${var.prefix}-predict"
+#   task_role_arn      = aws_iam_role.ecs_task.arn
+#   execution_role_arn = aws_iam_role.ecs_task_exec.arn
+#   network_mode       = "awsvpc"
+#   cpu                = "256"
+#   memory             = "512"
 
-# ----------------------------------------------------------------------------------------------
-# AWS ECS Service - Webtext Service Task Definition
-# ----------------------------------------------------------------------------------------------
-resource "aws_ecs_task_definition" "webtext" {
-  family             = "${var.prefix}-webtext"
-  task_role_arn      = aws_iam_role.ecs_task.arn
-  execution_role_arn = aws_iam_role.ecs_task_exec.arn
-  network_mode       = "awsvpc"
-  cpu                = "256"
-  memory             = "512"
+#   requires_compatibilities = [
+#     "FARGATE"
+#   ]
 
-  requires_compatibilities = [
-    "FARGATE"
-  ]
+#   container_definitions = templatefile(
+#     "${path.module}/taskdefs/definition.tpl",
+#     {
+#       aws_region      = local.region
+#       container_name  = "${var.prefix}-predict"
+#       container_image = "${module.ecr_predict.repository_url}:latest"
+#       container_port  = 80
+#     }
+#   )
+# }
 
-  container_definitions = templatefile(
-    "${path.module}/taskdefs/definition.tpl",
-    {
-      aws_region      = local.region
-      container_name  = "${var.prefix}-webtext"
-      container_image = "${module.ecr_rag.repository_url}:latest"
-      container_port  = 80
-    }
-  )
-}
+# # ----------------------------------------------------------------------------------------------
+# # ECS Service - Share Service
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_ecs_service" "share" {
+#   name                               = aws_ecs_task_definition.share.family
+#   cluster                            = aws_ecs_cluster.this.id
+#   desired_count                      = 1
+#   platform_version                   = "LATEST"
+#   task_definition                    = aws_ecs_task_definition.share.arn
+#   deployment_maximum_percent         = 200
+#   deployment_minimum_healthy_percent = 100
+#   health_check_grace_period_seconds  = 0
+#   wait_for_steady_state              = false
+#   scheduling_strategy                = "REPLICA"
+#   enable_ecs_managed_tags            = true
+
+#   capacity_provider_strategy {
+#     base              = 0
+#     weight            = 1
+#     capacity_provider = "FARGATE_SPOT"
+#   }
+
+#   deployment_circuit_breaker {
+#     enable   = false
+#     rollback = false
+#   }
+
+#   deployment_controller {
+#     type = "ECS"
+#   }
+
+#   network_configuration {
+#     assign_public_ip = false
+#     subnets          = module.vpc.private_subnets
+#     security_groups  = [aws_security_group.ecs_default_sg.id]
+#   }
+
+#   service_registries {
+#     registry_arn = aws_service_discovery_service.rag.arn
+#     port         = 8080
+#   }
+
+#   # provisioner "local-exec" {
+#   #   when    = destroy
+#   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
+#   # }
+
+#   lifecycle {
+#     ignore_changes = [
+#       desired_count
+#     ]
+#   }
+# }
+
+# # ----------------------------------------------------------------------------------------------
+# # AWS ECS Service - Share Service Task Definition
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_ecs_task_definition" "share" {
+#   family             = "${var.prefix}-share"
+#   task_role_arn      = aws_iam_role.ecs_task.arn
+#   execution_role_arn = aws_iam_role.ecs_task_exec.arn
+#   network_mode       = "awsvpc"
+#   cpu                = "256"
+#   memory             = "512"
+
+#   requires_compatibilities = [
+#     "FARGATE"
+#   ]
+
+#   container_definitions = templatefile(
+#     "${path.module}/taskdefs/definition.tpl",
+#     {
+#       aws_region      = local.region
+#       container_name  = "${var.prefix}-share"
+#       container_image = "${module.ecr_share.repository_url}:latest"
+#       container_port  = 80
+#     }
+#   )
+# }
+
+# # ----------------------------------------------------------------------------------------------
+# # ECS Service - SystemContexts Service
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_ecs_service" "systemcontexts" {
+#   name                               = aws_ecs_task_definition.systemcontexts.family
+#   cluster                            = aws_ecs_cluster.this.id
+#   desired_count                      = 1
+#   platform_version                   = "LATEST"
+#   task_definition                    = aws_ecs_task_definition.systemcontexts.arn
+#   deployment_maximum_percent         = 200
+#   deployment_minimum_healthy_percent = 100
+#   health_check_grace_period_seconds  = 0
+#   wait_for_steady_state              = false
+#   scheduling_strategy                = "REPLICA"
+#   enable_ecs_managed_tags            = true
+
+#   capacity_provider_strategy {
+#     base              = 0
+#     weight            = 1
+#     capacity_provider = "FARGATE_SPOT"
+#   }
+
+#   deployment_circuit_breaker {
+#     enable   = false
+#     rollback = false
+#   }
+
+#   deployment_controller {
+#     type = "ECS"
+#   }
+
+#   network_configuration {
+#     assign_public_ip = false
+#     subnets          = module.vpc.private_subnets
+#     security_groups  = [aws_security_group.ecs_default_sg.id]
+#   }
+
+#   service_registries {
+#     registry_arn = aws_service_discovery_service.systemcontexts.arn
+#     port         = 8080
+#   }
+
+#   # provisioner "local-exec" {
+#   #   when    = destroy
+#   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
+#   # }
+
+#   lifecycle {
+#     ignore_changes = [
+#       desired_count
+#     ]
+#   }
+# }
+
+# # ----------------------------------------------------------------------------------------------
+# # AWS ECS Service - SystemContexts Service Task Definition
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_ecs_task_definition" "systemcontexts" {
+#   family             = "${var.prefix}-systemcontexts"
+#   task_role_arn      = aws_iam_role.ecs_task.arn
+#   execution_role_arn = aws_iam_role.ecs_task_exec.arn
+#   network_mode       = "awsvpc"
+#   cpu                = "256"
+#   memory             = "512"
+
+#   requires_compatibilities = [
+#     "FARGATE"
+#   ]
+
+#   container_definitions = templatefile(
+#     "${path.module}/taskdefs/definition.tpl",
+#     {
+#       aws_region      = local.region
+#       container_name  = "${var.prefix}-systemcontexts"
+#       container_image = "${module.ecr_systemcontexts.repository_url}:latest"
+#       container_port  = 80
+#     }
+#   )
+# }
+
+# # ----------------------------------------------------------------------------------------------
+# # ECS Service - Transcribe Service
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_ecs_service" "transcribe" {
+#   name                               = aws_ecs_task_definition.transcribe.family
+#   cluster                            = aws_ecs_cluster.this.id
+#   desired_count                      = 1
+#   platform_version                   = "LATEST"
+#   task_definition                    = aws_ecs_task_definition.transcribe.arn
+#   deployment_maximum_percent         = 200
+#   deployment_minimum_healthy_percent = 100
+#   health_check_grace_period_seconds  = 0
+#   wait_for_steady_state              = false
+#   scheduling_strategy                = "REPLICA"
+#   enable_ecs_managed_tags            = true
+
+#   capacity_provider_strategy {
+#     base              = 0
+#     weight            = 1
+#     capacity_provider = "FARGATE_SPOT"
+#   }
+
+#   deployment_circuit_breaker {
+#     enable   = false
+#     rollback = false
+#   }
+
+#   deployment_controller {
+#     type = "ECS"
+#   }
+
+#   network_configuration {
+#     assign_public_ip = false
+#     subnets          = module.vpc.private_subnets
+#     security_groups  = [aws_security_group.ecs_default_sg.id]
+#   }
+
+#   service_registries {
+#     registry_arn = aws_service_discovery_service.transcribe.arn
+#     port         = 8080
+#   }
+
+#   # provisioner "local-exec" {
+#   #   when    = destroy
+#   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
+#   # }
+
+#   lifecycle {
+#     ignore_changes = [
+#       desired_count
+#     ]
+#   }
+# }
+
+# # ----------------------------------------------------------------------------------------------
+# # AWS ECS Service - Transcribe Service Task Definition
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_ecs_task_definition" "transcribe" {
+#   family             = "${var.prefix}-transcribe"
+#   task_role_arn      = aws_iam_role.ecs_task.arn
+#   execution_role_arn = aws_iam_role.ecs_task_exec.arn
+#   network_mode       = "awsvpc"
+#   cpu                = "256"
+#   memory             = "512"
+
+#   requires_compatibilities = [
+#     "FARGATE"
+#   ]
+
+#   container_definitions = templatefile(
+#     "${path.module}/taskdefs/definition.tpl",
+#     {
+#       aws_region      = local.region
+#       container_name  = "${var.prefix}-transcribe"
+#       container_image = "${module.ecr_rag.repository_url}:latest"
+#       container_port  = 80
+#     }
+#   )
+# }
+
+# # ----------------------------------------------------------------------------------------------
+# # ECS Service - Webtext Service
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_ecs_service" "webtext" {
+#   name                               = aws_ecs_task_definition.webtext.family
+#   cluster                            = aws_ecs_cluster.this.id
+#   desired_count                      = 1
+#   platform_version                   = "LATEST"
+#   task_definition                    = aws_ecs_task_definition.webtext.arn
+#   deployment_maximum_percent         = 200
+#   deployment_minimum_healthy_percent = 100
+#   health_check_grace_period_seconds  = 0
+#   wait_for_steady_state              = false
+#   scheduling_strategy                = "REPLICA"
+#   enable_ecs_managed_tags            = true
+
+#   capacity_provider_strategy {
+#     base              = 0
+#     weight            = 1
+#     capacity_provider = "FARGATE_SPOT"
+#   }
+
+#   deployment_circuit_breaker {
+#     enable   = false
+#     rollback = false
+#   }
+
+#   deployment_controller {
+#     type = "ECS"
+#   }
+
+#   network_configuration {
+#     assign_public_ip = false
+#     subnets          = module.vpc.private_subnets
+#     security_groups  = [aws_security_group.ecs_default_sg.id]
+#   }
+
+#   service_registries {
+#     registry_arn = aws_service_discovery_service.webtext.arn
+#     port         = 8080
+#   }
+
+#   # provisioner "local-exec" {
+#   #   when    = destroy
+#   #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
+#   # }
+
+#   lifecycle {
+#     ignore_changes = [
+#       desired_count
+#     ]
+#   }
+# }
+
+# # ----------------------------------------------------------------------------------------------
+# # AWS ECS Service - Webtext Service Task Definition
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_ecs_task_definition" "webtext" {
+#   family             = "${var.prefix}-webtext"
+#   task_role_arn      = aws_iam_role.ecs_task.arn
+#   execution_role_arn = aws_iam_role.ecs_task_exec.arn
+#   network_mode       = "awsvpc"
+#   cpu                = "256"
+#   memory             = "512"
+
+#   requires_compatibilities = [
+#     "FARGATE"
+#   ]
+
+#   container_definitions = templatefile(
+#     "${path.module}/taskdefs/definition.tpl",
+#     {
+#       aws_region      = local.region
+#       container_name  = "${var.prefix}-webtext"
+#       container_image = "${module.ecr_rag.repository_url}:latest"
+#       container_port  = 80
+#     }
+#   )
+# }
 
 

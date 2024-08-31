@@ -224,7 +224,7 @@ resource "aws_apigatewayv2_route" "shares_share_shareid_delete" {
 resource "aws_apigatewayv2_route" "systemcontexts_get" {
   api_id             = aws_apigatewayv2_api.this.id
   route_key          = "GET /systemcontexts"
-  target             = "integrations/${aws_apigatewayv2_integration.systemcontexts.id}"
+  target             = "integrations/${aws_apigatewayv2_integration.chat.id}"
   authorization_type = "CUSTOM"
   authorizer_id      = aws_apigatewayv2_authorizer.this.id
 }
@@ -235,7 +235,7 @@ resource "aws_apigatewayv2_route" "systemcontexts_get" {
 resource "aws_apigatewayv2_route" "systemcontexts_post" {
   api_id             = aws_apigatewayv2_api.this.id
   route_key          = "POST /systemcontexts"
-  target             = "integrations/${aws_apigatewayv2_integration.systemcontexts.id}"
+  target             = "integrations/${aws_apigatewayv2_integration.chat.id}"
   authorization_type = "CUSTOM"
   authorizer_id      = aws_apigatewayv2_authorizer.this.id
 }
@@ -246,7 +246,7 @@ resource "aws_apigatewayv2_route" "systemcontexts_post" {
 resource "aws_apigatewayv2_route" "systemcontexts_systemContextid_delete" {
   api_id             = aws_apigatewayv2_api.this.id
   route_key          = "DELETE /systemcontexts/{systemContextId}"
-  target             = "integrations/${aws_apigatewayv2_integration.systemcontexts.id}"
+  target             = "integrations/${aws_apigatewayv2_integration.chat.id}"
   authorization_type = "CUSTOM"
   authorizer_id      = aws_apigatewayv2_authorizer.this.id
 }
@@ -257,7 +257,7 @@ resource "aws_apigatewayv2_route" "systemcontexts_systemContextid_delete" {
 resource "aws_apigatewayv2_route" "systemcontexts_systemContextid_title_put" {
   api_id             = aws_apigatewayv2_api.this.id
   route_key          = "PUT /systemcontexts/{systemContextId}/title"
-  target             = "integrations/${aws_apigatewayv2_integration.systemcontexts.id}"
+  target             = "integrations/${aws_apigatewayv2_integration.chat.id}"
   authorization_type = "CUSTOM"
   authorizer_id      = aws_apigatewayv2_authorizer.this.id
 }

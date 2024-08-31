@@ -35,64 +35,10 @@ resource "aws_service_discovery_service" "chat" {
 }
 
 # ----------------------------------------------------------------------------------------------
-# Service Discovery Service - File Service
+# Service Discovery Service - Functions Service
 # ----------------------------------------------------------------------------------------------
-resource "aws_service_discovery_service" "file" {
-  name = "file"
-
-  dns_config {
-    namespace_id = aws_service_discovery_private_dns_namespace.this.id
-
-    dns_records {
-      ttl  = 60
-      type = "A"
-    }
-
-    dns_records {
-      ttl  = 60
-      type = "SRV"
-    }
-
-    routing_policy = "MULTIVALUE"
-  }
-
-  health_check_custom_config {
-    failure_threshold = 1
-  }
-}
-
-# ----------------------------------------------------------------------------------------------
-# Service Discovery Service - Image Service
-# ----------------------------------------------------------------------------------------------
-resource "aws_service_discovery_service" "image" {
-  name = "image"
-
-  dns_config {
-    namespace_id = aws_service_discovery_private_dns_namespace.this.id
-
-    dns_records {
-      ttl  = 60
-      type = "A"
-    }
-
-    dns_records {
-      ttl  = 60
-      type = "SRV"
-    }
-
-    routing_policy = "MULTIVALUE"
-  }
-
-  health_check_custom_config {
-    failure_threshold = 1
-  }
-}
-
-# ----------------------------------------------------------------------------------------------
-# Service Discovery Service - Predict Service
-# ----------------------------------------------------------------------------------------------
-resource "aws_service_discovery_service" "predict" {
-  name = "predict"
+resource "aws_service_discovery_service" "functions" {
+  name = "functions"
 
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.this.id
@@ -142,111 +88,192 @@ resource "aws_service_discovery_service" "rag" {
   }
 }
 
-# ----------------------------------------------------------------------------------------------
-# Service Discovery Service - Share Service
-# ----------------------------------------------------------------------------------------------
-resource "aws_service_discovery_service" "share" {
-  name = "share"
+# # ----------------------------------------------------------------------------------------------
+# # Service Discovery Service - File Service
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_service_discovery_service" "file" {
+#   name = "file"
 
-  dns_config {
-    namespace_id = aws_service_discovery_private_dns_namespace.this.id
+#   dns_config {
+#     namespace_id = aws_service_discovery_private_dns_namespace.this.id
 
-    dns_records {
-      ttl  = 60
-      type = "A"
-    }
+#     dns_records {
+#       ttl  = 60
+#       type = "A"
+#     }
 
-    dns_records {
-      ttl  = 60
-      type = "SRV"
-    }
+#     dns_records {
+#       ttl  = 60
+#       type = "SRV"
+#     }
 
-    routing_policy = "MULTIVALUE"
-  }
+#     routing_policy = "MULTIVALUE"
+#   }
 
-  health_check_custom_config {
-    failure_threshold = 1
-  }
-}
+#   health_check_custom_config {
+#     failure_threshold = 1
+#   }
+# }
 
-# ----------------------------------------------------------------------------------------------
-# Service Discovery Service - SystemContexts Service
-# ----------------------------------------------------------------------------------------------
-resource "aws_service_discovery_service" "systemcontexts" {
-  name = "systemcontexts"
+# # ----------------------------------------------------------------------------------------------
+# # Service Discovery Service - Image Service
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_service_discovery_service" "image" {
+#   name = "image"
 
-  dns_config {
-    namespace_id = aws_service_discovery_private_dns_namespace.this.id
+#   dns_config {
+#     namespace_id = aws_service_discovery_private_dns_namespace.this.id
 
-    dns_records {
-      ttl  = 60
-      type = "A"
-    }
+#     dns_records {
+#       ttl  = 60
+#       type = "A"
+#     }
 
-    dns_records {
-      ttl  = 60
-      type = "SRV"
-    }
+#     dns_records {
+#       ttl  = 60
+#       type = "SRV"
+#     }
 
-    routing_policy = "MULTIVALUE"
-  }
+#     routing_policy = "MULTIVALUE"
+#   }
 
-  health_check_custom_config {
-    failure_threshold = 1
-  }
-}
+#   health_check_custom_config {
+#     failure_threshold = 1
+#   }
+# }
 
-# ----------------------------------------------------------------------------------------------
-# Service Discovery Service - Transcribe Service
-# ----------------------------------------------------------------------------------------------
-resource "aws_service_discovery_service" "transcribe" {
-  name = "transcribe"
+# # ----------------------------------------------------------------------------------------------
+# # Service Discovery Service - Predict Service
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_service_discovery_service" "predict" {
+#   name = "predict"
 
-  dns_config {
-    namespace_id = aws_service_discovery_private_dns_namespace.this.id
+#   dns_config {
+#     namespace_id = aws_service_discovery_private_dns_namespace.this.id
 
-    dns_records {
-      ttl  = 60
-      type = "A"
-    }
+#     dns_records {
+#       ttl  = 60
+#       type = "A"
+#     }
 
-    dns_records {
-      ttl  = 60
-      type = "SRV"
-    }
+#     dns_records {
+#       ttl  = 60
+#       type = "SRV"
+#     }
 
-    routing_policy = "MULTIVALUE"
-  }
+#     routing_policy = "MULTIVALUE"
+#   }
 
-  health_check_custom_config {
-    failure_threshold = 1
-  }
-}
+#   health_check_custom_config {
+#     failure_threshold = 1
+#   }
+# }
 
-# ----------------------------------------------------------------------------------------------
-# Service Discovery Service - Webtext Service
-# ----------------------------------------------------------------------------------------------
-resource "aws_service_discovery_service" "webtext" {
-  name = "webtext"
+# # ----------------------------------------------------------------------------------------------
+# # Service Discovery Service - Share Service
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_service_discovery_service" "share" {
+#   name = "share"
 
-  dns_config {
-    namespace_id = aws_service_discovery_private_dns_namespace.this.id
+#   dns_config {
+#     namespace_id = aws_service_discovery_private_dns_namespace.this.id
 
-    dns_records {
-      ttl  = 60
-      type = "A"
-    }
+#     dns_records {
+#       ttl  = 60
+#       type = "A"
+#     }
 
-    dns_records {
-      ttl  = 60
-      type = "SRV"
-    }
+#     dns_records {
+#       ttl  = 60
+#       type = "SRV"
+#     }
 
-    routing_policy = "MULTIVALUE"
-  }
+#     routing_policy = "MULTIVALUE"
+#   }
 
-  health_check_custom_config {
-    failure_threshold = 1
-  }
-}
+#   health_check_custom_config {
+#     failure_threshold = 1
+#   }
+# }
+
+# # ----------------------------------------------------------------------------------------------
+# # Service Discovery Service - SystemContexts Service
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_service_discovery_service" "systemcontexts" {
+#   name = "systemcontexts"
+
+#   dns_config {
+#     namespace_id = aws_service_discovery_private_dns_namespace.this.id
+
+#     dns_records {
+#       ttl  = 60
+#       type = "A"
+#     }
+
+#     dns_records {
+#       ttl  = 60
+#       type = "SRV"
+#     }
+
+#     routing_policy = "MULTIVALUE"
+#   }
+
+#   health_check_custom_config {
+#     failure_threshold = 1
+#   }
+# }
+
+# # ----------------------------------------------------------------------------------------------
+# # Service Discovery Service - Transcribe Service
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_service_discovery_service" "transcribe" {
+#   name = "transcribe"
+
+#   dns_config {
+#     namespace_id = aws_service_discovery_private_dns_namespace.this.id
+
+#     dns_records {
+#       ttl  = 60
+#       type = "A"
+#     }
+
+#     dns_records {
+#       ttl  = 60
+#       type = "SRV"
+#     }
+
+#     routing_policy = "MULTIVALUE"
+#   }
+
+#   health_check_custom_config {
+#     failure_threshold = 1
+#   }
+# }
+
+# # ----------------------------------------------------------------------------------------------
+# # Service Discovery Service - Webtext Service
+# # ----------------------------------------------------------------------------------------------
+# resource "aws_service_discovery_service" "webtext" {
+#   name = "webtext"
+
+#   dns_config {
+#     namespace_id = aws_service_discovery_private_dns_namespace.this.id
+
+#     dns_records {
+#       ttl  = 60
+#       type = "A"
+#     }
+
+#     dns_records {
+#       ttl  = 60
+#       type = "SRV"
+#     }
+
+#     routing_policy = "MULTIVALUE"
+#   }
+
+#   health_check_custom_config {
+#     failure_threshold = 1
+#   }
+# }
 
