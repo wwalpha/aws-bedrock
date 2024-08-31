@@ -57,15 +57,6 @@ resource "aws_apigatewayv2_stage" "this" {
 }
 
 # ---------------------------------------------------------------------------------------------
-# API Gateway VPC Link
-# ---------------------------------------------------------------------------------------------
-resource "aws_apigatewayv2_vpc_link" "this" {
-  name               = "${var.prefix}-vpclink"
-  security_group_ids = [aws_security_group.private_link.id]
-  subnet_ids         = module.vpc.private_subnets
-}
-
-# ---------------------------------------------------------------------------------------------
 # API Gateway Integration - Chat Service
 # ---------------------------------------------------------------------------------------------
 resource "aws_apigatewayv2_integration" "chat" {
@@ -74,7 +65,7 @@ resource "aws_apigatewayv2_integration" "chat" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = aws_service_discovery_service.chat.arn
+  integration_uri    = var.service_discovery_service_chat_arn
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -86,7 +77,7 @@ resource "aws_apigatewayv2_integration" "file" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = aws_service_discovery_service.file.arn
+  integration_uri    = var.service_discovery_service_file_arn
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -98,7 +89,7 @@ resource "aws_apigatewayv2_integration" "image" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = aws_service_discovery_service.image.arn
+  integration_uri    = var.service_discovery_service_image_arn
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -110,7 +101,7 @@ resource "aws_apigatewayv2_integration" "predict" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = aws_service_discovery_service.predict.arn
+  integration_uri    = var.service_discovery_service_predict_arn
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -122,7 +113,7 @@ resource "aws_apigatewayv2_integration" "rag" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = aws_service_discovery_service.rag.arn
+  integration_uri    = var.service_discovery_service_rag_arn
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -134,7 +125,7 @@ resource "aws_apigatewayv2_integration" "share" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = aws_service_discovery_service.share.arn
+  integration_uri    = var.service_discovery_service_share_arn
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -146,7 +137,7 @@ resource "aws_apigatewayv2_integration" "systemcontexts" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = aws_service_discovery_service.systemcontexts.arn
+  integration_uri    = var.service_discovery_service_systemcontexts_arn
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -158,7 +149,7 @@ resource "aws_apigatewayv2_integration" "transcribe" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = aws_service_discovery_service.transcribe.arn
+  integration_uri    = var.service_discovery_service_transcribe_arn
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -170,5 +161,5 @@ resource "aws_apigatewayv2_integration" "webtext" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = aws_service_discovery_service.webtext.arn
+  integration_uri    = var.service_discovery_service_webtext_arn
 }
