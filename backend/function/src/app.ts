@@ -2,7 +2,7 @@ import express from 'express';
 import { urlencoded } from 'body-parser';
 import entry from './entry';
 import chatRegist from './apis/chatRegist';
-import chatList from './apis/chatList';
+import chatList from './apis/predict';
 
 const app = express();
 
