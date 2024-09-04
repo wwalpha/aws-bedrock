@@ -7,13 +7,8 @@ import {
 } from '@aws-sdk/client-bedrock-agent-runtime';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  ApiInterface,
-  AgentMap,
-  Model,
-  UnrecordedMessage,
-} from 'generative-ai-use-cases-jp';
 import { streamingChunk } from './streamingChunk';
+import { AgentMap, ApiInterface, Model, UnrecordedMessage } from 'typings';
 
 const agentMap: AgentMap = JSON.parse(process.env.AGENT_MAP || '{}');
 const client = new BedrockAgentRuntimeClient({
@@ -59,8 +54,7 @@ const bedrockAgentApi: Partial<ApiInterface> = {
           // Attribution の追加
           const sources: { [key: string]: number } = {};
           let offset = 0;
-          for (const citation of streamChunk.chunk?.attribution?.citations ||
-            []) {
+          for (const citation of streamChunk.chunk?.attribution?.citations || []) {
             for (const ref of citation.retrievedReferences || []) {
               // S3 URI を取得し URL に変換
               const s3Uri = ref?.location?.s3Location?.uri || '';
@@ -77,15 +71,10 @@ const bedrockAgentApi: Partial<ApiInterface> = {
               const referenceId = sources[url];
 
               // 文中に Reference 追加
-              const position =
-                (citation.generatedResponsePart?.textResponsePart?.span?.end ||
-                  0) +
-                offset +
-                1;
+              const position = (citation.generatedResponsePart?.textResponsePart?.span?.end || 0) + offset + 1;
               const referenceText = `[^${referenceId}]`;
               offset += referenceText.length;
-              body =
-                body.slice(0, position) + referenceText + body.slice(position);
+              body = body.slice(0, position) + referenceText + body.slice(position);
             }
           }
 
@@ -119,10 +108,7 @@ const bedrockAgentApi: Partial<ApiInterface> = {
         }
       }
     } catch (e) {
-      if (
-        e instanceof ThrottlingException ||
-        e instanceof ServiceQuotaExceededException
-      ) {
+      if (e instanceof ThrottlingException || e instanceof ServiceQuotaExceededException) {
         yield streamingChunk({
           text: 'ただいまアクセスが集中しているため時間をおいて試してみてください。',
         });

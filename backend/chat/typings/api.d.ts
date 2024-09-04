@@ -8,31 +8,31 @@ export namespace APIs {
   // ------------------------------------------------------------
   // Chat List
   // ------------------------------------------------------------
-  interface ChatListRequest {}
-  type ChatListResponse = Chat[];
+  type ListChatRequest = void;
+  type ListChatResponse = Chat[];
 
   // ------------------------------------------------------------
   // Chat Regist
   // ------------------------------------------------------------
-  interface ChatRegistRequest {}
-  type ChatRegistResponse = Chat;
+  type RegistChatRequest = void;
+  type RegistChatResponse = Chat;
 
   // ------------------------------------------------------------
   // Chat Delete
   // ------------------------------------------------------------
-  interface ChatDeleteRequest {}
-  interface ChatDeleteParams {
+  type DeleteChatRequest = void;
+  type DeleteChatParams = {
     chatId: string;
-  }
+  };
   type ChatDeleteResponse = void;
 
   // ------------------------------------------------------------
   // Chat Get
   // ------------------------------------------------------------
-  interface ChatGetRequest {}
-  interface ChatGetParams {
+  type ChatGetRequest = void;
+  type ChatGetParams = {
     chatId: string;
-  }
+  };
   type ChatGetResponse = Chat | null;
 
   // ------------------------------------------------------------
@@ -52,71 +52,71 @@ export namespace APIs {
   // ------------------------------------------------------------
   // Message List
   // ------------------------------------------------------------
-  interface MessageListRequest {}
-  interface MessageListParams {
+  interface ListMessagesRequest {}
+  interface ListMessagesParams {
     chatId: string;
   }
-  interface MessageListResponse {
+  interface ListMessagesResponse {
     messages: RecordedMessage[];
   }
 
   // ------------------------------------------------------------
   // Message Regist
   // ------------------------------------------------------------
-  interface MessageRegistRequest {
+  interface RegistMessageRequest {
     messages: ToBeRecordedMessage[];
   }
-  interface MessageRegistParams {
+  interface RegistMessageParams {
     chatId: string;
   }
-  interface MessageRegistResponse {
+  interface RegistMessageResponse {
     messages: RecordedMessage[];
   }
 
   // ------------------------------------------------------------
   // Chat Title Update
   // ------------------------------------------------------------
-  interface ChatTitleUpdateRequest {
+  interface UpdateChatTitleRequest {
     title: string;
   }
-  interface ChatTitleUpdateParams {
+  interface UpdateChatTitleParams {
     chatId: string;
   }
-  interface ChatTitleUpdateResponse {
+  interface UpdateChatTitleResponse {
     chat: Chat;
   }
 
   // ------------------------------------------------------------
   // SystemContext List
   // ------------------------------------------------------------
-  interface SystemContextListRequest {}
-  type SystemContextListResponse = SystemContext[];
+  interface ListSystemContextRequest {}
+  type ListSystemContextResponse = SystemContext[];
 
   // ------------------------------------------------------------
   // SystemContext Regist
   // ------------------------------------------------------------
-  interface SystemContextRegistRequest extends SystemContext {}
-  type SystemContextRegistResponse = SystemContext;
+  interface RegistSystemContextRequest extends SystemContext {}
+  type RegistSystemContextResponse = SystemContext;
 
   // ------------------------------------------------------------
   // SystemContext Delete
   // ------------------------------------------------------------
-  interface SystemContextDeleteRequest {}
-  interface SystemContextDeleteParams {
+  interface DeleteSystemContextRequest {}
+  interface DeleteSystemContextParams {
     systemContextId: string;
   }
-  type SystemContextDeleteResponse = void;
+  type DeleteSystemContextResponse = void;
 
   // ------------------------------------------------------------
   // SystemContext Title Update
   // ------------------------------------------------------------
-  interface SystemContextTitleUpdateRequest {
+  interface UpdateSystemContextTitleRequest {
     title: string;
   }
-  interface SystemContextTitleUpdateParams {
+  interface UpdateSystemContextTitleParams {
     systemContextId: string;
   }
-  interface SystemContextTitleUpdateResponse {
+  interface UpdateSystemContextTitleResponse {
     systemContext: SystemContext;
   }
 }

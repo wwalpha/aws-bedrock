@@ -3,8 +3,8 @@ import { SystemContextsService } from '@services';
 import { APIs } from 'typings';
 
 export default async (
-  req: Request<APIs.SystemContextTitleUpdateParams, any, APIs.SystemContextTitleUpdateRequest, any>
-): Promise<APIs.SystemContextTitleUpdateResponse> => {
+  req: Request<APIs.UpdateSystemContextTitleParams, any, APIs.UpdateSystemContextTitleRequest, any>
+): Promise<APIs.UpdateSystemContextTitleResponse> => {
   const userId: string = req.headers['username'] as string;
   const { systemContextId } = req.params;
   const { title } = req.body;

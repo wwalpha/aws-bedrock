@@ -4,8 +4,8 @@ import { APIs } from 'typings';
 import { ForbiddenError } from '@utils';
 
 export default async (
-  req: Request<APIs.MessageListParams, any, APIs.MessageListRequest, any>
-): Promise<APIs.MessageListResponse> => {
+  req: Request<APIs.ListMessagesParams, any, APIs.ListMessagesRequest, any>
+): Promise<APIs.ListMessagesResponse> => {
   const userId: string = req.headers['username'] as string;
   const { chatId } = req.params;
 

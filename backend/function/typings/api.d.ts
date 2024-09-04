@@ -1,10 +1,12 @@
 import { Request } from 'express';
-import { ParamsDictionary } from 'express-serve-static-core';
+import { ParamsDictionary, Query } from 'express-serve-static-core';
 import {
   Chat,
   SystemContext,
   PredictRequest as APIPredictRequest,
   PredictTitleRequest as APIPredictTitleRequest,
+  GenerateImageParams,
+  Model,
 } from '../../types/index';
 
 export namespace APIs {
@@ -21,6 +23,57 @@ export namespace APIs {
   // ------------------------------------------------------------
   interface PredictTitleRequest extends APIPredictTitleRequest {}
   type PredictTitleResponse = string;
+
+  // ------------------------------------------------------------
+  // Image Generate
+  // ------------------------------------------------------------
+  interface GenerateImageRequest {
+    model?: Model;
+    params: GenerateImageParams;
+  }
+  type GenerateImageResponse = string;
+
+  // ------------------------------------------------------------
+  // Delete File
+  // ------------------------------------------------------------
+  interface DeleteFileRequest {
+    fileName: string;
+  }
+  type DeleteFileResponse = void;
+
+  // ------------------------------------------------------------
+  // Get File Download Signed Url
+  // ------------------------------------------------------------
+  type GetFileDownloadSignedUrlRequest = {
+    bucketName: string;
+    filePrefix: string;
+    region?: string;
+    contentType?: string;
+  };
+
+  type GetFileDownloadSignedUrlResponse = string;
+
+  // ------------------------------------------------------------
+  // Get File Uploaded Signed Url
+  // ------------------------------------------------------------
+  type GetFileUploadSignedUrlRequest = {
+    filename?: string;
+    mediaFormat: string;
+  };
+
+  type GetFileUploadSignedUrlResponse = string;
+
+  // ------------------------------------------------------------
+  // Get Web Text
+  // ------------------------------------------------------------
+  interface GetWebTextQuery extends Query {}
+
+  type GetWebTextRequest = {};
+
+  type GetWebTextResponse = {
+    message?: string;
+    text?: string;
+  };
 
   // // ------------------------------------------------------------
   // // Chat Delete
