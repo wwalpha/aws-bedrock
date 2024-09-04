@@ -31,6 +31,25 @@ resource "aws_iam_role" "ecs_task" {
 resource "aws_iam_role" "ecs_task_exec" {
   name               = "${var.prefix}_ECSTaskExecutionRole"
   assume_role_policy = data.aws_iam_policy_document.ecs_task.json
+
+  inline_policy {
+    name = "CloudWatchLogsPolicy"
+
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Effect = "Allow"
+          Action = [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+          ]
+          Resource = ["*"]
+        }
+      ]
+    })
+  }
 }
 
 # ----------------------------------------------------------------------------------------------
