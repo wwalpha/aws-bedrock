@@ -24,9 +24,9 @@ jobs:
     with:
       region: ap-northeast-1
       working-directory: backend/function
-      ECR_REPOSITORY: bedrock-function
+      ECR_REPOSITORY: bedrock-functions
       ECS_CLUSTER_NAME: bedrock-cluster
-      ECS_SERVICE_NAME: bedrock-function
+      ECS_SERVICE_NAME: bedrock-functions
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
