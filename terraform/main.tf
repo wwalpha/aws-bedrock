@@ -1,4 +1,15 @@
 # ----------------------------------------------------------------------------------------------
+# Terraform Settings
+# ----------------------------------------------------------------------------------------------
+terraform {
+  backend "s3" {
+    region = "us-east-1"
+    bucket = "arms-terraform-0606"
+    key    = "bedrock/terraform.tfstate"
+  }
+}
+
+# ----------------------------------------------------------------------------------------------
 # AWS Provider - Tokyo
 # ----------------------------------------------------------------------------------------------
 provider "aws" {
@@ -13,14 +24,11 @@ provider "aws" {
   region = "us-east-1"
 }
 
-terraform {
-  backend "local" {
-    path = "./tfstate/terraform.tfstate"
-  }
-}
-
-module "us_east_1" {
-  source = "./us-east-1"
+# ----------------------------------------------------------------------------------------------
+# WAF - IP Restrictions
+# ----------------------------------------------------------------------------------------------
+module "waf" {
+  source = "./waf"
   providers = {
     aws = aws.global
   }
@@ -29,18 +37,51 @@ module "us_east_1" {
   allow_ip_addresses = var.allow_ip_addresses
 }
 
+# ----------------------------------------------------------------------------------------------
+# Authentication
+# ----------------------------------------------------------------------------------------------
+module "auth" {
+  source = "./auth"
+  prefix = local.prefix
+}
 
+# ----------------------------------------------------------------------------------------------
+# Contents Delivery Network
+# ----------------------------------------------------------------------------------------------
+module "cdn" {
+  source      = "./cdn"
+  prefix      = local.prefix
+  suffix      = local.suffix
+  web_acl_arn = module.waf.web_acl_arn_ip_restrictions
+}
+
+# ----------------------------------------------------------------------------------------------
+# Database
+# ----------------------------------------------------------------------------------------------
 module "database" {
   source = "./database"
   prefix = local.prefix
 }
 
-
+# ----------------------------------------------------------------------------------------------
+# ECS Application
+# ----------------------------------------------------------------------------------------------
 module "app" {
-  source               = "./app"
-  prefix               = local.prefix
-  bucket_file_arn      = module.database.bucket_file_arn
-  bucket_name_file     = module.database.bucket_name_file
-  bucket_name_material = module.database.bucket_name_material
-  dynamodb_table_name  = module.database.dynamodb_table_name
+  source = "./app"
+  prefix = local.prefix
+}
+
+
+# ----------------------------------------------------------------------------------------------
+# REST API
+# ----------------------------------------------------------------------------------------------
+module "api" {
+  source                                  = "./api"
+  prefix                                  = local.prefix
+  vpc_id                                  = module.app.vpc_id
+  vpc_private_subnets                     = module.app.vpc_private_subnets
+  bucket_name_artifact                    = aws_s3_bucket.artifact.bucket
+  service_discovery_service_chat_arn      = module.app.service_discovery_service_chat_arn
+  service_discovery_service_functions_arn = module.app.service_discovery_service_functions_arn
+  service_discovery_service_rag_arn       = module.app.service_discovery_service_rag_arn
 }
