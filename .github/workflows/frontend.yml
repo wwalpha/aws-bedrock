@@ -56,6 +56,7 @@ jobs:
         run: |
           terraform init
           echo "bucket_name_frontend=$(terraform output -raw bucket_name_frontend)" >> $GITHUB_OUTPUT
+          echo "cloudfront_distribution_id=$(terraform output -raw cloudfront_distribution_id)" >> $GITHUB_OUTPUT
           sh build.sh
           cat .env
 
@@ -69,5 +70,7 @@ jobs:
       - name: Deploy
         env:
           BUCKET_NAME_FRONTEND: ${{ steps.terraform.outputs.bucket_name_frontend }}
+          DISTRIBUTION_ID: ${{ steps.terraform.outputs.cloudfront_distribution_id }}
         run: |
           aws s3 cp dist s3://$BUCKET_NAME_FRONTEND/ --recursive --region $AWS_DEFAULT_REGION
+          aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths '/*'

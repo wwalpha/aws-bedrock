@@ -30,6 +30,10 @@ output "cloudfront_url" {
   value = "https://${module.cdn.cloudfront_url}"
 }
 
+output "cloudfront_distribution_id" {
+  value = module.cdn.cloudfront_distribution_id
+}
+
 # output "ecr_repo_name_chat" {
 #   value = module.api.ecr_repo_name_chat
 # }
