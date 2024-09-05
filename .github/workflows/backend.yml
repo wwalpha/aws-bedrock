@@ -30,3 +30,15 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  RagService:
+    uses: ./.github/workflows/reuse_ecs_cicd.yml
+    with:
+      region: ap-northeast-1
+      working-directory: backend/rag
+      ECR_REPOSITORY: bedrock-rag
+      ECS_CLUSTER_NAME: bedrock-cluster
+      ECS_SERVICE_NAME: bedrock-rag
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
