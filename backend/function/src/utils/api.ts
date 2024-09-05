@@ -5,6 +5,7 @@ import { ApiInterface } from 'typings';
 
 const api: Record<'bedrock' | 'bedrockAgent' | 'sagemaker', ApiInterface> = {
   bedrock: bedrockApi,
+  //@ts-ignore
   bedrockAgent: bedrockAgentApi,
   sagemaker: sagemakerApi,
 };

@@ -1,12 +1,12 @@
 import {
-  SageMakerRuntimeClient,
   InvokeEndpointCommand,
   InvokeEndpointWithResponseStreamCommand,
+  SageMakerRuntimeClient,
 } from '@aws-sdk/client-sagemaker-runtime';
 import { generatePrompt } from './prompter';
-import { ApiInterface, UnrecordedMessage } from 'generative-ai-use-cases-jp';
 import { getSageMakerModelTemplate } from './models';
 import { streamingChunk } from './streamingChunk';
+import { ApiInterface, UnrecordedMessage } from 'typings';
 
 const client = new SageMakerRuntimeClient({
   region: process.env.MODEL_REGION,
@@ -19,11 +19,7 @@ const TGI_DEFAULT_PARAMS = {
   temperature: 0.3,
 };
 
-const createBodyText = (
-  model: string,
-  messages: UnrecordedMessage[],
-  stream: boolean
-): string => {
+const createBodyText = (model: string, messages: UnrecordedMessage[], stream: boolean): string => {
   return JSON.stringify({
     inputs: generatePrompt(getSageMakerModelTemplate(model), messages),
     parameters: TGI_DEFAULT_PARAMS,
@@ -77,10 +73,7 @@ const sagemakerApi: ApiInterface = {
       if (!buffer.endsWith('\n')) continue;
 
       // When buffer end with \n it can be parsed
-      const lines: string[] =
-        buffer
-          .split('\n')
-          .filter((line: string) => line.trim().startsWith('data:')) || [];
+      const lines: string[] = buffer.split('\n').filter((line: string) => line.trim().startsWith('data:')) || [];
       for (const line of lines) {
         const message = line.replace(/^data:/, '');
         const token: string = JSON.parse(message).token.text || '';
