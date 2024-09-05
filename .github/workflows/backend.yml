@@ -18,3 +18,15 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  FunctionService:
+    uses: ./.github/workflows/reuse_ecs_cicd.yml
+    with:
+      region: ap-northeast-1
+      working-directory: backend/function
+      ECR_REPOSITORY: bedrock-function
+      ECS_CLUSTER_NAME: bedrock-cluster
+      ECS_SERVICE_NAME: bedrock-function
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
