@@ -18,7 +18,6 @@ env:
   WORKING_DIRECTORY: frontend
   TERRAFORM_BACKEND_BUCKET_NAME: arms-terraform-0606
   TERRAFORM_BACKEND_BUCKET_KEY: bedrock/terraform.tfstate
-  BUCKET_NAME_FRONTEND: bedrock-frontend-61331c
 
 jobs:
   Terraform:
@@ -55,11 +54,8 @@ jobs:
       - name: Get terraform outputs
         id: terraform
         run: |
-          terraform init -backend-config="region=$AWS_DEFAULT_REGION" \
-            -backend-config="bucket=$TERRAFORM_BACKEND_BUCKET_NAME" \
-            -backend-config="key=$TERRAFORM_BACKEND_BUCKET_KEY"
-          echo "bucket_name_frontend=$(terraform output -raw bucket_name_frontend)" >> $GITHUB_OUTPUT
           sh build.sh
+          echo "bucket_name_frontend=$(terraform output -raw bucket_name_frontend)" >> $GITHUB_OUTPUT
           cat .env
 
       # Install and Build

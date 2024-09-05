@@ -1,3 +1,5 @@
+echo -e 'terraform {backend "s3" {region = "us-east-1"\n    bucket = "$TERRAFORM_BACKEND_BUCKET_NAME"\n    key    = "$TERRAFORM_BACKEND_BUCKET_KEY"\n  }}' > main.tf
+
 echo "VITE_APP_RAG_ENABLED=true" > .env
 echo "VITE_APP_RAG_KNOWLEDGE_BASE_ENABLED=true" >> .env
 echo "VITE_APP_AGENT_ENABLED=false" >> .env
