@@ -54,8 +54,9 @@ jobs:
       - name: Get terraform outputs
         id: terraform
         run: |
-          sh build.sh
+          terraform init
           echo "bucket_name_frontend=$(terraform output -raw bucket_name_frontend)" >> $GITHUB_OUTPUT
+          sh build.sh
           cat .env
 
       # Install and Build
