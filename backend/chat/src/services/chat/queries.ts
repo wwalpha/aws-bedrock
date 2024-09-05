@@ -108,3 +108,33 @@ export const batchCreateMessages = (messages: RecordedMessage[]): BatchWriteComm
     },
   });
 };
+
+export const findShareId = (userId: string, chatId: string): QueryInput => {
+  const query: QueryInput = {
+    TableName: TABLE_NAME,
+    KeyConditionExpression: '#id = :id',
+    ExpressionAttributeNames: {
+      '#id': 'id',
+    },
+    ExpressionAttributeValues: {
+      ':id': `${userId}_${chatId}`,
+    },
+  };
+
+  return query;
+};
+
+export const findUserIdAndChatId = (shareId: string): QueryInput => {
+  const query: QueryInput = {
+    TableName: TABLE_NAME,
+    KeyConditionExpression: '#id = :id',
+    ExpressionAttributeNames: {
+      '#id': 'id',
+    },
+    ExpressionAttributeValues: {
+      ':id': shareId,
+    },
+  };
+
+  return query;
+};

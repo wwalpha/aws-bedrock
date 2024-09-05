@@ -1,7 +1,9 @@
 import * as crypto from 'crypto';
 import * as Queries from './queries';
 import { DataNotfoundError, DBHelper } from '@utils';
-import { Chat, RecordedMessage, ToBeRecordedMessage } from 'typings';
+import { Chat, RecordedMessage, ShareId, ToBeRecordedMessage, UserIdAndChatId } from 'typings';
+
+const TABLE_NAME = process.env.TABLE_NAME as string;
 
 export const registChat = async (_userId: string): Promise<Chat> => {
   const userId = `user#${_userId}`;
@@ -236,132 +238,106 @@ export const setChatTitle = async (id: string, createdDate: string, title: strin
 //   );
 // };
 
-// export const createShareId = async (
-//   _userId: string,
-//   _chatId: string
-// ): Promise<{
-//   shareId: ShareId;
-//   userIdAndChatId: UserIdAndChatId;
-// }> => {
-//   const userId = `user#${_userId}`;
-//   const chatId = `chat#${_chatId}`;
-//   const createdDate = `${Date.now()}`;
-//   const shareId = `share#${crypto.randomUUID()}`;
+export const registShareId = async (
+  _userId: string,
+  _chatId: string
+): Promise<{
+  shareId: ShareId;
+  userIdAndChatId: UserIdAndChatId;
+}> => {
+  const userId = `user#${_userId}`;
+  const chatId = `chat#${_chatId}`;
+  const createdDate = `${Date.now()}`;
+  const shareId = `share#${crypto.randomUUID()}`;
+  const itemShareId = {
+    id: `${userId}_${chatId}`,
+    createdDate,
+    shareId,
+  };
+  const itemUserIdAndChatId = {
+    id: shareId,
+    createdDate,
+    userId,
+    chatId,
+  };
 
-//   const itemShareId = {
-//     id: `${userId}_${chatId}`,
-//     createdDate,
-//     shareId,
-//   };
+  await DBHelper().transactWrite({
+    TransactItems: [
+      {
+        Put: {
+          TableName: TABLE_NAME,
+          Item: itemShareId,
+        },
+      },
+      {
+        Put: {
+          TableName: TABLE_NAME,
+          Item: itemUserIdAndChatId,
+        },
+      },
+    ],
+  });
 
-//   const itemUserIdAndChatId = {
-//     id: shareId,
-//     createdDate,
-//     userId,
-//     chatId,
-//   };
+  return {
+    shareId: itemShareId,
+    userIdAndChatId: itemUserIdAndChatId,
+  };
+};
 
-//   await dynamoDbDocument.send(
-//     new TransactWriteCommand({
-//       TransactItems: [
-//         {
-//           Put: {
-//             TableName: TABLE_NAME,
-//             Item: itemShareId,
-//           },
-//         },
-//         {
-//           Put: {
-//             TableName: TABLE_NAME,
-//             Item: itemUserIdAndChatId,
-//           },
-//         },
-//       ],
-//     })
-//   );
+export const findUserIdAndChatId = async (_shareId: string): Promise<UserIdAndChatId | null> => {
+  const shareId = `share#${_shareId}`;
 
-//   return {
-//     shareId: itemShareId,
-//     userIdAndChatId: itemUserIdAndChatId,
-//   };
-// };
+  const res = await DBHelper().query<UserIdAndChatId>(Queries.findUserIdAndChatId(shareId));
 
-// export const findUserIdAndChatId = async (_shareId: string): Promise<UserIdAndChatId | null> => {
-//   const shareId = `share#${_shareId}`;
-//   const res = await dynamoDbDocument.send(
-//     new QueryCommand({
-//       TableName: TABLE_NAME,
-//       KeyConditionExpression: '#id = :id',
-//       ExpressionAttributeNames: {
-//         '#id': 'id',
-//       },
-//       ExpressionAttributeValues: {
-//         ':id': shareId,
-//       },
-//     })
-//   );
+  if (res.Items.length === 0) {
+    return null;
+  }
 
-//   if (!res.Items || res.Items.length === 0) {
-//     return null;
-//   } else {
-//     return res.Items[0] as UserIdAndChatId;
-//   }
-// };
+  return res.Items[0];
+};
 
-// export const findShareId = async (_userId: string, _chatId: string): Promise<ShareId | null> => {
-//   const userId = `user#${_userId}`;
-//   const chatId = `chat#${_chatId}`;
-//   const res = await dynamoDbDocument.send(
-//     new QueryCommand({
-//       TableName: TABLE_NAME,
-//       KeyConditionExpression: '#id = :id',
-//       ExpressionAttributeNames: {
-//         '#id': 'id',
-//       },
-//       ExpressionAttributeValues: {
-//         ':id': `${userId}_${chatId}`,
-//       },
-//     })
-//   );
+export const findShareId = async (_userId: string, _chatId: string): Promise<ShareId | null> => {
+  const userId = `user#${_userId}`;
+  const chatId = `chat#${_chatId}`;
 
-//   if (!res.Items || res.Items.length === 0) {
-//     return null;
-//   } else {
-//     return res.Items[0] as ShareId;
-//   }
-// };
+  const res = await DBHelper().query<ShareId>(Queries.findShareId(userId, chatId));
 
-// export const deleteShareId = async (_shareId: string): Promise<void> => {
-//   const userIdAndChatId = await findUserIdAndChatId(_shareId);
-//   const share = await findShareId(
-//     // SAML 認証だと userId に # が含まれるため
-//     // 例: user#EntraID_hogehoge.com#EXT#@hogehoge.onmicrosoft.com
-//     userIdAndChatId!.userId.split('#').slice(1).join('#'),
-//     userIdAndChatId!.chatId.split('#')[1]
-//   );
+  if (res.Items.length === 0) {
+    return null;
+  }
 
-//   await dynamoDbDocument.send(
-//     new TransactWriteCommand({
-//       TransactItems: [
-//         {
-//           Delete: {
-//             TableName: TABLE_NAME,
-//             Key: {
-//               id: share!.id,
-//               createdDate: share!.createdDate,
-//             },
-//           },
-//         },
-//         {
-//           Delete: {
-//             TableName: TABLE_NAME,
-//             Key: {
-//               id: userIdAndChatId!.id,
-//               createdDate: userIdAndChatId!.createdDate,
-//             },
-//           },
-//         },
-//       ],
-//     })
-//   );
-// };
+  return res.Items[0];
+};
+
+export const deleteShareId = async (_shareId: string): Promise<void> => {
+  const userIdAndChatId = await findUserIdAndChatId(_shareId);
+  const share = await findShareId(
+    // SAML 認証だと userId に # が含まれるため
+    // 例: user#EntraID_hogehoge.com#EXT#@hogehoge.onmicrosoft.com
+    userIdAndChatId!.userId.split('#').slice(1).join('#'),
+    userIdAndChatId!.chatId.split('#')[1]
+  );
+
+  await DBHelper().transactWrite({
+    TransactItems: [
+      {
+        Delete: {
+          TableName: TABLE_NAME,
+          Key: {
+            id: share!.id,
+            createdDate: share!.createdDate,
+          },
+        },
+      },
+      {
+        Delete: {
+          TableName: TABLE_NAME,
+          Key: {
+            id: userIdAndChatId!.id,
+            createdDate: userIdAndChatId!.createdDate,
+          },
+        },
+      },
+    ],
+  });
+};

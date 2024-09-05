@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
-import { Chat, SystemContext } from '../../types/index';
+import { Chat, SystemContext, ShareId, UserIdAndChatId } from '../../types/index';
 
 export namespace APIs {
   type Callback = (req: Request<any>) => Promise<any>;
@@ -119,4 +119,46 @@ export namespace APIs {
   interface UpdateSystemContextTitleResponse {
     systemContext: SystemContext;
   }
+
+  // ------------------------------------------------------------
+  // Find Share Id
+  // ------------------------------------------------------------
+  type FindShareIdRequest = void;
+  type FindShareIdParams = {
+    chatId: string;
+  };
+  type FindShareIdResponse = Chat | null;
+
+  // ------------------------------------------------------------
+  // Regist Share Id
+  // ------------------------------------------------------------
+  type RegistShareIdRequest = void;
+  type RegistShareIdParams = {
+    chatId: string;
+  };
+  type RegistShareIdResponse = {
+    shareId: ShareId;
+    userIdAndChatId: UserIdAndChatId;
+  };
+
+  // ------------------------------------------------------------
+  // Get Shared Chat
+  // ------------------------------------------------------------
+  type GetSharedChatRequest = void;
+  type GetSharedChatParams = {
+    shareId: string;
+  };
+  type GetSharedChatResponse = {
+    chat: Chat | null;
+    messages: RecordedMessage[];
+  };
+
+  // ------------------------------------------------------------
+  // Delete Shared Id
+  // ------------------------------------------------------------
+  type DeleteShareIdRequest = void;
+  type DeleteShareIdParams = {
+    shareId: string;
+  };
+  type DeleteShareIdResponse = void;
 }

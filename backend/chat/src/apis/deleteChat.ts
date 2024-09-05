@@ -10,10 +10,9 @@ export default async (
 
   await ChatService.deleteChat(userId, chatId);
 
-  // TODO: shareIdの削除処理を追加
-  // const shareId = await findShareId(userId, chatId);
+  const shareId = await ChatService.findShareId(userId, chatId);
 
-  // if (shareId) {
-  //   await deleteShareId(shareId.shareId.split('#')[1]);
-  // }
+  if (shareId) {
+    await ChatService.deleteShareId(shareId.shareId.split('#')[1]);
+  }
 };
