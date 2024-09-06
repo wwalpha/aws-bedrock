@@ -9,7 +9,9 @@ export namespace APIs {
   // Chat List
   // ------------------------------------------------------------
   type ListChatRequest = void;
-  type ListChatResponse = Chat[];
+  interface ListChatResponse {
+    chats: Chat[];
+  }
 
   // ------------------------------------------------------------
   // Chat Regist
