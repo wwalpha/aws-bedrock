@@ -1,0 +1,19 @@
+name: PUSH) Backend Lambda
+
+on:
+  push:
+    paths:
+      - backend/lambda/**
+      - .github/workflows/backend_lambda.yml
+
+jobs:
+  Authorizer:
+    uses: ./.github/workflows/reuse_lambda.yml
+    with:
+      region: ap-northeast-1
+      working-directory: backend/lambda/authorizer_v2
+      outputs-bucket: bedrock-artifact-1a65d4
+      function-name: apigw_authorizer
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
