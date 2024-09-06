@@ -25,6 +25,7 @@ resource "aws_kendra_index" "this" {
 # AWS Kendra Data Source
 # ----------------------------------------------------------------------------------------------
 resource "aws_kendra_data_source" "this" {
+  depends_on    = [aws_kendra_index.this]
   index_id      = aws_kendra_index.this.id
   name          = "s3_datasource"
   type          = "S3"
