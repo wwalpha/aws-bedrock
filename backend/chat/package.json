@@ -7,7 +7,8 @@
     "debug": "node dist/index.js",
     "start": "node index.js",
     "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
-    "test": "jest"
+    "test": "jest",
+    "test:local": "jest test/apis/getChat.test.ts"
   },
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.645.0",

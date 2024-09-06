@@ -8,7 +8,7 @@ export namespace APIs {
   // ------------------------------------------------------------
   // Chat List
   // ------------------------------------------------------------
-  type ListChatRequest = void;
+  interface ListChatRequest {}
   interface ListChatResponse {
     chats: Chat[];
   }
@@ -16,8 +16,10 @@ export namespace APIs {
   // ------------------------------------------------------------
   // Chat Regist
   // ------------------------------------------------------------
-  type RegistChatRequest = void;
-  type RegistChatResponse = Chat;
+  interface RegistChatRequest {}
+  interface RegistChatResponse {
+    chat: Chat;
+  }
 
   // ------------------------------------------------------------
   // Chat Delete
