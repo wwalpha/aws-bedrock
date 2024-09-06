@@ -85,3 +85,14 @@ module "api" {
   service_discovery_service_functions_arn = module.app.service_discovery_service_functions_arn
   service_discovery_service_rag_arn       = module.app.service_discovery_service_rag_arn
 }
+
+# ----------------------------------------------------------------------------------------------
+# ECS Application
+# ----------------------------------------------------------------------------------------------
+module "datasources" {
+  source = "./datasources"
+  prefix = local.prefix
+  suffix = local.suffix
+
+  count = var.rag_enable ? 1 : 0
+}

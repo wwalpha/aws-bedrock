@@ -1,4 +1,4 @@
-export { default as DBHelper } from './dbHelper';
+export * as ClientHelper from './clientHelper';
 export { default as Logger } from './logger';
 
 export class ValidationError extends Error {

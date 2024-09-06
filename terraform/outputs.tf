@@ -34,6 +34,17 @@ output "cloudfront_distribution_id" {
   value = module.cdn.cloudfront_distribution_id
 }
 
+# output "cognito_user_pool" {
+#   sensitive = true
+#   value     = module.auth.cognito_user_pool
+# }
+
+# output "cognito_user_pool_client" {
+#   sensitive = true
+#   value     = module.auth.cognito_user_pool_client
+# }
+
+
 # output "ecr_repo_name_chat" {
 #   value = module.api.ecr_repo_name_chat
 # }

@@ -69,42 +69,6 @@ resource "aws_apigatewayv2_integration" "chat" {
 }
 
 # ---------------------------------------------------------------------------------------------
-# API Gateway Integration - File Service
-# ---------------------------------------------------------------------------------------------
-resource "aws_apigatewayv2_integration" "file" {
-  api_id             = aws_apigatewayv2_api.this.id
-  connection_type    = "VPC_LINK"
-  connection_id      = aws_apigatewayv2_vpc_link.this.id
-  integration_method = "ANY"
-  integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_functions_arn
-}
-
-# ---------------------------------------------------------------------------------------------
-# API Gateway Integration - Image Service
-# ---------------------------------------------------------------------------------------------
-resource "aws_apigatewayv2_integration" "image" {
-  api_id             = aws_apigatewayv2_api.this.id
-  connection_type    = "VPC_LINK"
-  connection_id      = aws_apigatewayv2_vpc_link.this.id
-  integration_method = "ANY"
-  integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_functions_arn
-}
-
-# ---------------------------------------------------------------------------------------------
-# API Gateway Integration - Predict Service
-# ---------------------------------------------------------------------------------------------
-resource "aws_apigatewayv2_integration" "predict" {
-  api_id             = aws_apigatewayv2_api.this.id
-  connection_type    = "VPC_LINK"
-  connection_id      = aws_apigatewayv2_vpc_link.this.id
-  integration_method = "ANY"
-  integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_functions_arn
-}
-
-# ---------------------------------------------------------------------------------------------
 # API Gateway Integration - Rag Service
 # ---------------------------------------------------------------------------------------------
 resource "aws_apigatewayv2_integration" "rag" {
@@ -117,45 +81,9 @@ resource "aws_apigatewayv2_integration" "rag" {
 }
 
 # ---------------------------------------------------------------------------------------------
-# API Gateway Integration - Share Service
+# API Gateway Integration - Functions Service
 # ---------------------------------------------------------------------------------------------
-resource "aws_apigatewayv2_integration" "share" {
-  api_id             = aws_apigatewayv2_api.this.id
-  connection_type    = "VPC_LINK"
-  connection_id      = aws_apigatewayv2_vpc_link.this.id
-  integration_method = "ANY"
-  integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_functions_arn
-}
-
-# # ---------------------------------------------------------------------------------------------
-# # API Gateway Integration - SystemContexts Service
-# # ---------------------------------------------------------------------------------------------
-# resource "aws_apigatewayv2_integration" "systemcontexts" {
-#   api_id             = aws_apigatewayv2_api.this.id
-#   connection_type    = "VPC_LINK"
-#   connection_id      = aws_apigatewayv2_vpc_link.this.id
-#   integration_method = "ANY"
-#   integration_type   = "HTTP_PROXY"
-#   integration_uri    = var.service_discovery_service_systemcontexts_arn
-# }
-
-# ---------------------------------------------------------------------------------------------
-# API Gateway Integration - Transcribe Service
-# ---------------------------------------------------------------------------------------------
-resource "aws_apigatewayv2_integration" "transcribe" {
-  api_id             = aws_apigatewayv2_api.this.id
-  connection_type    = "VPC_LINK"
-  connection_id      = aws_apigatewayv2_vpc_link.this.id
-  integration_method = "ANY"
-  integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_functions_arn
-}
-
-# ---------------------------------------------------------------------------------------------
-# API Gateway Integration - Webtext Service
-# ---------------------------------------------------------------------------------------------
-resource "aws_apigatewayv2_integration" "webtext" {
+resource "aws_apigatewayv2_integration" "functions" {
   api_id             = aws_apigatewayv2_api.this.id
   connection_type    = "VPC_LINK"
   connection_id      = aws_apigatewayv2_vpc_link.this.id
