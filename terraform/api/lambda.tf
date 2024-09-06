@@ -18,3 +18,13 @@ resource "aws_lambda_function" "authorizer_v2" {
     }
   }
 }
+
+# ----------------------------------------------------------------------------------------------
+# Lambda Permission - Authorizer
+# ----------------------------------------------------------------------------------------------
+resource "aws_lambda_permission" "authorizer_v2" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.authorizer_v2.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.this.execution_arn}/authorizers/${aws_apigatewayv2_authorizer.this.id}"
+}
