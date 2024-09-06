@@ -91,8 +91,9 @@ module "api" {
 # ----------------------------------------------------------------------------------------------
 module "datasources" {
   source = "./datasources"
-  prefix = local.prefix
-  suffix = local.suffix
+  count  = var.rag_enable ? 1 : 0
 
-  count = var.rag_enable ? 1 : 0
+  prefix                     = local.prefix
+  suffix                     = local.suffix
+  cognito_user_pool_endpoint = module.auth.cognito_user_pool_endpoint
 }
