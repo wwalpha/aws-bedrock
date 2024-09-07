@@ -87,37 +87,6 @@ const buildAuthPolicy = (
 
   const policy = new AuthPolicy(principalId, accountId, apiOptions);
 
-  // console.log('authority', userInfo.authority);
-  // console.log('principalId', userInfo.id);
-
-  // switch (userInfo?.authority) {
-  //   case 'TENANT_ADMIN':
-  //     policy.allowMethod(AuthPolicy.HttpVerb.ALL, '/admin/*');
-  //     policy.allowMethod(AuthPolicy.HttpVerb.GET, '/groups');
-  //     policy.allowMethod(AuthPolicy.HttpVerb.POST, '/groups');
-  //     policy.allowMethod(AuthPolicy.HttpVerb.ALL, '/groups/*');
-  //     policy.allowMethod(AuthPolicy.HttpVerb.ALL, '/inquiries/*');
-  //     policy.allowMethod(AuthPolicy.HttpVerb.POST, '/vision/*');
-
-  //     break;
-  //   case 'PARENT':
-  //     policy.allowMethod(AuthPolicy.HttpVerb.GET, '/groups');
-  //     policy.allowMethod(AuthPolicy.HttpVerb.DELETE, '/groups/*');
-  //     policy.allowMethod(AuthPolicy.HttpVerb.GET, '/groups/*/questions');
-  //     policy.allowMethod(AuthPolicy.HttpVerb.GET, '/curriculums');
-  //     policy.allowMethod(AuthPolicy.HttpVerb.POST, '/curriculums');
-  //     policy.allowMethod(AuthPolicy.HttpVerb.ALL, '/curriculums/*');
-  //     policy.allowMethod(AuthPolicy.HttpVerb.ALL, '/users/*');
-  //     policy.allowMethod(AuthPolicy.HttpVerb.ALL, '/study/*');
-  //     policy.allowMethod(AuthPolicy.HttpVerb.ALL, '/reports/*');
-  //     break;
-  //   case 'STUDENT':
-  //     policy.allowAllMethods();
-  //     break;
-  //   default:
-  //     policy.denyAllMethods();
-  // }
-
   policy.allowAllMethods();
 
   return policy.build();
