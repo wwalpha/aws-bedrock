@@ -8,7 +8,7 @@ resource "aws_lambda_function" "authorizer_v2" {
   s3_object_version = aws_s3_object.apigw_authorizer.version_id
   handler           = local.lambda_handler
   runtime           = local.lambda_runtime_nodejs_20
-  memory_size       = 256
+  memory_size       = 128
   role              = aws_iam_role.authorizer.arn
   timeout           = 3
 
