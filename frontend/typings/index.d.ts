@@ -1,1 +1,1 @@
-export * from '../../backend/types'
+export * from '../../backend/ecs/types';
