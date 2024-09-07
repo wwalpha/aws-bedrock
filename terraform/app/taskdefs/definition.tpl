@@ -3,8 +3,15 @@
     "name": "${container_name}",
     "image": "${container_image}",
     "essential": true,
+    "environmentFiles": [
+      {
+        "value": "${env_file_arn}",
+        "type": "s3"
+      }
+    ],
     "portMappings": [
       {
+        "name": "${port_name}",
         "containerPort": ${container_port},
         "protocol": "tcp"
       }

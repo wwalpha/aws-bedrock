@@ -65,7 +65,7 @@ resource "aws_apigatewayv2_integration" "chat" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_chat_arn
+  integration_uri    = var.service_connect_service_chat_arn
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ resource "aws_apigatewayv2_integration" "rag" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_rag_arn
+  integration_uri    = var.service_connect_service_rag_arn
 }
 
 # ---------------------------------------------------------------------------------------------
@@ -89,5 +89,5 @@ resource "aws_apigatewayv2_integration" "functions" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
-  integration_uri    = var.service_discovery_service_functions_arn
+  integration_uri    = var.service_connect_service_functions_arn
 }

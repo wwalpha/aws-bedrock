@@ -34,3 +34,27 @@ data "aws_region" "this" {}
 # AWS Account
 # ----------------------------------------------------------------------------------------------
 data "aws_caller_identity" "this" {}
+
+# ----------------------------------------------------------------------------------------------
+# CloudMap Service - Chat
+# ----------------------------------------------------------------------------------------------
+data "aws_service_discovery_service" "chat" {
+  namespace_id = aws_service_discovery_private_dns_namespace.this.id
+  name         = aws_ecs_service.chat.service_connect_configuration[0].service[0].port_name
+}
+
+# ----------------------------------------------------------------------------------------------
+# CloudMap Service - Functions
+# ----------------------------------------------------------------------------------------------
+data "aws_service_discovery_service" "functions" {
+  namespace_id = aws_service_discovery_private_dns_namespace.this.id
+  name         = aws_ecs_service.functions.service_connect_configuration[0].service[0].port_name
+}
+
+# ----------------------------------------------------------------------------------------------
+# CloudMap Service - Rag
+# ----------------------------------------------------------------------------------------------
+data "aws_service_discovery_service" "rag" {
+  namespace_id = aws_service_discovery_private_dns_namespace.this.id
+  name         = aws_ecs_service.rag.service_connect_configuration[0].service[0].port_name
+}

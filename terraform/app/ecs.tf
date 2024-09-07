@@ -34,6 +34,11 @@ resource "aws_ecs_service" "chat" {
   wait_for_steady_state              = false
   scheduling_strategy                = "REPLICA"
   enable_ecs_managed_tags            = true
+  force_new_deployment               = true
+
+  triggers = {
+    redeployment = plantimestamp()
+  }
 
   capacity_provider_strategy {
     base              = 0
@@ -56,15 +61,17 @@ resource "aws_ecs_service" "chat" {
     security_groups  = [aws_security_group.ecs_default_sg.id]
   }
 
-  service_registries {
-    registry_arn = aws_service_discovery_service.chat.arn
-    port         = 8080
-  }
+  service_connect_configuration {
+    enabled   = true
+    namespace = aws_service_discovery_private_dns_namespace.this.arn
 
-  # provisioner "local-exec" {
-  #   when    = destroy
-  #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
-  # }
+    service {
+      port_name = "chat_service"
+      client_alias {
+        port = 80
+      }
+    }
+  }
 
   lifecycle {
     ignore_changes = [
@@ -95,6 +102,8 @@ resource "aws_ecs_task_definition" "chat" {
       container_name  = "${var.prefix}-chat"
       container_image = "${module.ecr_chat.repository_url}:latest"
       container_port  = 8080
+      env_file_arn    = aws_s3_object.chat.arn
+      port_name       = "chat_service"
     }
   )
 }
@@ -105,7 +114,6 @@ resource "aws_ecs_task_definition" "chat" {
 data "aws_ecs_task_definition" "chat" {
   task_definition = aws_ecs_task_definition.chat.family
 }
-
 
 # ----------------------------------------------------------------------------------------------
 # ECS Service - Functions Service
@@ -122,6 +130,11 @@ resource "aws_ecs_service" "functions" {
   wait_for_steady_state              = false
   scheduling_strategy                = "REPLICA"
   enable_ecs_managed_tags            = true
+  force_new_deployment               = true
+
+  triggers = {
+    redeployment = plantimestamp()
+  }
 
   capacity_provider_strategy {
     base              = 0
@@ -144,15 +157,17 @@ resource "aws_ecs_service" "functions" {
     security_groups  = [aws_security_group.ecs_default_sg.id]
   }
 
-  service_registries {
-    registry_arn = aws_service_discovery_service.functions.arn
-    port         = 8080
-  }
+  service_connect_configuration {
+    enabled   = true
+    namespace = aws_service_discovery_private_dns_namespace.this.arn
 
-  # provisioner "local-exec" {
-  #   when    = destroy
-  #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
-  # }
+    service {
+      port_name = "functions_service"
+      client_alias {
+        port = 80
+      }
+    }
+  }
 
   lifecycle {
     ignore_changes = [
@@ -181,8 +196,10 @@ resource "aws_ecs_task_definition" "functions" {
     {
       aws_region      = local.region
       container_name  = "${var.prefix}-functions"
-      container_image = "${module.ecr_chat.repository_url}:latest"
+      container_image = "${module.ecr_functions.repository_url}:latest"
       container_port  = 8080
+      env_file_arn    = aws_s3_object.functions.arn
+      port_name       = "functions_service"
     }
   )
 }
@@ -209,6 +226,11 @@ resource "aws_ecs_service" "rag" {
   wait_for_steady_state              = false
   scheduling_strategy                = "REPLICA"
   enable_ecs_managed_tags            = true
+  force_new_deployment               = true
+
+  triggers = {
+    redeployment = plantimestamp()
+  }
 
   capacity_provider_strategy {
     base              = 0
@@ -231,15 +253,17 @@ resource "aws_ecs_service" "rag" {
     security_groups  = [aws_security_group.ecs_default_sg.id]
   }
 
-  service_registries {
-    registry_arn = aws_service_discovery_service.rag.arn
-    port         = 8080
-  }
+  service_connect_configuration {
+    enabled   = true
+    namespace = aws_service_discovery_private_dns_namespace.this.arn
 
-  # provisioner "local-exec" {
-  #   when    = destroy
-  #   command = "sh ${path.module}/scripts/servicediscovery-drain.sh ${length(self.service_registries) != 0 ? split("/", self.service_registries[0].registry_arn)[1] : ""}"
-  # }
+    service {
+      port_name = "rag_service"
+      client_alias {
+        port = 80
+      }
+    }
+  }
 
   lifecycle {
     ignore_changes = [
@@ -270,6 +294,8 @@ resource "aws_ecs_task_definition" "rag" {
       container_name  = "${var.prefix}-rag"
       container_image = "${module.ecr_rag.repository_url}:latest"
       container_port  = 8080
+      env_file_arn    = aws_s3_object.functions.arn
+      port_name       = "rag_service"
     }
   )
 }

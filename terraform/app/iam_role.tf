@@ -50,6 +50,25 @@ resource "aws_iam_role" "ecs_task_exec" {
       ]
     })
   }
+
+  inline_policy {
+    name = "S3ArtifactsPolicy"
+
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Effect = "Allow"
+          Action = [
+            "s3:GetObject"
+          ]
+          Resource = [
+            "arn:aws:s3:::${var.bucket_name_artifacts}/*"
+          ]
+        }
+      ]
+    })
+  }
 }
 
 # ----------------------------------------------------------------------------------------------
