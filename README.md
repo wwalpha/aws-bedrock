@@ -11,7 +11,7 @@ Backend|TypeScript|JavaScriptに型付け機能を追加した言語。コード
 Backend|Express|軽量Webアプリケーションフレームワーク。REST APIの構築によく使われる。
 Backend|AWS SDK|AWSサービスをアプリケーションから操作するための開発キット
 Infrastructure|Terraform|インフラ構成をコードで管理（IaC）できるツール
-LLM Model|Claude 3 Sonnet|精度と応答速度のバランスに優れたAnthropic製のミドルクラス大規模言語モデル
+LLM Model|Claude 3.7 Sonnet|精度と応答速度のバランスに優れたAnthropic製のミドルクラス大規模言語モデル
 
 ## 機能一覧
 - 社内文書検索
