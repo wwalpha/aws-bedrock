@@ -3,6 +3,7 @@
 # ----------------------------------------------------------------------------------------------
 resource "aws_ecr_repository" "this" {
   name                 = var.repo_name
+  force_delete         = true
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -18,20 +19,20 @@ resource "aws_ecr_lifecycle_policy" "this" {
 
   policy = <<EOF
 {
-    "rules": [
-        {
-            "rulePriority": 1,
-            "description": "Expire images count more than 3",
-            "selection": {
-                "tagStatus": "any",
-                "countType": "imageCountMoreThan",
-                "countNumber": 3
-            },
-            "action": {
-                "type": "expire"
-            }
-        }
-    ]
+  "rules": [
+    {
+      "rulePriority": 1,
+      "description": "Expire images count more than 3",
+      "selection": {
+          "tagStatus": "any",
+          "countType": "imageCountMoreThan",
+          "countNumber": 3
+      },
+      "action": {
+          "type": "expire"
+      }
+    }
+  ]
 }
 EOF
 }

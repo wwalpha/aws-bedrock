@@ -11,6 +11,7 @@
     ],
     "portMappings": [
       {
+        "name": "${container_name}",
         "containerPort": ${container_port},
         "protocol": "tcp"
       }

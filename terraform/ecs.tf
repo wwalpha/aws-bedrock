@@ -23,7 +23,7 @@ resource "aws_ecs_cluster_capacity_providers" "this" {
 # AWS ECS Service - Auth Service Task Definition
 # ----------------------------------------------------------------------------------------------
 resource "aws_ecs_task_definition" "auth" {
-  family             = local.task_def_family_auth
+  family             = local.ecs_container_name_auth
   task_role_arn      = aws_iam_role.ecs_task.arn
   execution_role_arn = aws_iam_role.ecs_task_exec.arn
   network_mode       = "awsvpc"
@@ -38,7 +38,7 @@ resource "aws_ecs_task_definition" "auth" {
     "taskdefs/definition.tpl",
     {
       aws_region      = local.region
-      container_name  = local.task_def_family_auth
+      container_name  = local.ecs_container_name_auth
       container_image = "${module.ecr_repo_auth.repository_url}:latest"
       container_port  = 8080
       env_file_arn    = "${aws_s3_bucket.materials.arn}/${aws_s3_object.auth.key}"
@@ -90,7 +90,7 @@ resource "aws_ecs_service" "auth" {
     namespace = aws_service_discovery_http_namespace.auth.name
 
     service {
-      port_name = "auth"
+      port_name = local.ecs_container_name_auth
       client_alias {
         dns_name = "bedrock.auth"
         port     = 8080
