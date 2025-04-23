@@ -37,12 +37,34 @@
 | ESLint         | コード品質を保つために使用される静的解析ツール                       |
 | Prettier       | コードのフォーマットを統一するためのツール                           |
 | Lodash         | 開発者がよく使う共通の操作を簡単に実行できる多くのメソッドを提供する |
+| Python         |                                                                      |
+| LangChain      |                                                                      |
+| FastAPI        |                                                                      |
+| Swagger UI     |                                                                      |
+| Redoc          |                                                                      |
+| FastAPI        |                                                                      |
+| Uvicorn        |                                                                      |
+| httpx          |                                                                      |
+| python-dotenv  |                                                                      |
+| pytest         |                                                                      |
+| pytest-asyncio |                                                                      |
+| pytest-cov     |                                                                      |
 
 ## Infrastructure
 
-| サービス                     | コメント                                      |
-| ---------------------------- | --------------------------------------------- |
-| Terraform                    | インフラ構成をコードで管理（IaC）できるツール |
-| Amazon Bedrock               |                                               |
-| Amazon S3                    |                                               |
-| Amazon OpenSearch Serverless |                                               |
+| サービス                      | コメント                                      |
+| ----------------------------- | --------------------------------------------- |
+| Terraform                     | インフラ構成をコードで管理（IaC）できるツール |
+| Amazon Bedrock                |                                               |
+| Amazon S3                     |                                               |
+| Amazon OpenSearch Serverless  |                                               |
+| Amazon CloudFront             |                                               |
+| Amazon API Gateway            |                                               |
+| Amazon Cognito                |                                               |
+| Amazon Lambda                 |                                               |
+| Amazon DynamoDB               |                                               |
+| Amazon Kendra                 |                                               |
+| Amazon Bedrock Knowledge Base |                                               |
+| Amazon SageMaker              |                                               |
+| Agents for Amazon Bedrock     |                                               |
+| Amazon Transcribe             |                                               |
