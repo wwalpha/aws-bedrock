@@ -1,6 +1,4 @@
-# Backend APIs
-
----
+# Backend API 一覧
 
 ## Chats
 
@@ -15,8 +13,6 @@
 | POST     | `/chats/{chatId}/messages`  | チャットにメッセージを追加     |
 | POST     | `/chats/{chatId}/feedbacks` | チャットのフィードバックを更新 |
 
----
-
 ## ユーザー認証
 
 | メソッド | エンドポイント  | 説明               |
@@ -27,8 +23,6 @@
 | GET      | `/auth/session` | ログイン状態の確認 |
 | GET      | `/user/profile` | プロフィールの取得 |
 | POST     | `/user/profile` | プロフィールの更新 |
-
----
 
 ## システム設定
 
