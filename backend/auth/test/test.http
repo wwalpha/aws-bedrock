@@ -1,0 +1,15 @@
+POST http://localhost:8080/auth/signup
+Content-Type: application/json
+
+{
+  "email": "wwalpha@gmail.com",
+  "password": "Session10+"
+}
+
+POST http://localhost:8080/auth/confirmSignup
+Content-Type: application/json
+
+{
+  "username": "wwalpha@gmail.com",
+  "confirmationCode": "514276"
+}
