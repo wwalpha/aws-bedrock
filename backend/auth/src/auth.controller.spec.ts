@@ -1,12 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { BadRequestException } from '@nestjs/common';
+import { SignUpCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 
 describe('AppController', () => {
   let appController: AuthController;
+  let app: TestingModule;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
+    app = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [AuthService],
     }).compile();
@@ -70,6 +73,7 @@ describe('AppController', () => {
       );
     });
   });
+
   describe('logout', () => {
     it('should call AuthService.logout with the correct access token', async () => {
       const mockRequestBody = {
@@ -119,7 +123,11 @@ describe('AppController', () => {
         password: 'password123',
       };
 
-      const mockSignupResponse = { UserConfirmed: true };
+      const mockSignupResponse: SignUpCommandOutput = {
+        UserConfirmed: true,
+        $metadata: {},
+        UserSub: 'mockUserSub',
+      };
 
       const authService = app.get<AuthService>(AuthService);
       jest.spyOn(authService, 'signup').mockResolvedValue(mockSignupResponse);
