@@ -69,6 +69,7 @@ resource "aws_ecs_service" "auth" {
   wait_for_steady_state              = false
   scheduling_strategy                = "REPLICA"
   enable_ecs_managed_tags            = true
+  availability_zone_rebalancing      = "ENABLED"
 
   capacity_provider_strategy {
     base              = 0
@@ -94,6 +95,18 @@ resource "aws_ecs_service" "auth" {
       client_alias {
         dns_name = "bedrock.auth"
         port     = 8080
+      }
+    }
+
+    log_configuration {
+      log_driver = "awslogs"
+      options = {
+        "awslogs-create-group"  = "true"
+        "awslogs-group"         = "/ecs/bedrock-auth"
+        "awslogs-region"        = "ap-northeast-1"
+        "awslogs-stream-prefix" = "ecs"
+        "max-buffer-size"       = "25m"
+        "mode"                  = "non-blocking"
       }
     }
   }
