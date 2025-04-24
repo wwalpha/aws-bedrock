@@ -41,7 +41,7 @@ export class AuthService {
 
     // ログイン失敗時のエラー処理
     if (!result) {
-      throw new UnauthorizedException('Login failed: No authentication result');
+      throw new UnauthorizedException('Login failed.');
     }
 
     // アクセストークンなどを返す

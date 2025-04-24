@@ -1,13 +1,19 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Auth } from 'typings';
+import {
+  ConfirmSignupRequest,
+  LoginRequest,
+  LoginResponse,
+  LogoutRequest,
+  SignupRequest,
+} from './auth.interfaces';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  async login(@Body() body: Auth.LoginRequest): Promise<Auth.LoginResponse> {
+  async login(@Body() body: LoginRequest): Promise<LoginResponse> {
     // リクエストボディのバリデーション
     if (!body.username || !body.password) {
       throw new BadRequestException('Username and password are required');
@@ -24,7 +30,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Body() body: Auth.LogoutRequest): Promise<void> {
+  async logout(@Body() body: LogoutRequest): Promise<void> {
     // リクエストボディのバリデーション
     if (!body.accessToken) {
       throw new BadRequestException('Access token is required');
@@ -35,7 +41,7 @@ export class AuthController {
   }
 
   @Post('signup')
-  async signup(@Body() body: Auth.SignupRequest) {
+  async signup(@Body() body: SignupRequest) {
     // リクエストボディのバリデーション
     if (!body.email || !body.password) {
       throw new BadRequestException('Email and password are required');
@@ -46,7 +52,7 @@ export class AuthController {
   }
 
   @Post('confirmSignup')
-  async confirmSignup(@Body() body: Auth.ConfirmSignupRequest) {
+  async confirmSignup(@Body() body: ConfirmSignupRequest) {
     // リクエストボディのバリデーション
     if (!body.username || !body.confirmationCode) {
       throw new BadRequestException(

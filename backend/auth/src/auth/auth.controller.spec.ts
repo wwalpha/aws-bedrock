@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { SignUpCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 
 describe('AppController', () => {
@@ -161,7 +161,7 @@ describe('AppController', () => {
       const authService = app.get<AuthService>(AuthService);
       jest
         .spyOn(authService, 'signup')
-        .mockRejectedValue(new Error('Signup failed'));
+        .mockRejectedValue(new UnauthorizedException('Signup failed'));
 
       await expect(appController.signup(mockRequestBody)).rejects.toThrow(
         'Signup failed',

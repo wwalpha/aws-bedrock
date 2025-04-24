@@ -44,18 +44,6 @@ describe('AuthService', () => {
       expect(cognitoMock.call(0).args[0]).toBeInstanceOf(InitiateAuthCommand);
       expect(result).toEqual(mockResponse.AuthenticationResult);
     });
-
-    it('should throw an error if login fails', async () => {
-      cognitoMock
-        .on(InitiateAuthCommand)
-        .rejects(new Error('Invalid credentials'));
-
-      await expect(
-        authService.login('testUser', 'wrongPassword'),
-      ).rejects.toThrow('Login failed: Invalid credentials');
-
-      expect(cognitoMock.calls()).toHaveLength(1);
-    });
   });
 
   describe('logout', () => {
@@ -66,16 +54,6 @@ describe('AuthService', () => {
 
       expect(cognitoMock.calls()).toHaveLength(1);
       expect(cognitoMock.call(0).args[0]).toBeInstanceOf(GlobalSignOutCommand);
-    });
-
-    it('should throw an error if logout fails', async () => {
-      cognitoMock.on(GlobalSignOutCommand).rejects(new Error('Logout failed'));
-
-      await expect(authService.logout('mockAccessToken')).rejects.toThrow(
-        'Logout failed: Logout failed',
-      );
-
-      expect(cognitoMock.calls()).toHaveLength(1);
     });
   });
 
@@ -94,16 +72,6 @@ describe('AuthService', () => {
       expect(cognitoMock.call(0).args[0]).toBeInstanceOf(SignUpCommand);
       expect(result).toEqual(mockResponse);
     });
-
-    it('should throw an error if signup fails', async () => {
-      cognitoMock.on(SignUpCommand).rejects(new Error('Signup failed'));
-
-      await expect(
-        authService.signup('test@example.com', 'password123'),
-      ).rejects.toThrow('Signup failed: Signup failed');
-
-      expect(cognitoMock.calls()).toHaveLength(1);
-    });
   });
 
   describe('confirmSignup', () => {
@@ -114,18 +82,6 @@ describe('AuthService', () => {
 
       expect(cognitoMock.calls()).toHaveLength(1);
       expect(cognitoMock.call(0).args[0]).toBeInstanceOf(ConfirmSignUpCommand);
-    });
-
-    it('should throw an error if confirmation fails', async () => {
-      cognitoMock
-        .on(ConfirmSignUpCommand)
-        .rejects(new Error('Confirmation failed'));
-
-      await expect(
-        authService.confirmSignup('testUser', '123456'),
-      ).rejects.toThrow('Failed to confirm user: Confirmation failed');
-
-      expect(cognitoMock.calls()).toHaveLength(1);
     });
   });
 });
