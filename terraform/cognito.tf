@@ -2,16 +2,17 @@
 # Amazon Cognito User Pool
 # --------------------------------------------------------------------------------------------------------------
 resource "aws_cognito_user_pool" "this" {
-  name = "${local.prefix}_UserPool"
-
+  name                     = "${local.prefix}_UserPool"
   auto_verified_attributes = ["email"]
+  username_attributes      = ["email"]
   mfa_configuration        = "OPTIONAL"
 
-  account_recovery_setting {
-    recovery_mechanism {
-      name     = "verified_email"
-      priority = 1
-    }
+  password_policy {
+    minimum_length    = 10
+    require_lowercase = true
+    require_uppercase = true
+    require_numbers   = true
+    require_symbols   = true
   }
 
   software_token_mfa_configuration {
@@ -32,6 +33,14 @@ resource "aws_cognito_user_pool" "this" {
       max_length = 256
     }
   }
+
+  account_recovery_setting {
+    recovery_mechanism {
+      name     = "verified_email"
+      priority = 1
+    }
+  }
+
 }
 
 # -------------------------------------------------------

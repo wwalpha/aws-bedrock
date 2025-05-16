@@ -21,6 +21,12 @@ output "cognito_user_pool_domain" {
   value = "https://${local.prefix}${aws_cognito_user_pool_domain.this.domain}.auth.${local.region}.amazoncognito.com"
 }
 
+# ----------------------------------------------------------------------------------------------
+# API Gateway URL
+# ----------------------------------------------------------------------------------------------
+output "api_gateway_url" {
+  value = aws_apigatewayv2_stage.this.invoke_url
+}
 
 # output "test" {
 #   value = aws_ecs_service.auth
