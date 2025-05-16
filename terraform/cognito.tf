@@ -38,11 +38,10 @@ resource "aws_cognito_user_pool" "this" {
 # Amazon Cognito User Pool Client
 # -------------------------------------------------------
 resource "aws_cognito_user_pool_client" "this" {
-  name = "SPAClient"
-
-  user_pool_id    = aws_cognito_user_pool.this.id
-  generate_secret = false
-
+  name                                 = "SPAClient"
+  user_pool_id                         = aws_cognito_user_pool.this.id
+  generate_secret                      = false
+  supported_identity_providers         = ["COGNITO"]
   allowed_oauth_flows                  = ["code"]
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_scopes = [
@@ -61,3 +60,30 @@ resource "aws_cognito_user_pool_client" "this" {
     "ALLOW_USER_SRP_AUTH"
   ]
 }
+
+# --------------------------------------------------------------------------------------------------------------
+# Amazon Cognito User Pool Client Domain
+# --------------------------------------------------------------------------------------------------------------
+resource "aws_cognito_user_pool_domain" "this" {
+  domain                = "bedrock${aws_cognito_user_pool_client.this.id}"
+  user_pool_id          = aws_cognito_user_pool.this.id
+  managed_login_version = 2
+}
+
+# --------------------------------------------------------------------------------------------------------------
+# Amazon Cognito Managed Login Branding
+# --------------------------------------------------------------------------------------------------------------
+resource "awscc_cognito_managed_login_branding" "this" {
+  user_pool_id = aws_cognito_user_pool.this.id
+  client_id    = aws_cognito_user_pool_client.this.id
+
+  settings = jsonencode({
+  })
+
+  lifecycle {
+    ignore_changes = [
+      settings,
+    ]
+  }
+}
+
