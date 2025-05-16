@@ -2,10 +2,9 @@ import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from '../pages/Home';
 import SecurePage from '../pages/SecurePage';
-import LoginCallback from '../pages/LoginCallback';
 import NotFound from '../pages/NotFound';
 import ProtectedRoute from '../auth/ProtectedRoute';
-import { useAuth } from '@auth/useAuth';
+import { useAuth, LoginCallback } from '@auth/index';
 
 const AppRoutes = () => {
   const { isLoading, isLoggedIn, signinRedirect, isAuthenticated } = useAuth();
