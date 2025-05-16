@@ -13,6 +13,9 @@
       "@auth/*": [
         "src/auth/*"
       ],
+      "@store": [
+        "src/stores/index.ts"
+      ],
     },
     "module": "ESNext",
     "skipLibCheck": true,

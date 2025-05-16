@@ -61,7 +61,7 @@ resource "aws_cognito_user_pool_client" "this" {
     "profile"
   ]
   callback_urls = [
-    "http://localhost:3000/auth/callback",
+    "http://localhost:3000/callback",
   ]
   explicit_auth_flows = [
     "ALLOW_CUSTOM_AUTH",

@@ -11,12 +11,8 @@ const AppRoutes = () => {
   const { isLoading, isLoggedIn, signinRedirect, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    console.log('isLoading:', isLoading);
-    console.log('isLoggedIn:', isLoggedIn);
-
     if (!isLoading && !isLoggedIn) {
       console.log('Redirecting to login page...');
-      // ログインしてなければ自動的にログインページ（OIDCプロバイダ）へリダイレクト
       signinRedirect();
     }
   }, [isLoading, isLoggedIn, signinRedirect]);

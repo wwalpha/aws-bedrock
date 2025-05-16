@@ -12,5 +12,7 @@ export const useAuth = () => {
     isLoggedIn: auth.isAuthenticated,
     userName: auth.user?.profile?.name ?? '',
     email: auth.user?.profile?.email ?? '',
+    accessToken: auth.user?.access_token ?? '',
+    idToken: auth.user?.id_token ?? '',
   };
 };
