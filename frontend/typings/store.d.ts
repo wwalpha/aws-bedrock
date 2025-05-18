@@ -1,9 +1,16 @@
 export type StoreState = AuthSlice;
 
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
 export interface AuthSlice {
-  user: any | null;
+  user: User | null;
   accessToken: string | null;
   idToken: string | null;
-  setAuthInfo: (user: any, accessToken: string, idToken: string) => void;
+
+  setAuthInfo: (user: User, accessToken: string, idToken: string) => void;
   clearAuthInfo: () => void;
 }

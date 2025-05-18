@@ -1,5 +1,5 @@
-/// <reference path="./global.d.ts" />
-/// <reference path="./store.d.ts" />
+import './global.d.ts';
+import './store.d.ts';
 
 export * from './global';
 export * from './store';
