@@ -10,6 +10,9 @@
     ],
     "baseUrl": ".",
     "paths": {
+      "@/*": [
+        "./src/*"
+      ],
       "@auth/*": [
         "src/auth/*"
       ],
