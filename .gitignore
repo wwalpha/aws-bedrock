@@ -43,3 +43,5 @@ backend/**/dist
 # React
 frontend/dist
 frontend/.env
+
+frontend2
