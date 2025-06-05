@@ -29,14 +29,6 @@ const AppRoutes = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/callback" element={<LoginCallback />} />
-          <Route
-            path="/secure"
-            element={
-              <ProtectedRoute>
-                <SecurePage />
-              </ProtectedRoute>
-            }
-          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Dashboard>

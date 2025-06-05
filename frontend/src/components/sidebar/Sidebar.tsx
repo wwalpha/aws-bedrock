@@ -21,18 +21,30 @@ export const Sidebar: FC<SidebarProps> = ({
 }) => {
   // const { folders, chats, presets, prompts, files, collections, assistants, tools, models } = useContext(ChatbotUIContext);
 
-  // const chatFolders = folders.filter(folder => folder.type === 'chats');
-  // const presetFolders = folders.filter(folder => folder.type === 'presets');
-  // const promptFolders = folders.filter(folder => folder.type === 'prompts');
-  // const filesFolders = folders.filter(folder => folder.type === 'files');
-  // const collectionFolders = folders.filter(folder => folder.type === 'collections');
-  // const assistantFolders = folders.filter(folder => folder.type === 'assistants');
-  // const toolFolders = folders.filter(folder => folder.type === 'tools');
-  // const modelFolders = folders.filter(folder => folder.type === 'models');
+  const folders: any[] = []; // Placeholder for folders data
+  const chats: any[] = []; // Placeholder for folders data
+  const presets: any[] = []; // Placeholder for folders data
+  const prompts: any[] = []; // Placeholder for folders data
+  const files: any[] = []; // Placeholder for folders data
+  const collections: any[] = []; // Placeholder for folders data
+  const assistants: any[] = []; // Placeholder for folders data
+  const tools: any[] = []; // Placeholder for folders data
+  const models: any[] = []; // Placeholder for folders data
+
+  const chatFolders = folders.filter(folder => folder.type === 'chats');
+  const presetFolders = folders.filter(folder => folder.type === 'presets');
+  const promptFolders = folders.filter(folder => folder.type === 'prompts');
+  const filesFolders = folders.filter(folder => folder.type === 'files');
+  const collectionFolders = folders.filter(folder => folder.type === 'collections');
+  const assistantFolders = folders.filter(folder => folder.type === 'assistants');
+  const toolFolders = folders.filter(folder => folder.type === 'tools');
+  const modelFolders = folders.filter(folder => folder.type === 'models');
 
   const renderSidebarContent = (contentType: ContentType, data: any[], folders: any[]) => {
     return <SidebarContent contentType={contentType} data={data} folders={folders} />;
   };
+
+  const contentType = 'chats'; // This should be dynamically set based on the current view or state
 
   return (
     <TabsContent
@@ -52,7 +64,7 @@ export const Sidebar: FC<SidebarProps> = ({
           <WorkspaceSettings /> */}
         </div>
 
-        {/* {(() => {
+        {(() => {
           switch (contentType) {
             case 'chats':
               return renderSidebarContent('chats', chats, chatFolders);
@@ -81,7 +93,7 @@ export const Sidebar: FC<SidebarProps> = ({
             default:
               return null;
           }
-        })()} */}
+        })()}
       </div>
     </TabsContent>
   );

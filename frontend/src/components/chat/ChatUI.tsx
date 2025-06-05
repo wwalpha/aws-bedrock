@@ -68,70 +68,70 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
   const fetchMessages = async () => {
     const fetchedMessages = await getMessagesByChatId(params.chatid as string);
 
-    const imagePromises: Promise<MessageImage>[] = fetchedMessages.flatMap(message =>
-      message.image_paths
-        ? message.image_paths.map(async imagePath => {
-            const url = await getMessageImageFromStorage(imagePath);
+    // const imagePromises: Promise<MessageImage>[] = fetchedMessages.flatMap(message =>
+    //   message.image_paths
+    //     ? message.image_paths.map(async imagePath => {
+    //         const url = await getMessageImageFromStorage(imagePath);
 
-            if (url) {
-              const response = await fetch(url);
-              const blob = await response.blob();
-              const base64 = await convertBlobToBase64(blob);
+    //         if (url) {
+    //           const response = await fetch(url);
+    //           const blob = await response.blob();
+    //           const base64 = await convertBlobToBase64(blob);
 
-              return {
-                messageId: message.id,
-                path: imagePath,
-                base64,
-                url,
-                file: null
-              };
-            }
+    //           return {
+    //             messageId: message.id,
+    //             path: imagePath,
+    //             base64,
+    //             url,
+    //             file: null
+    //           };
+    //         }
 
-            return {
-              messageId: message.id,
-              path: imagePath,
-              base64: '',
-              url,
-              file: null
-            };
-          })
-        : []
-    );
+    //         return {
+    //           messageId: message.id,
+    //           path: imagePath,
+    //           base64: '',
+    //           url,
+    //           file: null
+    //         };
+    //       })
+    //     : []
+    // );
 
-    const images: MessageImage[] = await Promise.all(imagePromises.flat());
-    setChatImages(images);
+    // const images: MessageImage[] = await Promise.all(imagePromises.flat());
+    // setChatImages(images);
 
-    const messageFileItemPromises = fetchedMessages.map(async message => await getMessageFileItemsByMessageId(message.id));
+    // const messageFileItemPromises = fetchedMessages.map(async message => await getMessageFileItemsByMessageId(message.id));
 
-    const messageFileItems = await Promise.all(messageFileItemPromises);
+    // const messageFileItems = await Promise.all(messageFileItemPromises);
 
-    const uniqueFileItems = messageFileItems.flatMap(item => item.file_items);
-    setChatFileItems(uniqueFileItems);
+    // const uniqueFileItems = messageFileItems.flatMap(item => item.file_items);
+    // setChatFileItems(uniqueFileItems);
 
-    const chatFiles = await getChatFilesByChatId(params.chatid as string);
+    // const chatFiles = await getChatFilesByChatId(params.chatid as string);
 
-    setChatFiles(
-      chatFiles.files.map(file => ({
-        id: file.id,
-        name: file.name,
-        type: file.type,
-        file: null
-      }))
-    );
+    // setChatFiles(
+    //   chatFiles.files.map(file => ({
+    //     id: file.id,
+    //     name: file.name,
+    //     type: file.type,
+    //     file: null
+    //   }))
+    // );
 
     setUseRetrieval(true);
     setShowFilesDisplay(true);
 
-    const fetchedChatMessages = fetchedMessages.map(message => {
-      return {
-        message,
-        fileItems: messageFileItems
-          .filter(messageFileItem => messageFileItem.id === message.id)
-          .flatMap(messageFileItem => messageFileItem.file_items.map(fileItem => fileItem.id))
-      };
-    });
+    // const fetchedChatMessages = fetchedMessages.map(message => {
+    //   return {
+    //     message,
+    //     fileItems: messageFileItems
+    //       .filter(messageFileItem => messageFileItem.id === message.id)
+    //       .flatMap(messageFileItem => messageFileItem.file_items.map(fileItem => fileItem.id))
+    //   };
+    // });
 
-    setChatMessages(fetchedChatMessages);
+    // setChatMessages(fetchedChatMessages);
   };
 
   const fetchChat = async () => {
