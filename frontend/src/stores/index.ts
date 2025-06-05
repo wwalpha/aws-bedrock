@@ -1,11 +1,16 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { createAuthSlice } from './slices/authSlice';
-import type { StoreState } from 'typings';
+import { createSidebarSlice } from './slices/sidebarSlice';
+import { createUIContextSlice } from './slices/uiContextSlice';
+
+import { StoreState } from 'typings';
 
 export const useStore = create<StoreState>()(
   devtools((...args) => ({
-    ...createAuthSlice(...args)
+    ...createAuthSlice(...args),
+    ...createSidebarSlice(...args),
+    ...createUIContextSlice(...args)
   }))
 );
 
