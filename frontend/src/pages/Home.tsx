@@ -1,11 +1,9 @@
 import React from 'react';
+import { Dashboard } from '@/components/ui/dashboard';
+import { ChatUI } from '@/components/chat/ChatUI';
 
 const Home: React.FC = () => {
-  return (
-    <div style={{ padding: '2rem' }}>
-      <h1>🏠 ホームページ</h1>
-    </div>
-  );
+  return <div>1111111111111</div>;
 };
 
 export default Home;

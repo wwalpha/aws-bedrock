@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { createAuthSlice } from './slices/authSlice';
-import { StoreState } from 'typings';
+import type { StoreState } from 'typings';
 
 export const useStore = create<StoreState>()(
   devtools((...args) => ({
-    ...createAuthSlice(...args),
+    ...createAuthSlice(...args)
   }))
 );
 

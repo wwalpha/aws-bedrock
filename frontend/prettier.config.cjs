@@ -1,12 +1,13 @@
 /** @type {import('prettier').Config} */
 module.exports = {
   endOfLine: 'lf',
-  semi: false,
+  semi: true,
   useTabs: false,
-  singleQuote: false,
+  singleQuote: true,
   arrowParens: 'avoid',
   tabWidth: 2,
   trailingComma: 'none',
+  printWidth: 160,
   importOrder: [
     '^.+\\.scss$',
     '^.+\\.css$',
@@ -32,5 +33,5 @@ module.exports = {
   importOrderBuiltinModulesToTop: true,
   importOrderParserPlugins: ['typescript', 'jsx', 'decorators-legacy'],
   importOrderMergeDuplicateImports: true,
-  importOrderCombineTypeAndValueImports: true,
-}
+  importOrderCombineTypeAndValueImports: true
+};

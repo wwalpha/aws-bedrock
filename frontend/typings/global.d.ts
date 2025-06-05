@@ -11,3 +11,5 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+export type ContentType = 'chats' | 'presets' | 'prompts' | 'files' | 'collections' | 'assistants' | 'tools' | 'models';

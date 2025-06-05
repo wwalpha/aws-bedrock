@@ -4,7 +4,8 @@ import Home from '../pages/Home';
 import SecurePage from '../pages/SecurePage';
 import NotFound from '../pages/NotFound';
 import ProtectedRoute from '../auth/ProtectedRoute';
-import { useAuth, LoginCallback } from '@auth/index';
+import { useAuth, LoginCallback } from '@/auth';
+import { Dashboard } from '@/components/ui/dashboard';
 
 const AppRoutes = () => {
   const { isLoading, isLoggedIn, signinRedirect, isAuthenticated } = useAuth();
@@ -24,19 +25,21 @@ const AppRoutes = () => {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/callback" element={<LoginCallback />} />
-        <Route
-          path="/secure"
-          element={
-            <ProtectedRoute>
-              <SecurePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Dashboard>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/callback" element={<LoginCallback />} />
+          <Route
+            path="/secure"
+            element={
+              <ProtectedRoute>
+                <SecurePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Dashboard>
     </BrowserRouter>
   );
 };
