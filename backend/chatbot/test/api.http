@@ -1,0 +1,9 @@
+GET http://localhost:8000/api/stream?message=こんにちは
+Content-Type: application/json
+
+{
+  "message": "AWS"
+}
+
+GET http://localhost:8000/api/stream?message=こんにちは
+Content-Type: application/json

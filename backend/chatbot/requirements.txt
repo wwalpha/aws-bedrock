@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+langchain
+anthropic
+python-dotenv
+langchain_aws
