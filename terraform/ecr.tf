@@ -6,3 +6,12 @@ module "ecr_repo_auth" {
 
   repo_name = "${var.project_name}/auth"
 }
+
+# ----------------------------------------------------------------------------------------------
+# ECR Repository - Chat
+# ----------------------------------------------------------------------------------------------
+module "ecr_repo_chat" {
+  source = "./m_ecr"
+
+  repo_name = "${var.project_name}/chat"
+}

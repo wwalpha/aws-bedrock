@@ -11,5 +11,5 @@ async def get_chat_response(req: ChatRequest) -> ChatResponse:
 
 async def stream_chat_response(message: str) -> AsyncGenerator[str, None]:
   response_stream = chat_model.stream([HumanMessage(content=message)])
-  async for chunk in response_stream:
-    yield chunk.content
+  for chunk in response_stream:
+      yield chunk.content

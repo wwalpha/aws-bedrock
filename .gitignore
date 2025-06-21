@@ -45,3 +45,5 @@ frontend/dist
 frontend/.env
 
 frontend2
+
+__pycache__

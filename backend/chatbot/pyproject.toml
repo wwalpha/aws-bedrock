@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chatbot"
+version = "0.1.0"
+description = "A chatbot application using FastAPI"
+authors = [
+    { name = "wwalpha", email = "wwalpha@gmail.com" }
+]
+license = { text = "MIT" }
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "boto3",
+    "pydantic",
+    "langchain",
+    "anthropic",
+    "langchain_aws",
+    "python-dotenv",
+]
+
+[tool.setuptools]
+package-dir = {"" = "app"}
+packages = ["app"]

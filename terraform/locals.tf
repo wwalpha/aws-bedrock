@@ -7,8 +7,13 @@ locals {
   # ECS
   # ----------------------------------------------------------------------------------------------
   task_def_family_auth      = "${local.prefix}-taskdef-auth"
+  task_def_family_chat      = "${local.prefix}-taskdef-chat"
   ecs_container_name_auth   = "${local.prefix}-auth"
+  ecs_container_name_chat   = "${local.prefix}-chat"
+  ecs_service_name_auth     = "AuthService"
+  ecs_service_name_chat     = "ChatService"
   ecs_service_env_file_auth = "environments/auth.env"
+  ecs_service_env_file_chat = "environments/chat.env"
 
   # ----------------------------------------------------------------------------------------------
   # API Gateway
