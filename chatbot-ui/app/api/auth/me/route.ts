@@ -10,7 +10,7 @@ export async function GET() {
   if (!backendBase) {
     return NextResponse.json(
       { error: "BACKEND_URL not configured" },
-      { status: 500 }
+      { status: 401 }
     )
   }
   const res = await fetch(`${backendBase}/v1/auth/me`, {

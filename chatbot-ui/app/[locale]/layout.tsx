@@ -16,9 +16,9 @@ const APP_DESCRIPTION = "Chabot UI PWA!"
 
 interface RootLayoutProps {
   children: ReactNode
-  params: {
+  params: Promise<{
     locale: string
-  }
+  }>
 }
 
 export const metadata: Metadata = {
@@ -67,16 +67,15 @@ export const viewport: Viewport = {
 
 const i18nNamespaces = ["translation"]
 
-export default async function RootLayout({
-  children,
-  params: { locale }
-}: RootLayoutProps) {
+export default async function RootLayout(props: RootLayoutProps) {
+  const { children } = props
+  const { locale } = await props.params
   // Supabase auth removed in Phase 1; render children directly
 
   const { t, resources } = await initTranslations(locale, i18nNamespaces)
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale || "en"} suppressHydrationWarning>
       <body className={inter.className}>
         <Providers attribute="class" defaultTheme="dark">
           <TranslationsProvider
