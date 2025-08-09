@@ -5,11 +5,10 @@ import TranslationsProvider from "@/components/utility/translations-provider"
 import initTranslations from "@/lib/i18n"
 import { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
-import { cookies } from "next/headers"
 import { ReactNode } from "react"
 import "./globals.css"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"], display: "swap" })
 const APP_NAME = "Chatbot UI"
 const APP_DEFAULT_TITLE = "Chatbot UI"
 const APP_TITLE_TEMPLATE = "%s - Chatbot UI"
@@ -35,6 +34,10 @@ export const metadata: Metadata = {
     statusBarStyle: "black",
     title: APP_DEFAULT_TITLE
     // startUpImage: [],
+  },
+  // Add mobile-web-app-capable for Android/Chrome PWA support
+  other: {
+    "mobile-web-app-capable": "yes"
   },
   formatDetection: {
     telephone: false
@@ -81,7 +84,12 @@ export default async function RootLayout({
             locale={locale}
             resources={resources}
           >
-            <Toaster richColors position="top-center" duration={3000} />
+            <Toaster
+              // lighter work in dev to reduce hydration/render time
+              richColors={process.env.NODE_ENV === "production"}
+              position="top-center"
+              duration={3000}
+            />
             <div className="bg-background text-foreground flex h-dvh flex-col items-center overflow-x-auto">
               <GlobalState>{children}</GlobalState>
             </div>
