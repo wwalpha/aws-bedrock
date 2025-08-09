@@ -14,8 +14,10 @@ export const metadata: Metadata = {
 export default async function Login({
   searchParams
 }: {
-  searchParams: { message: string }
+  searchParams?: Promise<Record<string, string | undefined>>
 }) {
+  // Await if Next hands a promise-like for searchParams in this version
+  const sp = (await searchParams) as { message?: string } | undefined
   // If already logged in (via backend), redirect away
   try {
     const meRes = await fetch(
@@ -139,7 +141,8 @@ export default async function Login({
   const handleResetPassword = async (formData: FormData) => {
     "use server"
 
-    const origin = headers().get("origin")
+    const h = await headers()
+    const origin = h.get("origin")
     const email = formData.get("email") as string
     // Optionally proxy to backend reset endpoint if exists
     try {
@@ -216,9 +219,9 @@ export default async function Login({
           </button>
         </div>
 
-        {searchParams?.message && (
+        {sp?.message && (
           <p className="bg-foreground/10 text-foreground mt-4 p-4 text-center">
-            {searchParams.message}
+            {sp.message}
           </p>
         )}
       </form>

@@ -21,7 +21,7 @@ export const ChatbotUISVG: FC<ChatbotUISVGProps> = ({ scale = 1 }) => {
         width="164"
         height="127"
         rx="37.5"
-        className="fill-white dark:fill-black stroke-black dark:stroke-white"
+        className="fill-white stroke-black dark:fill-black dark:stroke-white"
         strokeWidth="25"
       />
       <path
