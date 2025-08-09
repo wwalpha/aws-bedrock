@@ -60,19 +60,11 @@ In your terminal at the root of your local Chatbot UI repository, run:
 npm run update
 ```
 
-If you run a hosted instance you'll also need to run:
-
-```bash
-npm run db-push
-```
-
-to apply the latest migrations to your live database.
-
 ## Local Quickstart
 
 Follow these steps to get your own Chatbot UI instance running locally.
 
-Note: In this project, Supabase local resources have been removed and the backend is hosted on AWS. You can run the frontend without Supabase by providing your API keys via environment variables. Auth- and DB-backed features depending on Supabase will be disabled.
+Note: This fork removes Supabase dependencies. The UI talks to a backend REST API. Set backend URL envs and provider API keys; no Supabase is required.
 
 You can watch the full video tutorial [here](https://www.youtube.com/watch?v=9Qq3-7-HNgw).
 
@@ -90,10 +82,23 @@ Open a terminal in the root directory of your local Chatbot UI repository and ru
 npm install
 ```
 
-### 3. (Optional) Supabase
+### 3. Backend URL and keys
 
-If you plan to use Supabase, refer to the original upstream README. This fork does not require Supabase to run the UI against an AWS backend.
-You may ignore the Supabase setup steps.
+Configure the backend base URL and any model/provider keys.
+
+- BACKEND_URL: Server-side base URL for the backend (e.g., https://api.example.com)
+- NEXT_PUBLIC_BACKEND_URL: Client-side base URL when needed (falls back to BACKEND_URL)
+
+Provider keys (optional, can also be stored per-user in the backend profile):
+
+- OPENAI_API_KEY, OPENAI_ORGANIZATION_ID
+- ANTHROPIC_API_KEY
+- GOOGLE_GEMINI_API_KEY
+- MISTRAL_API_KEY
+- GROQ_API_KEY
+- PERPLEXITY_API_KEY
+- OPENROUTER_API_KEY
+- AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, AZURE_GPT_35_TURBO_NAME, AZURE_GPT_45_TURBO_NAME, AZURE_GPT_45_VISION_NAME, AZURE_EMBEDDINGS_NAME
 
 ### 4. Fill in Secrets
 
@@ -109,7 +114,7 @@ Now go to your `.env.local` file and fill in the values.
 
 If the environment variable is set, it will disable the input in the user settings.
 
-You can ignore SQL setup for Supabase in this fork.
+No SQL or Supabase setup is required in this fork.
 
 ### 5. Install Ollama (optional for local models)
 
@@ -125,7 +130,7 @@ npm run dev
 
 Your local instance of Chatbot UI should now be running at [http://localhost:3000](http://localhost:3000). Be sure to use a compatible node version (i.e. v18).
 
-You can view your backend GUI at [http://localhost:54323/project/default/editor](http://localhost:54323/project/default/editor).
+Ensure your backend is reachable at BACKEND_URL; authentication cookies are forwarded by the internal API routes.
 
 ## Hosted Quickstart
 
@@ -141,72 +146,9 @@ You will want separate repositories for your local and hosted instances.
 
 Create a new repository for your hosted instance of Chatbot UI on GitHub and push your code to it.
 
-### 2. Setup Backend with Supabase
+### 2. Setup Backend
 
-#### 1. Create a new project
-
-Go to [Supabase](https://supabase.com/) and create a new project.
-
-#### 2. Get Project Values
-
-Once you are in the project dashboard, click on the "Project Settings" icon tab on the far bottom left.
-
-Here you will get the values for the following environment variables:
-
-- `Project Ref`: Found in "General settings" as "Reference ID"
-
-- `Project ID`: Found in the URL of your project dashboard (Ex: https://supabase.com/dashboard/project/<YOUR_PROJECT_ID>/settings/general)
-
-While still in "Settings" click on the "API" text tab on the left.
-
-Here you will get the values for the following environment variables:
-
-- `Project URL`: Found in "API Settings" as "Project URL"
-
-- `Anon key`: Found in "Project API keys" as "anon public"
-
-- `Service role key`: Found in "Project API keys" as "service_role" (Reminder: Treat this like a password!)
-
-#### 3. Configure Auth
-
-Next, click on the "Authentication" icon tab on the far left.
-
-In the text tabs, click on "Providers" and make sure "Email" is enabled.
-
-We recommend turning off "Confirm email" for your own personal instance.
-
-#### 4. Connect to Hosted DB
-
-Open up your repository for your hosted instance of Chatbot UI.
-
-In the 1st migration file `supabase/migrations/20240108234540_setup.sql` you will need to replace 2 values with the values you got above:
-
-- `project_url` (line 53): Use the `Project URL` value from above
-- `service_role_key` (line 54): Use the `Service role key` value from above
-
-Now, open a terminal in the root directory of your local Chatbot UI repository. We will execute a few commands here.
-
-Login to Supabase by running:
-
-```bash
-supabase login
-```
-
-Next, link your project by running the following command with the "Project ID" you got above:
-
-```bash
-supabase link --project-ref <project-id>
-```
-
-Your project should now be linked.
-
-Finally, push your database to Supabase by running:
-
-```bash
-supabase db push
-```
-
-Your hosted database should now be set up!
+Use your own REST backend that implements the endpoints referenced below. Set BACKEND_URL to point to it. Authentication is proxied via internal routes under /api/auth.
 
 ### 3. Setup Frontend with Vercel
 
@@ -214,21 +156,52 @@ Go to [Vercel](https://vercel.com/) and create a new project.
 
 In the setup page, import your GitHub repository for your hosted instance of Chatbot UI. Within the project Settings, in the "Build & Development Settings" section, switch Framework Preset to "Next.js".
 
-In environment variables, add the following from the values you got above:
+In environment variables, add at least:
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `NEXT_PUBLIC_OLLAMA_URL` (only needed when using local Ollama models; default: `http://localhost:11434`)
+- `BACKEND_URL`
+- `NEXT_PUBLIC_BACKEND_URL` (optional)
 
-You can also add API keys as environment variables.
+You can also add provider API keys as environment variables (optional):
 
 - `OPENAI_API_KEY`
 - `AZURE_OPENAI_API_KEY`
 - `AZURE_OPENAI_ENDPOINT`
 - `AZURE_GPT_45_VISION_NAME`
 
-For the full list of environment variables, refer to the '.env.local.example' file. If the environment variables are set for API keys, it will disable the input in the user settings.
+For the full list of environment variables, refer to the '.env.local.example' file. If provider API keys are set in env, it disables input in user settings.
+
+## Frontend API routes (proxy/edge)
+
+These Next.js routes proxy to the backend or call provider SDKs after fetching the user profile from the backend.
+
+| Method | Path                        | Description                                           |
+| ------ | --------------------------- | ----------------------------------------------------- |
+| GET    | /api/keys                   | Indicates which provider keys are set via env         |
+| POST   | /api/auth/login             | Proxy to BACKEND_URL/v1/auth/login; sets auth cookies |
+| POST   | /api/auth/logout            | Proxy to BACKEND_URL/v1/auth/logout                   |
+| GET    | /api/auth/me                | Proxy to BACKEND_URL/v1/auth/me                       |
+| POST   | /api/username/get           | Get profile username by user_id                       |
+| POST   | /api/username/available     | Check if username is available                        |
+| POST   | /api/retrieval/process      | Chunk + embed uploaded files; bulk upsert to backend  |
+| POST   | /api/retrieval/process/docx | Process docx text and embed                           |
+| POST   | /api/retrieval/retrieve     | Compute query embedding and match via backend         |
+| POST   | /api/chat/openai            | Chat via OpenAI                                       |
+| POST   | /api/chat/anthropic         | Chat via Anthropic                                    |
+| POST   | /api/chat/azure             | Chat via Azure OpenAI                                 |
+| POST   | /api/chat/google            | Chat via Google Gemini                                |
+| POST   | /api/chat/mistral           | Chat via Mistral                                      |
+| POST   | /api/chat/groq              | Chat via Groq                                         |
+| POST   | /api/chat/perplexity        | Chat via Perplexity                                   |
+| POST   | /api/chat/openrouter        | Chat via OpenRouter                                   |
+| POST   | /api/chat/custom            | Chat via a custom model configured in the backend     |
+| POST   | /api/chat/tools             | Tool-call flow using OpenAPI schemas                  |
+| GET    | /api/assistants/openai      | List OpenAI assistants for the user                   |
+| POST   | /api/command                | Simple command completion using OpenAI                |
+
+Notes:
+
+- All routes that need user context call BACKEND_URL/v1/profile/me and rely on authentication cookies.
+- File upload uses POST BACKEND_URL/v1/upload and signed URLs via GET BACKEND_URL/v1/upload/signed-url.
 
 Click "Deploy" and wait for your frontend to deploy.
 
