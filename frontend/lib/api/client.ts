@@ -1,7 +1,6 @@
 import axios, { AxiosInstance } from "axios"
 
-const base =
-  process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
+const base = process.env.BACKEND_URL || ""
 
 const client: AxiosInstance = axios.create({
   // Don't hard-fail at import time if base is missing; handlers will validate

@@ -9,8 +9,7 @@ import {
 import { NextResponse } from "next/server"
 import OpenAI from "openai/index.mjs"
 
-const base =
-  process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
+const base = process.env.BACKEND_URL || ""
 import { FileItemChunk } from "@/types"
 
 export async function POST(req: Request) {

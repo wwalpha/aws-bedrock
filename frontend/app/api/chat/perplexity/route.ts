@@ -1,5 +1,4 @@
-const base =
-  process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
+const base = process.env.BACKEND_URL || ""
 import { ChatSettings } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import OpenAI from "openai/index.mjs"

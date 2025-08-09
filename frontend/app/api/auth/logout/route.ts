@@ -4,17 +4,9 @@ import { NextResponse } from "next/server"
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
-const backendBase =
-  process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || ""
+const backendBase = process.env.BACKEND_URL || ""
 
 export async function POST(req: Request) {
-  if (!backendBase) {
-    return NextResponse.json(
-      { error: "BACKEND_URL not configured" },
-      { status: 500 }
-    )
-  }
-
   const jar = await cookies()
   const accessToken = jar?.get("accessToken")?.value
   let bodyToken: string | undefined

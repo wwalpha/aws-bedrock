@@ -4,20 +4,16 @@ import { NextResponse } from "next/server"
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
-const backendBase =
-  process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || ""
+const backendBase = process.env.BACKEND_URL || ""
 
 export async function GET() {
   const jar = await cookies()
   const idToken = jar?.get("idToken")?.value
   const accessToken = jar?.get("accessToken")?.value
 
-  if (!backendBase) {
-    // Fallback: if tokens exist, consider user as logged-in minimally
-    if (idToken || accessToken) {
-      return NextResponse.json({ ok: true })
-    }
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
+  // Fallback: if tokens exist, consider user as logged-in minimally
+  if (idToken || accessToken) {
+    return NextResponse.json({ ok: true })
   }
 
   // If backend implements an identity/me endpoint later, call it here.

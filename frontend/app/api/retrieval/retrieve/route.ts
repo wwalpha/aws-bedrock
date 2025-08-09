@@ -1,6 +1,5 @@
 import { generateLocalEmbedding } from "@/lib/generate-local-embedding"
-const base =
-  process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
+const base = process.env.BACKEND_URL || ""
 import OpenAI from "openai/index.mjs"
 
 export async function POST(request: Request) {

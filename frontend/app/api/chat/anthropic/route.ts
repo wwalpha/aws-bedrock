@@ -15,8 +15,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const base =
-      process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
+    const base = process.env.BACKEND_URL || ""
     if (!base) throw new Error("BACKEND_URL not configured")
     const res = await fetch(`${base}/v1/profile/me`, { credentials: "include" })
     if (!res.ok) return new NextResponse("Unauthorized", { status: 401 })

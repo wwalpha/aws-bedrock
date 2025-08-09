@@ -4,8 +4,7 @@ export async function uploadFile(
   fields?: Record<string, string>
 ) {
   // Upload API endpoint on backend should accept multipart/form-data
-  const base =
-    process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
+  const base = process.env.BACKEND_URL || ""
   if (!base) throw new Error("BACKEND_URL not configured")
   const form = new FormData()
   form.append("file", file)

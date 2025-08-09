@@ -87,7 +87,6 @@ npm install
 Configure the backend base URL and any model/provider keys.
 
 - BACKEND_URL: Server-side base URL for the backend (e.g., https://api.example.com)
-- NEXT_PUBLIC_BACKEND_URL: Client-side base URL when needed (falls back to BACKEND_URL)
 
 Provider keys (optional, can also be stored per-user in the backend profile):
 
@@ -159,7 +158,6 @@ In the setup page, import your GitHub repository for your hosted instance of Cha
 In environment variables, add at least:
 
 - `BACKEND_URL`
-- `NEXT_PUBLIC_BACKEND_URL` (optional)
 
 You can also add provider API keys as environment variables (optional):
 
