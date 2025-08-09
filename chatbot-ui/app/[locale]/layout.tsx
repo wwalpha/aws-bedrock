@@ -4,7 +4,6 @@ import { Providers } from "@/components/utility/providers"
 import TranslationsProvider from "@/components/utility/translations-provider"
 import initTranslations from "@/lib/i18n"
 import { Database } from "@/supabase/types"
-import { createServerClient } from "@supabase/ssr"
 import { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import { cookies } from "next/headers"
@@ -70,26 +69,7 @@ export default async function RootLayout({
   children,
   params: { locale }
 }: RootLayoutProps) {
-  const cookieStore = cookies()
-  const hasSupabase =
-    Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
-    Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
-
-  const session = hasSupabase
-    ? (
-        await createServerClient<Database>(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-          {
-            cookies: {
-              get(name: string) {
-                return cookieStore.get(name)?.value
-              }
-            }
-          }
-        ).auth.getSession()
-      ).data.session
-    : null
+  // Supabase auth removed in Phase 1; render children directly
 
   const { t, resources } = await initTranslations(locale, i18nNamespaces)
 
@@ -104,7 +84,7 @@ export default async function RootLayout({
           >
             <Toaster richColors position="top-center" duration={3000} />
             <div className="bg-background text-foreground flex h-dvh flex-col items-center overflow-x-auto">
-              {session ? <GlobalState>{children}</GlobalState> : children}
+              <GlobalState>{children}</GlobalState>
             </div>
           </TranslationsProvider>
         </Providers>
