@@ -10,7 +10,6 @@ import {
   fetchHostedModels,
   fetchOpenRouterModels
 } from "@/lib/models/fetch-models"
-import { supabase } from "@/lib/supabase/browser-client"
 import { TablesUpdate } from "@/supabase/types"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
@@ -63,12 +62,12 @@ export default function SetupPage() {
 
   useEffect(() => {
     ;(async () => {
-      const session = (await supabase.auth.getSession()).data.session
-
-      if (!session) {
+      const meRes = await fetch(`/api/auth/me`, { cache: "no-store" })
+      if (!meRes.ok) {
         return router.push("/login")
       } else {
-        const user = session.user
+        const me = await meRes.json()
+        const user = { id: me?.user?.id || me?.id }
 
         const profile = await getProfileByUserId(user.id)
         setProfile(profile)
@@ -90,9 +89,7 @@ export default function SetupPage() {
             setAvailableOpenRouterModels(openRouterModels)
           }
 
-          const homeWorkspaceId = await getHomeWorkspaceByUserId(
-            session.user.id
-          )
+          const homeWorkspaceId = await getHomeWorkspaceByUserId(user.id)
           return router.push(`/${homeWorkspaceId}/chat`)
         }
       }
@@ -112,12 +109,13 @@ export default function SetupPage() {
   }
 
   const handleSaveSetupSetting = async () => {
-    const session = (await supabase.auth.getSession()).data.session
-    if (!session) {
+  const meRes = await fetch(`/api/auth/me`, { cache: "no-store" })
+  if (!meRes.ok) {
       return router.push("/login")
     }
 
-    const user = session.user
+  const me = await meRes.json()
+  const user = { id: me?.user?.id || me?.id }
     const profile = await getProfileByUserId(user.id)
 
     const updateProfilePayload: TablesUpdate<"profiles"> = {

@@ -2,7 +2,6 @@ import { Brand } from "@/components/ui/brand"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { createClient } from "@/lib/supabase/server"
 import { get } from "@vercel/edge-config"
 import { Metadata } from "next"
 import { cookies, headers } from "next/headers"
@@ -17,56 +16,53 @@ export default async function Login({
 }: {
   searchParams: { message: string }
 }) {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
-  const session = (await supabase.auth.getSession()).data.session
-
-  if (session) {
-    const { data: homeWorkspace, error } = await supabase
-      .from("workspaces")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .eq("is_home", true)
-      .single()
-
-    if (!homeWorkspace) {
-      throw new Error(error.message)
+  // If already logged in (via backend), redirect away
+  try {
+    const meRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/api/auth/me`, {
+      cache: "no-store"
+    })
+    if (meRes.ok) {
+      const me = await meRes.json()
+      const dest = me?.homeWorkspaceId
+        ? `/${me.homeWorkspaceId}/chat`
+        : "/"
+      return redirect(dest)
     }
-
-    return redirect(`/${homeWorkspace.id}/chat`)
-  }
+  } catch {}
 
   const signIn = async (formData: FormData) => {
     "use server"
 
     const email = formData.get("email") as string
     const password = formData.get("password") as string
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
-
-    if (error) {
-      return redirect(`/login?message=${error.message}`)
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/api/auth/login`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, password })
+      })
+      if (!res.ok) {
+        const msg = (await res.text()) || "Login failed"
+        return redirect(`/login?message=${encodeURIComponent(msg)}`)
+      }
+    } catch (e: any) {
+      return redirect(`/login?message=${encodeURIComponent(e?.message || "Login failed")}`)
     }
 
-    const { data: homeWorkspace, error: homeWorkspaceError } = await supabase
-      .from("workspaces")
-      .select("*")
-      .eq("user_id", data.user.id)
-      .eq("is_home", true)
-      .single()
-
-    if (!homeWorkspace) {
-      throw new Error(
-        homeWorkspaceError?.message || "An unexpected error occurred"
-      )
-    }
-
-    return redirect(`/${homeWorkspace.id}/chat`)
+    // After login, try to fetch profile/me for redirect
+    try {
+      const meRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/api/auth/me`, {
+        cache: "no-store"
+      })
+      if (meRes.ok) {
+        const me = await meRes.json()
+        const dest = me?.homeWorkspaceId
+          ? `/${me.homeWorkspaceId}/chat`
+          : "/"
+        return redirect(dest)
+      }
+    } catch {}
+    return redirect("/")
   }
 
   const getEnvVarOrEdgeConfigValue = async (name: string) => {
@@ -107,24 +103,22 @@ export default async function Login({
       }
     }
 
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        // USE IF YOU WANT TO SEND EMAIL VERIFICATION, ALSO CHANGE TOML FILE
-        // emailRedirectTo: `${origin}/auth/callback`
+    // Delegate to backend if it supports sign up, otherwise skip
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/api/auth/login`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, password, signup: true })
+      })
+      if (!res.ok) {
+        const msg = (await res.text()) || "Sign up failed"
+        return redirect(`/login?message=${encodeURIComponent(msg)}`)
       }
-    })
-
-    if (error) {
-      console.error(error)
-      return redirect(`/login?message=${error.message}`)
+    } catch (e: any) {
+      return redirect(`/login?message=${encodeURIComponent(e?.message || "Sign up failed")}`)
     }
 
-    return redirect("/setup")
+    return redirect("/")
 
     // USE IF YOU WANT TO SEND EMAIL VERIFICATION, ALSO CHANGE TOML FILE
     // return redirect("/login?message=Check email to continue sign in process")
@@ -135,17 +129,20 @@ export default async function Login({
 
     const origin = headers().get("origin")
     const email = formData.get("email") as string
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${origin}/auth/callback?next=/login/password`
-    })
-
-    if (error) {
-      return redirect(`/login?message=${error.message}`)
+    // Optionally proxy to backend reset endpoint if exists
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/api/auth/login`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, reset: true, redirectTo: `${origin}/login/password` })
+      })
+      if (!res.ok) {
+        const msg = (await res.text()) || "Reset failed"
+        return redirect(`/login?message=${encodeURIComponent(msg)}`)
+      }
+    } catch (e: any) {
+      return redirect(`/login?message=${encodeURIComponent(e?.message || "Reset failed")}`)
     }
-
     return redirect("/login?message=Check email to reset password")
   }
 

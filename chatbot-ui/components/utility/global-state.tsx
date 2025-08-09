@@ -12,7 +12,6 @@ import {
   fetchOllamaModels,
   fetchOpenRouterModels
 } from "@/lib/models/fetch-models"
-import { supabase } from "@/lib/supabase/browser-client"
 import { Tables } from "@/supabase/types"
 import {
   ChatFile,
@@ -153,19 +152,21 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   }, [])
 
   const fetchStartingData = async () => {
-    const session = (await supabase.auth.getSession()).data.session
+    try {
+      const meRes = await fetch(`/api/auth/me`, { cache: "no-store" })
+      if (!meRes.ok) return
+      const me = await meRes.json()
+      const userId = me?.user?.id || me?.id
+      if (!userId) return
 
-    if (session) {
-      const user = session.user
-
-      const profile = await getProfileByUserId(user.id)
+      const profile = await getProfileByUserId(userId)
       setProfile(profile)
 
       if (!profile.has_onboarded) {
         return router.push("/setup")
       }
 
-      const workspaces = await getWorkspacesByUserId(user.id)
+      const workspaces = await getWorkspacesByUserId(userId)
       setWorkspaces(workspaces)
 
       for (const workspace of workspaces) {
@@ -194,7 +195,7 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
       }
 
       return profile
-    }
+    } catch {}
   }
 
   return (
