@@ -1,7 +1,7 @@
 import i18nConfig from "@/i18nConfig"
 import { createInstance } from "i18next"
 import resourcesToBackend from "i18next-resources-to-backend"
-import { initReactI18next } from "react-i18next/initReactI18next"
+import { initReactI18next } from "@/node_modules/react-i18next/initReactI18next"
 
 declare global {
   // eslint-disable-next-line no-var

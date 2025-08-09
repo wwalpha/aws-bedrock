@@ -2,7 +2,7 @@ import { generateLocalEmbedding } from "@/lib/generate-local-embedding"
 import { processDocX } from "@/lib/retrieval/processing"
 import { FileItemChunk } from "@/types"
 import { NextResponse } from "next/server"
-import OpenAI from "openai"
+import OpenAI from "openai/index.mjs"
 
 const base =
   process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""

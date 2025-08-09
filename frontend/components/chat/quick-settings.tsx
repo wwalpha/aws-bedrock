@@ -10,7 +10,7 @@ import { LLMID } from "@/types"
 import { IconChevronDown, IconRobotFace } from "@tabler/icons-react"
 import Image from "next/image"
 import { FC, useContext, useEffect, useRef, useState } from "react"
-import { useTranslation } from "react-i18next"
+import { useTranslation } from "@/node_modules/react-i18next"
 import { ModelIcon } from "../models/model-icon"
 import { Button } from "../ui/button"
 import {

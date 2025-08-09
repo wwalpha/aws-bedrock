@@ -2,7 +2,7 @@ import { openapiToFunctions } from "@/lib/openapi-conversion"
 import { Tables } from "@/types/db"
 import { ChatSettings } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
-import OpenAI from "openai"
+import OpenAI from "openai/index.mjs"
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions.mjs"
 
 export async function POST(request: Request) {

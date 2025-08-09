@@ -1,5 +1,5 @@
 import { CHAT_SETTING_LIMITS } from "@/lib/chat-setting-limits"
-import OpenAI from "openai"
+import OpenAI from "openai/index.mjs"
 
 export const runtime = "edge"
 

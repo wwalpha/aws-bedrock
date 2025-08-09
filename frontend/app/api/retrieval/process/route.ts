@@ -7,7 +7,7 @@ import {
   processTxt
 } from "@/lib/retrieval/processing"
 import { NextResponse } from "next/server"
-import OpenAI from "openai"
+import OpenAI from "openai/index.mjs"
 
 const base =
   process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
