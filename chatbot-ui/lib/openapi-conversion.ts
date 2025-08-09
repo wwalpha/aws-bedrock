@@ -124,16 +124,16 @@ export const openapiToFunctions = async (
 
       const params = spec.parameters || []
       if (params.length > 0) {
-        const paramProperties = params.reduce((acc: any, param: any) => {
-          if (param.schema) {
-            acc[param.name] = param.schema
+        // Flatten parameters into top-level properties, preserving type/format and required flag
+        for (const param of params) {
+          if (param?.schema && param?.name) {
+            const propSchema: any = { ...param.schema }
+            if (param.required === true) {
+              // Tests expect `required: true` on the property itself
+              propSchema.required = true
+            }
+            schema.properties[param.name] = propSchema
           }
-          return acc
-        }, {})
-
-        schema.properties.parameters = {
-          type: "object",
-          properties: paramProperties
         }
       }
 
