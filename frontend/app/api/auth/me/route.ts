@@ -1,3 +1,4 @@
+import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 
 export const runtime = "nodejs"
@@ -7,22 +8,32 @@ const backendBase =
   process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || ""
 
 export async function GET() {
+  const jar = await cookies()
+  const idToken = jar?.get("idToken")?.value
+  const accessToken = jar?.get("accessToken")?.value
+
   if (!backendBase) {
-    return NextResponse.json(
-      { error: "BACKEND_URL not configured" },
-      { status: 401 }
-    )
-  }
-  const res = await fetch(`${backendBase}/v1/auth/me`, {
-    method: "GET"
-    // In Next.js Route Handlers, cookies from the incoming request are available
-    // automatically on server-side fetch. We simply forward the call.
-  })
-  const text = await res.text()
-  return new NextResponse(text, {
-    status: res.status,
-    headers: {
-      "content-type": res.headers.get("content-type") || "application/json"
+    // Fallback: if tokens exist, consider user as logged-in minimally
+    if (idToken || accessToken) {
+      return NextResponse.json({ ok: true })
     }
-  })
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
+  }
+
+  // If backend implements an identity/me endpoint later, call it here.
+  // For now, decode idToken (JWT) to return a minimal identity when available.
+  if (idToken) {
+    try {
+      const [, payload] = idToken.split(".")
+      const json = JSON.parse(
+        Buffer.from(
+          payload.replace(/-/g, "+").replace(/_/g, "/"),
+          "base64"
+        ).toString("utf8")
+      ) as { sub?: string; email?: string }
+      return NextResponse.json({ id: json.sub, email: json.email, ok: true })
+    } catch {}
+  }
+  if (accessToken) return NextResponse.json({ ok: true })
+  return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
 }

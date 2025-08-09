@@ -13,31 +13,45 @@ export async function POST(req: Request) {
       { status: 500 }
     )
   }
-  const body = await req.text()
-  const url = `${backendBase}/v1/auth/login`
+
+  // Map incoming { email, password } to backend's { username, password }
+  let email = ""
+  let password = ""
+  try {
+    const json = await req.json()
+    email = json?.email || json?.username || ""
+    password = json?.password || ""
+  } catch {}
+  if (!email || !password) {
+    return NextResponse.json(
+      { error: "Email and password are required" },
+      { status: 400 }
+    )
+  }
+
+  const url = `${backendBase}/auth/login`
   const res = await fetch(url, {
     method: "POST",
-    headers: {
-      "content-type": req.headers.get("content-type") || "application/json"
-    },
-    body,
-    redirect: "manual"
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ username: email, password })
   })
 
-  const text = await res.text()
-  const nextRes = new NextResponse(text, {
-    status: res.status,
-    headers: {
-      "content-type": res.headers.get("content-type") || "application/json"
+  const data = await res.json().catch(() => null)
+  const nextRes = NextResponse.json(data ?? {}, { status: res.status })
+
+  // Set auth cookies if available
+  if (res.ok && data) {
+    const cookieOpts = {
+      httpOnly: true,
+      sameSite: "lax" as const,
+      secure: true,
+      path: "/"
     }
-  })
-
-  // Forward Set-Cookie headers
-  const setCookie = res.headers.get("set-cookie")
-  if (setCookie) {
-    nextRes.headers.append("set-cookie", setCookie)
-    // Also expose to browser if needed
-    nextRes.headers.append("access-control-expose-headers", "set-cookie")
+    if (data.idToken) nextRes.cookies.set("idToken", data.idToken, cookieOpts)
+    if (data.accessToken)
+      nextRes.cookies.set("accessToken", data.accessToken, cookieOpts)
+    if (data.refreshToken)
+      nextRes.cookies.set("refreshToken", data.refreshToken, cookieOpts)
   }
 
   return nextRes

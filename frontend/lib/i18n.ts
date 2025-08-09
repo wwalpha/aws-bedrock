@@ -1,7 +1,6 @@
 import i18nConfig from "@/i18nConfig"
 import { createInstance } from "i18next"
 import resourcesToBackend from "i18next-resources-to-backend"
-import { initReactI18next } from "@/node_modules/react-i18next/initReactI18next"
 
 declare global {
   // eslint-disable-next-line no-var
@@ -26,7 +25,13 @@ export default async function initTranslations(
 
   i18nInstance = i18nInstance || createInstance()
 
-  i18nInstance.use(initReactI18next)
+  // Only attach react-i18next on the client to avoid importing React bindings on the server
+  if (typeof window !== "undefined") {
+    const mod = await import("react-i18next")
+    if (mod?.initReactI18next) {
+      i18nInstance.use(mod.initReactI18next)
+    }
+  }
 
   if (!resources) {
     i18nInstance.use(

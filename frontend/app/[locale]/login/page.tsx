@@ -115,11 +115,11 @@ export default async function Login({
     // Delegate to backend if it supports sign up, otherwise skip
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/api/auth/login`,
+        `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/api/auth/signup`,
         {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ email, password, signup: true })
+          body: JSON.stringify({ email, password })
         }
       )
       if (!res.ok) {
@@ -132,7 +132,9 @@ export default async function Login({
       )
     }
 
-    return redirect("/")
+    return redirect(
+      "/login?message=Account created. Check your email for a confirmation code if required."
+    )
 
     // USE IF YOU WANT TO SEND EMAIL VERIFICATION, ALSO CHANGE TOML FILE
     // return redirect("/login?message=Check email to continue sign in process")

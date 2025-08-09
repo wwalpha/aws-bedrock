@@ -45,6 +45,14 @@ resource "aws_iam_role_policy_attachment" "ecs_task_exec_default" {
 }
 
 # ----------------------------------------------------------------------------------------------
+# AWS ECS Task Execution Policy - CloudWatch Logs Basic (CreateGroup, CreateStream, PutEvents)
+# ----------------------------------------------------------------------------------------------
+resource "aws_iam_role_policy_attachment" "ecs_task_exec_cloudwatch" {
+  role       = aws_iam_role.ecs_task_exec.name
+  policy_arn = aws_iam_policy.cloudwatch_logs_basic.arn
+}
+
+# ----------------------------------------------------------------------------------------------
 # AWS ECS Task Execution Policy - ECS Task Execution S3 Objects
 # ----------------------------------------------------------------------------------------------
 resource "aws_iam_role_policy" "ecs_task_exec_s3_objects" {
