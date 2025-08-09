@@ -1,12 +1,11 @@
-import { supabase } from "@/lib/supabase/browser-client"
-import { Tables } from "@/supabase/types"
+import { uploadFile } from "@/lib/api/upload"
+import { api } from "@/lib/api/client"
+import { Tables } from "@/types/db"
 
 export const uploadAssistantImage = async (
   assistant: Tables<"assistants">,
   image: File
 ) => {
-  const bucket = "assistant_images"
-
   const imageSizeLimit = 6000000 // 6MB
 
   if (image.size > imageSizeLimit) {
@@ -15,41 +14,24 @@ export const uploadAssistantImage = async (
 
   const currentPath = assistant.image_path
   let filePath = `${assistant.user_id}/${assistant.id}/${Date.now()}`
-
-  if (currentPath.length > 0) {
-    const { error: deleteError } = await supabase.storage
-      .from(bucket)
-      .remove([currentPath])
-
-    if (deleteError) {
-      throw new Error("Error deleting old image")
-    }
+  if (currentPath && currentPath.length > 0) {
+    try {
+      await api.post(`/v1/upload/delete`, {
+        path: currentPath,
+        scope: "assistants"
+      })
+    } catch {}
   }
-
-  const { error } = await supabase.storage
-    .from(bucket)
-    .upload(filePath, image, {
-      upsert: true
-    })
-
-  if (error) {
-    throw new Error("Error uploading image")
-  }
-
+  await uploadFile(`/assistants`, image, { path: filePath })
   return filePath
 }
 
 export const getAssistantImageFromStorage = async (filePath: string) => {
   try {
-    const { data, error } = await supabase.storage
-      .from("assistant_images")
-      .createSignedUrl(filePath, 60 * 60 * 24) // 24hrs
-
-    if (error) {
-      throw new Error("Error downloading assistant image")
-    }
-
-    return data.signedUrl
+    const res = await api.get(
+      `/v1/upload/signed-url?scope=assistants&path=${encodeURIComponent(filePath)}&ttl=86400`
+    )
+    return (res as any).url as string
   } catch (error) {
     console.error(error)
   }

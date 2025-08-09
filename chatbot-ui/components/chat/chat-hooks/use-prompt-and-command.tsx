@@ -3,7 +3,7 @@ import { getAssistantCollectionsByAssistantId } from "@/db/assistant-collections
 import { getAssistantFilesByAssistantId } from "@/db/assistant-files"
 import { getAssistantToolsByAssistantId } from "@/db/assistant-tools"
 import { getCollectionFilesByCollectionId } from "@/db/collection-files"
-import { Tables } from "@/supabase/types"
+import { Tables } from "@/types/db"
 import { LLMID } from "@/types"
 import { useContext } from "react"
 
@@ -111,11 +111,11 @@ export const usePromptAndCommand = () => {
     setNewMessageFiles(prev => {
       const newFiles = collectionFiles.files
         .filter(
-          file =>
+          (file: any) =>
             !prev.some(prevFile => prevFile.id === file.id) &&
             !chatFiles.some(chatFile => chatFile.id === file.id)
         )
-        .map(file => ({
+        .map((file: any) => ({
           id: file.id,
           name: file.name,
           type: file.type,

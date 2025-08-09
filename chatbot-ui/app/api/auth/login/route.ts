@@ -3,7 +3,8 @@ import { NextResponse } from "next/server"
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
-const backendBase = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || ""
+const backendBase =
+  process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || ""
 
 export async function POST(req: Request) {
   if (!backendBase) {
@@ -16,7 +17,9 @@ export async function POST(req: Request) {
   const url = `${backendBase}/v1/auth/login`
   const res = await fetch(url, {
     method: "POST",
-    headers: { "content-type": req.headers.get("content-type") || "application/json" },
+    headers: {
+      "content-type": req.headers.get("content-type") || "application/json"
+    },
     body,
     redirect: "manual"
   })

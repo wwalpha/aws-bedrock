@@ -1,4 +1,5 @@
-import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
+const base =
+  process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
 import { ChatSettings } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import OpenAI from "openai"
@@ -13,9 +14,12 @@ export async function POST(request: Request) {
   }
 
   try {
-    const profile = await getServerProfile()
-
-    checkApiKey(profile.perplexity_api_key, "Perplexity")
+    if (!base) throw new Error("BACKEND_URL not configured")
+    const res = await fetch(`${base}/v1/profile/me`, { credentials: "include" })
+    if (!res.ok) return new Response("Unauthorized", { status: 401 })
+    const profile = await res.json()
+    if (!profile.perplexity_api_key)
+      return new Response("Perplexity API Key not found", { status: 400 })
 
     // Perplexity is compatible the OpenAI SDK
     const perplexity = new OpenAI({

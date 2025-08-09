@@ -1,69 +1,32 @@
-import { supabase } from "@/lib/supabase/browser-client"
-import { TablesInsert } from "@/supabase/types"
+import { api } from "@/lib/api/client"
+import { TablesInsert } from "@/types/db"
 
 export const getCollectionFilesByCollectionId = async (
   collectionId: string
 ) => {
-  const { data: collectionFiles, error } = await supabase
-    .from("collections")
-    .select(
-      `
-        id, 
-        name, 
-        files ( id, name, type )
-      `
-    )
-    .eq("id", collectionId)
-    .single()
-
-  if (!collectionFiles) {
-    throw new Error(error.message)
-  }
-
-  return collectionFiles
+  return api.get(
+    `/v1/collections/${encodeURIComponent(collectionId)}?include=files`
+  )
 }
 
 export const createCollectionFile = async (
   collectionFile: TablesInsert<"collection_files">
 ) => {
-  const { data: createdCollectionFile, error } = await supabase
-    .from("collection_files")
-    .insert(collectionFile)
-    .select("*")
-
-  if (!createdCollectionFile) {
-    throw new Error(error.message)
-  }
-
-  return createdCollectionFile
+  return api.post(`/v1/collection_files`, collectionFile)
 }
 
 export const createCollectionFiles = async (
   collectionFiles: TablesInsert<"collection_files">[]
 ) => {
-  const { data: createdCollectionFiles, error } = await supabase
-    .from("collection_files")
-    .insert(collectionFiles)
-    .select("*")
-
-  if (!createdCollectionFiles) {
-    throw new Error(error.message)
-  }
-
-  return createdCollectionFiles
+  return api.post(`/v1/collection_files/bulk`, { items: collectionFiles })
 }
 
 export const deleteCollectionFile = async (
   collectionId: string,
   fileId: string
 ) => {
-  const { error } = await supabase
-    .from("collection_files")
-    .delete()
-    .eq("collection_id", collectionId)
-    .eq("file_id", fileId)
-
-  if (error) throw new Error(error.message)
-
+  await api.delete(
+    `/v1/collection_files?collection_id=${encodeURIComponent(collectionId)}&file_id=${encodeURIComponent(fileId)}`
+  )
   return true
 }

@@ -12,7 +12,7 @@ import {
   fetchOllamaModels,
   fetchOpenRouterModels
 } from "@/lib/models/fetch-models"
-import { Tables } from "@/supabase/types"
+import { Tables } from "@/types/db"
 import {
   ChatFile,
   ChatMessage,

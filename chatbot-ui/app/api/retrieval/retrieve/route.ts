@@ -1,7 +1,6 @@
 import { generateLocalEmbedding } from "@/lib/generate-local-embedding"
-import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
-import { Database } from "@/supabase/types"
-import { createClient } from "@supabase/supabase-js"
+const base =
+  process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
 import OpenAI from "openai"
 
 export async function POST(request: Request) {
@@ -16,19 +15,20 @@ export async function POST(request: Request) {
   const uniqueFileIds = [...new Set(fileIds)]
 
   try {
-    const supabaseAdmin = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
+    if (!base) throw new Error("BACKEND_URL not configured")
+    const profRes = await fetch(`${base}/v1/profile/me`, {
+      credentials: "include",
+      headers: { cookie: request.headers.get("cookie") || "" }
+    })
+    if (!profRes.ok) return new Response("Unauthorized", { status: 401 })
+    const profile = await profRes.json()
 
-    const profile = await getServerProfile()
-
+    // Validate required API keys client-side; backend should also enforce
     if (embeddingsProvider === "openai") {
-      if (profile.use_azure_openai) {
-        checkApiKey(profile.azure_openai_api_key, "Azure OpenAI")
-      } else {
-        checkApiKey(profile.openai_api_key, "OpenAI")
-      }
+      if (profile.use_azure_openai && !profile.azure_openai_api_key)
+        throw new Error("Azure OpenAI API Key not found")
+      if (!profile.use_azure_openai && !profile.openai_api_key)
+        throw new Error("OpenAI API Key not found")
     }
 
     let chunks: any[] = []
@@ -56,33 +56,41 @@ export async function POST(request: Request) {
 
       const openaiEmbedding = response.data.map(item => item.embedding)[0]
 
-      const { data: openaiFileItems, error: openaiError } =
-        await supabaseAdmin.rpc("match_file_items_openai", {
-          query_embedding: openaiEmbedding as any,
+      const matchRes = await fetch(`${base}/v1/retrieval/match`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "content-type": "application/json",
+          cookie: request.headers.get("cookie") || ""
+        },
+        body: JSON.stringify({
+          provider: "openai",
+          query_embedding: openaiEmbedding,
           match_count: sourceCount,
           file_ids: uniqueFileIds
         })
-
-      if (openaiError) {
-        throw openaiError
-      }
-
-      chunks = openaiFileItems
+      })
+      if (!matchRes.ok) throw new Error("Match failed")
+      chunks = await matchRes.json()
     } else if (embeddingsProvider === "local") {
       const localEmbedding = await generateLocalEmbedding(userInput)
 
-      const { data: localFileItems, error: localFileItemsError } =
-        await supabaseAdmin.rpc("match_file_items_local", {
-          query_embedding: localEmbedding as any,
+      const matchRes = await fetch(`${base}/v1/retrieval/match`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "content-type": "application/json",
+          cookie: request.headers.get("cookie") || ""
+        },
+        body: JSON.stringify({
+          provider: "local",
+          query_embedding: localEmbedding,
           match_count: sourceCount,
           file_ids: uniqueFileIds
         })
-
-      if (localFileItemsError) {
-        throw localFileItemsError
-      }
-
-      chunks = localFileItems
+      })
+      if (!matchRes.ok) throw new Error("Match failed")
+      chunks = await matchRes.json()
     }
 
     const mostSimilarChunks = chunks?.sort(

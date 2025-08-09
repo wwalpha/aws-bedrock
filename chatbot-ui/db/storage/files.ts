@@ -1,4 +1,5 @@
-import { supabase } from "@/lib/supabase/browser-client"
+import { api } from "@/lib/api/client"
+import { uploadFile as uploadBinary } from "@/lib/api/upload"
 import { toast } from "sonner"
 
 export const uploadFile = async (
@@ -20,38 +21,26 @@ export const uploadFile = async (
   }
 
   const filePath = `${payload.user_id}/${Buffer.from(payload.file_id).toString("base64")}`
-
-  const { error } = await supabase.storage
-    .from("files")
-    .upload(filePath, file, {
-      upsert: true
-    })
-
-  if (error) {
-    throw new Error("Error uploading file")
-  }
-
+  await uploadBinary(`/files`, file, { path: filePath, name: payload.name })
   return filePath
 }
 
 export const deleteFileFromStorage = async (filePath: string) => {
-  const { error } = await supabase.storage.from("files").remove([filePath])
-
-  if (error) {
+  try {
+    await api.post(`/v1/upload/delete`, { path: filePath, scope: "files" })
+  } catch (e) {
     toast.error("Failed to remove file!")
-    return
   }
 }
 
 export const getFileFromStorage = async (filePath: string) => {
-  const { data, error } = await supabase.storage
-    .from("files")
-    .createSignedUrl(filePath, 60 * 60 * 24) // 24hrs
-
-  if (error) {
-    console.error(`Error uploading file with path: ${filePath}`, error)
+  try {
+    const res = await api.get(
+      `/v1/upload/signed-url?scope=files&path=${encodeURIComponent(filePath)}&ttl=86400`
+    )
+    return (res as any).url as string
+  } catch (error) {
+    console.error(`Error fetching file with path: ${filePath}`, error)
     throw new Error("Error downloading file")
   }
-
-  return data.signedUrl
 }

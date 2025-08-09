@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/dialog"
 import { ChatbotUIContext } from "@/context/context"
 import { deleteFolder } from "@/db/folders"
-import { supabase } from "@/lib/supabase/browser-client"
-import { Tables } from "@/supabase/types"
+import { api } from "@/lib/api/client"
+import { Tables } from "@/types/db"
 import { ContentType } from "@/types"
 import { IconTrash } from "@tabler/icons-react"
 import { FC, useContext, useRef, useState } from "react"
@@ -83,13 +83,15 @@ export const DeleteFolder: FC<DeleteFolderProps> = ({
 
     if (!setStateFunction) return
 
-    const { error } = await supabase
-      .from(contentType)
-      .delete()
-      .eq("folder_id", folder.id)
-
-    if (error) {
-      toast.error(error.message)
+    try {
+      // Attempt backend bulk delete by folder id for the given content type
+      await api.delete(
+        `/v1/${encodeURIComponent(contentType)}?folder_id=${encodeURIComponent(
+          folder.id
+        )}`
+      )
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to delete items in folder")
     }
 
     setStateFunction((prevItems: any) =>

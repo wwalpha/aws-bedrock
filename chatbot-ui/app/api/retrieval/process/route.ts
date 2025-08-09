@@ -6,71 +6,71 @@ import {
   processPdf,
   processTxt
 } from "@/lib/retrieval/processing"
-import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
-import { Database } from "@/supabase/types"
-import { FileItemChunk } from "@/types"
-import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 import OpenAI from "openai"
 
+const base =
+  process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
+import { FileItemChunk } from "@/types"
+
 export async function POST(req: Request) {
   try {
-    const supabaseAdmin = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
-
-    const profile = await getServerProfile()
+    if (!base) {
+      return new NextResponse("BACKEND_URL not configured", { status: 500 })
+    }
+    const profileRes = await fetch(`${base}/v1/profile/me`, {
+      credentials: "include",
+      headers: { cookie: req.headers.get("cookie") || "" }
+    })
+    if (!profileRes.ok) {
+      return new NextResponse("Unauthorized", { status: 401 })
+    }
+    const profile = await profileRes.json()
 
     const formData = await req.formData()
 
     const file_id = formData.get("file_id") as string
     const embeddingsProvider = formData.get("embeddingsProvider") as string
 
-    const { data: fileMetadata, error: metadataError } = await supabaseAdmin
-      .from("files")
-      .select("*")
-      .eq("id", file_id)
-      .single()
-
-    if (metadataError) {
-      throw new Error(
-        `Failed to retrieve file metadata: ${metadataError.message}`
-      )
-    }
-
-    if (!fileMetadata) {
-      throw new Error("File not found")
-    }
+    const metaRes = await fetch(
+      `${base}/v1/files/${encodeURIComponent(file_id)}`,
+      {
+        credentials: "include",
+        headers: { cookie: req.headers.get("cookie") || "" }
+      }
+    )
+    if (!metaRes.ok) throw new Error("Failed to load file metadata")
+    const fileMetadata = await metaRes.json()
 
     if (fileMetadata.user_id !== profile.user_id) {
       throw new Error("Unauthorized")
     }
 
-    const { data: file, error: fileError } = await supabaseAdmin.storage
-      .from("files")
-      .download(fileMetadata.file_path)
+    // Fetch signed URL from backend, then download the file
+    const signedRes = await fetch(
+      `${base}/v1/upload/signed-url?scope=files&path=${encodeURIComponent(
+        fileMetadata.file_path
+      )}&ttl=300`,
+      {
+        credentials: "include",
+        headers: { cookie: req.headers.get("cookie") || "" }
+      }
+    )
+    if (!signedRes.ok) throw new Error("Failed to retrieve signed url")
+    const signed = await signedRes.json()
+    const fileRes = await fetch(signed.url)
+    if (!fileRes.ok) throw new Error("Failed to retrieve file from storage")
 
-    if (fileError)
-      throw new Error(`Failed to retrieve file: ${fileError.message}`)
-
-    const fileBuffer = Buffer.from(await file.arrayBuffer())
-    const blob = new Blob([fileBuffer])
+    const blob = await fileRes.blob()
     const fileExtension = fileMetadata.name.split(".").pop()?.toLowerCase()
 
     if (embeddingsProvider === "openai") {
-      try {
-        if (profile.use_azure_openai) {
-          checkApiKey(profile.azure_openai_api_key, "Azure OpenAI")
-        } else {
-          checkApiKey(profile.openai_api_key, "OpenAI")
-        }
-      } catch (error: any) {
-        error.message =
-          error.message +
-          ", make sure it is configured or else use local embeddings"
-        throw error
-      }
+      if (profile.use_azure_openai && !profile.azure_openai_api_key)
+        throw new Error(
+          "Azure OpenAI API Key not found, or use local embeddings"
+        )
+      if (!profile.use_azure_openai && !profile.openai_api_key)
+        throw new Error("OpenAI API Key not found, or use local embeddings")
     }
 
     let chunks: FileItemChunk[] = []
@@ -152,14 +152,27 @@ export async function POST(req: Request) {
           : null
     }))
 
-    await supabaseAdmin.from("file_items").upsert(file_items)
+    await fetch(`${base}/v1/file_items/bulk`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "content-type": "application/json",
+        cookie: req.headers.get("cookie") || ""
+      },
+      body: JSON.stringify({ items: file_items })
+    })
 
     const totalTokens = file_items.reduce((acc, item) => acc + item.tokens, 0)
 
-    await supabaseAdmin
-      .from("files")
-      .update({ tokens: totalTokens })
-      .eq("id", file_id)
+    await fetch(`${base}/v1/files/${encodeURIComponent(file_id)}`, {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "content-type": "application/json",
+        cookie: req.headers.get("cookie") || ""
+      },
+      body: JSON.stringify({ tokens: totalTokens })
+    })
 
     return new NextResponse("Embed Successful", {
       status: 200

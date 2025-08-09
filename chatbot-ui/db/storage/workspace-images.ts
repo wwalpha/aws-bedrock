@@ -1,12 +1,11 @@
-import { supabase } from "@/lib/supabase/browser-client"
-import { Tables } from "@/supabase/types"
+import { uploadFile } from "@/lib/api/upload"
+import { api } from "@/lib/api/client"
+import { Tables } from "@/types/db"
 
 export const uploadWorkspaceImage = async (
   workspace: Tables<"workspaces">,
   image: File
 ) => {
-  const bucket = "workspace_images"
-
   const imageSizeLimit = 6000000 // 6MB
 
   if (image.size > imageSizeLimit) {
@@ -14,42 +13,26 @@ export const uploadWorkspaceImage = async (
   }
 
   const currentPath = workspace.image_path
-  let filePath = `${workspace.user_id}/${workspace.id}/${Date.now()}`
-
-  if (currentPath.length > 0) {
-    const { error: deleteError } = await supabase.storage
-      .from(bucket)
-      .remove([currentPath])
-
-    if (deleteError) {
-      throw new Error("Error deleting old image")
-    }
+  const filePath = `${workspace.user_id}/${workspace.id}/${Date.now()}`
+  // Optionally request backend to delete old image
+  if (currentPath && currentPath.length > 0) {
+    try {
+      await api.post(`/v1/upload/delete`, {
+        path: currentPath,
+        scope: "workspaces"
+      })
+    } catch {}
   }
-
-  const { error } = await supabase.storage
-    .from(bucket)
-    .upload(filePath, image, {
-      upsert: true
-    })
-
-  if (error) {
-    throw new Error("Error uploading image")
-  }
-
+  await uploadFile(`/workspaces`, image, { path: filePath })
   return filePath
 }
 
 export const getWorkspaceImageFromStorage = async (filePath: string) => {
   try {
-    const { data, error } = await supabase.storage
-      .from("workspace_images")
-      .createSignedUrl(filePath, 60 * 60 * 24) // 24hrs
-
-    if (error) {
-      throw new Error("Error downloading workspace image")
-    }
-
-    return data.signedUrl
+    const res = await api.get(
+      `/v1/upload/signed-url?scope=workspaces&path=${encodeURIComponent(filePath)}&ttl=86400`
+    )
+    return res.url as string
   } catch (error) {
     console.error(error)
   }

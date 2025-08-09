@@ -1,50 +1,16 @@
-import { supabase } from "@/lib/supabase/browser-client"
-import { TablesInsert } from "@/supabase/types"
+import { api } from "@/lib/api/client"
+import { TablesInsert } from "@/types/db"
 
 export const getChatFilesByChatId = async (chatId: string) => {
-  const { data: chatFiles, error } = await supabase
-    .from("chats")
-    .select(
-      `
-      id, 
-      name, 
-      files (*)
-    `
-    )
-    .eq("id", chatId)
-    .single()
-
-  if (!chatFiles) {
-    throw new Error(error.message)
-  }
-
-  return chatFiles
+  return api.get(`/v1/chats/${encodeURIComponent(chatId)}?include=files`)
 }
 
 export const createChatFile = async (chatFile: TablesInsert<"chat_files">) => {
-  const { data: createdChatFile, error } = await supabase
-    .from("chat_files")
-    .insert(chatFile)
-    .select("*")
-
-  if (!createdChatFile) {
-    throw new Error(error.message)
-  }
-
-  return createdChatFile
+  return api.post(`/v1/chat_files`, chatFile)
 }
 
 export const createChatFiles = async (
   chatFiles: TablesInsert<"chat_files">[]
 ) => {
-  const { data: createdChatFiles, error } = await supabase
-    .from("chat_files")
-    .insert(chatFiles)
-    .select("*")
-
-  if (!createdChatFiles) {
-    throw new Error(error.message)
-  }
-
-  return createdChatFiles
+  return api.post(`/v1/chat_files/bulk`, { items: chatFiles })
 }

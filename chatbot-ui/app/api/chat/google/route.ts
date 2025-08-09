@@ -1,4 +1,5 @@
-import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
+const base =
+  process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
 import { ChatSettings } from "@/types"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
@@ -12,9 +13,12 @@ export async function POST(request: Request) {
   }
 
   try {
-    const profile = await getServerProfile()
-
-    checkApiKey(profile.google_gemini_api_key, "Google")
+    if (!base) throw new Error("BACKEND_URL not configured")
+    const res = await fetch(`${base}/v1/profile/me`, { credentials: "include" })
+    if (!res.ok) return new Response("Unauthorized", { status: 401 })
+    const profile = await res.json()
+    if (!profile.google_gemini_api_key)
+      return new Response("Google API Key not found", { status: 400 })
 
     const genAI = new GoogleGenerativeAI(profile.google_gemini_api_key || "")
     const googleModel = genAI.getGenerativeModel({ model: chatSettings.model })
@@ -44,7 +48,6 @@ export async function POST(request: Request) {
     return new Response(readableStream, {
       headers: { "Content-Type": "text/plain" }
     })
-
   } catch (error: any) {
     let errorMessage = error.message || "An unexpected error occurred"
     const errorCode = error.status || 500

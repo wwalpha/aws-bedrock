@@ -1,6 +1,4 @@
-import { Database } from "@/supabase/types"
 import { ChatSettings } from "@/types"
-import { createClient } from "@supabase/supabase-js"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import { ServerRuntime } from "next"
 import OpenAI from "openai"
@@ -17,20 +15,18 @@ export async function POST(request: Request) {
   }
 
   try {
-    const supabaseAdmin = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    const base =
+      process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
+    if (!base) throw new Error("BACKEND_URL not configured")
+    const res = await fetch(
+      `${base}/v1/models/${encodeURIComponent(customModelId)}`,
+      {
+        credentials: "include",
+        headers: { cookie: request.headers.get("cookie") || "" }
+      }
     )
-
-    const { data: customModel, error } = await supabaseAdmin
-      .from("models")
-      .select("*")
-      .eq("id", customModelId)
-      .single()
-
-    if (!customModel) {
-      throw new Error(error.message)
-    }
+    if (!res.ok) throw new Error("Custom model not found")
+    const customModel = await res.json()
 
     const custom = new OpenAI({
       apiKey: customModel.api_key || "",

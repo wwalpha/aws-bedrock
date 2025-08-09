@@ -10,7 +10,7 @@ import {
   fetchHostedModels,
   fetchOpenRouterModels
 } from "@/lib/models/fetch-models"
-import { TablesUpdate } from "@/supabase/types"
+import { TablesUpdate } from "@/types/db"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { APIStep } from "../../../components/setup/api-step"
@@ -109,13 +109,13 @@ export default function SetupPage() {
   }
 
   const handleSaveSetupSetting = async () => {
-  const meRes = await fetch(`/api/auth/me`, { cache: "no-store" })
-  if (!meRes.ok) {
+    const meRes = await fetch(`/api/auth/me`, { cache: "no-store" })
+    if (!meRes.ok) {
       return router.push("/login")
     }
 
-  const me = await meRes.json()
-  const user = { id: me?.user?.id || me?.id }
+    const me = await meRes.json()
+    const user = { id: me?.user?.id || me?.id }
     const profile = await getProfileByUserId(user.id)
 
     const updateProfilePayload: TablesUpdate<"profiles"> = {
@@ -144,7 +144,9 @@ export default function SetupPage() {
     setProfile(updatedProfile)
 
     const workspaces = await getWorkspacesByUserId(profile.user_id)
-    const homeWorkspace = workspaces.find(w => w.is_home)
+    const homeWorkspace = workspaces.find(
+      (w: { is_home: boolean }) => w.is_home
+    )
 
     // There will always be a home workspace
     setSelectedWorkspace(homeWorkspace!)

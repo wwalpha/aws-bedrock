@@ -1,13 +1,16 @@
 import { generateLocalEmbedding } from "@/lib/generate-local-embedding"
 import { processDocX } from "@/lib/retrieval/processing"
-import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
-import { Database } from "@/supabase/types"
 import { FileItemChunk } from "@/types"
-import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 import OpenAI from "openai"
 
+const base =
+  process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
+
 export async function POST(req: Request) {
+  if (!base) {
+    return new NextResponse("BACKEND_URL not configured", { status: 500 })
+  }
   const json = await req.json()
   const { text, fileId, embeddingsProvider, fileExtension } = json as {
     text: string
@@ -17,19 +20,18 @@ export async function POST(req: Request) {
   }
 
   try {
-    const supabaseAdmin = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
-
-    const profile = await getServerProfile()
+    const profileRes = await fetch(`${base}/v1/profile/me`, {
+      credentials: "include",
+      headers: { cookie: req.headers.get("cookie") || "" }
+    })
+    if (!profileRes.ok) return new NextResponse("Unauthorized", { status: 401 })
+    const profile = await profileRes.json()
 
     if (embeddingsProvider === "openai") {
-      if (profile.use_azure_openai) {
-        checkApiKey(profile.azure_openai_api_key, "Azure OpenAI")
-      } else {
-        checkApiKey(profile.openai_api_key, "OpenAI")
-      }
+      if (profile.use_azure_openai && !profile.azure_openai_api_key)
+        throw new Error("Azure OpenAI API Key not found")
+      if (!profile.use_azure_openai && !profile.openai_api_key)
+        throw new Error("OpenAI API Key not found")
     }
 
     let chunks: FileItemChunk[] = []
@@ -98,14 +100,27 @@ export async function POST(req: Request) {
           : null
     }))
 
-    await supabaseAdmin.from("file_items").upsert(file_items)
+    await fetch(`${base}/v1/file_items/bulk`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "content-type": "application/json",
+        cookie: req.headers.get("cookie") || ""
+      },
+      body: JSON.stringify({ items: file_items })
+    })
 
     const totalTokens = file_items.reduce((acc, item) => acc + item.tokens, 0)
 
-    await supabaseAdmin
-      .from("files")
-      .update({ tokens: totalTokens })
-      .eq("id", fileId)
+    await fetch(`${base}/v1/files/${encodeURIComponent(fileId)}`, {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "content-type": "application/json",
+        cookie: req.headers.get("cookie") || ""
+      },
+      body: JSON.stringify({ tokens: totalTokens })
+    })
 
     return new NextResponse("Embed Successful", {
       status: 200

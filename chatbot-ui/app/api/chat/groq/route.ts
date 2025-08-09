@@ -1,5 +1,4 @@
 import { CHAT_SETTING_LIMITS } from "@/lib/chat-setting-limits"
-import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { ChatSettings } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import OpenAI from "openai"
@@ -13,9 +12,14 @@ export async function POST(request: Request) {
   }
 
   try {
-    const profile = await getServerProfile()
-
-    checkApiKey(profile.groq_api_key, "G")
+    const base =
+      process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
+    if (!base) throw new Error("BACKEND_URL not configured")
+    const res = await fetch(`${base}/v1/profile/me`, { credentials: "include" })
+    if (!res.ok) return new Response("Unauthorized", { status: 401 })
+    const profile = await res.json()
+    if (!profile.groq_api_key)
+      return new Response("Groq API Key not found", { status: 400 })
 
     // Groq is compatible with the OpenAI SDK
     const groq = new OpenAI({

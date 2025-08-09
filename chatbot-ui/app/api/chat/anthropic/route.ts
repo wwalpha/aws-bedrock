@@ -1,5 +1,4 @@
 import { CHAT_SETTING_LIMITS } from "@/lib/chat-setting-limits"
-import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { getBase64FromDataURL, getMediaTypeFromDataURL } from "@/lib/utils"
 import { ChatSettings } from "@/types"
 import Anthropic from "@anthropic-ai/sdk"
@@ -16,9 +15,14 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const profile = await getServerProfile()
-
-    checkApiKey(profile.anthropic_api_key, "Anthropic")
+    const base =
+      process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
+    if (!base) throw new Error("BACKEND_URL not configured")
+    const res = await fetch(`${base}/v1/profile/me`, { credentials: "include" })
+    if (!res.ok) return new NextResponse("Unauthorized", { status: 401 })
+    const profile = await res.json()
+    if (!profile.anthropic_api_key)
+      return new NextResponse("Anthropic API Key not found", { status: 400 })
 
     let ANTHROPIC_FORMATTED_MESSAGES: any = messages.slice(1)
 

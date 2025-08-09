@@ -1,4 +1,5 @@
-import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
+const base =
+  process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || ""
 import { ChatAPIPayload } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import OpenAI from "openai"
@@ -11,9 +12,12 @@ export async function POST(request: Request) {
   const { chatSettings, messages } = json as ChatAPIPayload
 
   try {
-    const profile = await getServerProfile()
-
-    checkApiKey(profile.azure_openai_api_key, "Azure OpenAI")
+    if (!base) throw new Error("BACKEND_URL not configured")
+    const res = await fetch(`${base}/v1/profile/me`, { credentials: "include" })
+    if (!res.ok) return new Response("Unauthorized", { status: 401 })
+    const profile = await res.json()
+    if (!profile.azure_openai_api_key)
+      return new Response("Azure OpenAI API Key not found", { status: 400 })
 
     const ENDPOINT = profile.azure_openai_endpoint
     const KEY = profile.azure_openai_api_key

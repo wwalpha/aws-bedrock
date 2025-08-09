@@ -1,71 +1,26 @@
-import { supabase } from "@/lib/supabase/browser-client"
-import { TablesInsert, TablesUpdate } from "@/supabase/types"
+import { api } from "@/lib/api/client"
+import { TablesInsert, TablesUpdate } from "@/types/db"
 
 export const getProfileByUserId = async (userId: string) => {
-  const { data: profile, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("user_id", userId)
-    .single()
-
-  if (!profile) {
-    throw new Error(error.message)
-  }
-
-  return profile
+  return api.get(`/v1/profiles?user_id=${encodeURIComponent(userId)}&single=1`)
 }
 
 export const getProfilesByUserId = async (userId: string) => {
-  const { data: profiles, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("user_id", userId)
-
-  if (!profiles) {
-    throw new Error(error.message)
-  }
-
-  return profiles
+  return api.get(`/v1/profiles?user_id=${encodeURIComponent(userId)}`)
 }
 
 export const createProfile = async (profile: TablesInsert<"profiles">) => {
-  const { data: createdProfile, error } = await supabase
-    .from("profiles")
-    .insert([profile])
-    .select("*")
-    .single()
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
-  return createdProfile
+  return api.post(`/v1/profiles`, profile)
 }
 
 export const updateProfile = async (
   profileId: string,
   profile: TablesUpdate<"profiles">
 ) => {
-  const { data: updatedProfile, error } = await supabase
-    .from("profiles")
-    .update(profile)
-    .eq("id", profileId)
-    .select("*")
-    .single()
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
-  return updatedProfile
+  return api.put(`/v1/profiles/${encodeURIComponent(profileId)}`, profile)
 }
 
 export const deleteProfile = async (profileId: string) => {
-  const { error } = await supabase.from("profiles").delete().eq("id", profileId)
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
+  await api.delete(`/v1/profiles/${encodeURIComponent(profileId)}`)
   return true
 }

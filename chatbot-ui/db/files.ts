@@ -1,61 +1,21 @@
-import { supabase } from "@/lib/supabase/browser-client"
-import { TablesInsert, TablesUpdate } from "@/supabase/types"
+import { api } from "@/lib/api/client"
+import { TablesInsert, TablesUpdate } from "@/types/db"
 import mammoth from "mammoth"
 import { toast } from "sonner"
 import { uploadFile } from "./storage/files"
 
 export const getFileById = async (fileId: string) => {
-  const { data: file, error } = await supabase
-    .from("files")
-    .select("*")
-    .eq("id", fileId)
-    .single()
-
-  if (!file) {
-    throw new Error(error.message)
-  }
-
-  return file
+  return api.get(`/v1/files/${encodeURIComponent(fileId)}`)
 }
 
 export const getFileWorkspacesByWorkspaceId = async (workspaceId: string) => {
-  const { data: workspace, error } = await supabase
-    .from("workspaces")
-    .select(
-      `
-      id,
-      name,
-      files (*)
-    `
-    )
-    .eq("id", workspaceId)
-    .single()
-
-  if (!workspace) {
-    throw new Error(error.message)
-  }
-
-  return workspace
+  return api.get(
+    `/v1/workspaces/${encodeURIComponent(workspaceId)}?include=files`
+  )
 }
 
 export const getFileWorkspacesByFileId = async (fileId: string) => {
-  const { data: file, error } = await supabase
-    .from("files")
-    .select(
-      `
-      id, 
-      name, 
-      workspaces (*)
-    `
-    )
-    .eq("id", fileId)
-    .single()
-
-  if (!file) {
-    throw new Error(error.message)
-  }
-
-  return file
+  return api.get(`/v1/files/${encodeURIComponent(fileId)}?include=workspaces`)
 }
 
 export const createFileBasedOnExtension = async (
@@ -94,22 +54,17 @@ export const createFile = async (
   let validFilename = fileRecord.name.replace(/[^a-z0-9.]/gi, "_").toLowerCase()
   const extension = file.name.split(".").pop()
   const extensionIndex = validFilename.lastIndexOf(".")
-  const baseName = validFilename.substring(0, (extensionIndex < 0) ? undefined : extensionIndex)
+  const baseName = validFilename.substring(
+    0,
+    extensionIndex < 0 ? undefined : extensionIndex
+  )
   const maxBaseNameLength = 100 - (extension?.length || 0) - 1
   if (baseName.length > maxBaseNameLength) {
     fileRecord.name = baseName.substring(0, maxBaseNameLength) + "." + extension
   } else {
     fileRecord.name = baseName + "." + extension
   }
-  const { data: createdFile, error } = await supabase
-    .from("files")
-    .insert([fileRecord])
-    .select("*")
-    .single()
-
-  if (error) {
-    throw new Error(error.message)
-  }
+  const createdFile = await api.post(`/v1/files`, fileRecord)
 
   await createFileWorkspace({
     user_id: createdFile.user_id,
@@ -123,9 +78,7 @@ export const createFile = async (
     file_id: createdFile.name
   })
 
-  await updateFile(createdFile.id, {
-    file_path: filePath
-  })
+  await updateFile(createdFile.id, { file_path: filePath })
 
   const formData = new FormData()
   formData.append("file_id", createdFile.id)
@@ -161,15 +114,7 @@ export const createDocXFile = async (
   workspace_id: string,
   embeddingsProvider: "openai" | "local"
 ) => {
-  const { data: createdFile, error } = await supabase
-    .from("files")
-    .insert([fileRecord])
-    .select("*")
-    .single()
-
-  if (error) {
-    throw new Error(error.message)
-  }
+  const createdFile = await api.post(`/v1/files`, fileRecord)
 
   await createFileWorkspace({
     user_id: createdFile.user_id,
@@ -183,9 +128,7 @@ export const createDocXFile = async (
     file_id: createdFile.name
   })
 
-  await updateFile(createdFile.id, {
-    file_path: filePath
-  })
+  await updateFile(createdFile.id, { file_path: filePath })
 
   const response = await fetch("/api/retrieval/process/docx", {
     method: "POST",
@@ -221,23 +164,14 @@ export const createFiles = async (
   files: TablesInsert<"files">[],
   workspace_id: string
 ) => {
-  const { data: createdFiles, error } = await supabase
-    .from("files")
-    .insert(files)
-    .select("*")
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
+  const createdFiles = await api.post(`/v1/files/bulk`, { items: files })
   await createFileWorkspaces(
-    createdFiles.map(file => ({
+    createdFiles.map((file: any) => ({
       user_id: file.user_id,
       file_id: file.id,
       workspace_id
     }))
   )
-
   return createdFiles
 }
 
@@ -246,57 +180,24 @@ export const createFileWorkspace = async (item: {
   file_id: string
   workspace_id: string
 }) => {
-  const { data: createdFileWorkspace, error } = await supabase
-    .from("file_workspaces")
-    .insert([item])
-    .select("*")
-    .single()
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
-  return createdFileWorkspace
+  return api.post(`/v1/file_workspaces`, item)
 }
 
 export const createFileWorkspaces = async (
   items: { user_id: string; file_id: string; workspace_id: string }[]
 ) => {
-  const { data: createdFileWorkspaces, error } = await supabase
-    .from("file_workspaces")
-    .insert(items)
-    .select("*")
-
-  if (error) throw new Error(error.message)
-
-  return createdFileWorkspaces
+  return api.post(`/v1/file_workspaces/bulk`, { items })
 }
 
 export const updateFile = async (
   fileId: string,
   file: TablesUpdate<"files">
 ) => {
-  const { data: updatedFile, error } = await supabase
-    .from("files")
-    .update(file)
-    .eq("id", fileId)
-    .select("*")
-    .single()
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
-  return updatedFile
+  return api.put(`/v1/files/${encodeURIComponent(fileId)}`, file)
 }
 
 export const deleteFile = async (fileId: string) => {
-  const { error } = await supabase.from("files").delete().eq("id", fileId)
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
+  await api.delete(`/v1/files/${encodeURIComponent(fileId)}`)
   return true
 }
 
@@ -304,13 +205,8 @@ export const deleteFileWorkspace = async (
   fileId: string,
   workspaceId: string
 ) => {
-  const { error } = await supabase
-    .from("file_workspaces")
-    .delete()
-    .eq("file_id", fileId)
-    .eq("workspace_id", workspaceId)
-
-  if (error) throw new Error(error.message)
-
+  await api.delete(
+    `/v1/file_workspaces?file_id=${encodeURIComponent(fileId)}&workspace_id=${encodeURIComponent(workspaceId)}`
+  )
   return true
 }
