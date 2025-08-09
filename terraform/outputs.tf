@@ -15,7 +15,7 @@ output "cognito_user_pool_id" {
 }
 
 # ----------------------------------------------------------------------------------------------
-# Cognito User Pool ID
+# Cognito User Pool Domain
 # ----------------------------------------------------------------------------------------------
 output "cognito_user_pool_domain" {
   value = "https://${local.prefix}${aws_cognito_user_pool_domain.this.domain}.auth.${local.region}.amazoncognito.com"
@@ -29,11 +29,31 @@ output "api_gateway_url" {
 }
 
 # ----------------------------------------------------------------------------------------------
-# API Gateway URL
+# DynamoDB Chat History Table Name
 # ----------------------------------------------------------------------------------------------
 output "table_name_chat_history" {
   value = aws_dynamodb_table.chat_history.name
 }
-# output "test" {
-#   value = aws_ecs_service.auth
-# }
+
+# ----------------------------------------------------------------------------------------------
+# ECR Repositories
+# ----------------------------------------------------------------------------------------------
+output "ecr_auth_repository_url" {
+  value       = module.ecr_repo_auth.repository_url
+  description = "ECR repository URL for auth"
+}
+
+output "ecr_chat_repository_url" {
+  value       = module.ecr_repo_chat.repository_url
+  description = "ECR repository URL for chat"
+}
+
+output "ecr_auth_repository_name" {
+  value       = "${var.project_name}/auth"
+  description = "ECR repository name for auth"
+}
+
+output "ecr_chat_repository_name" {
+  value       = "${var.project_name}/chat"
+  description = "ECR repository name for chat"
+}
