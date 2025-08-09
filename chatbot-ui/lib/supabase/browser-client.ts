@@ -13,7 +13,10 @@ export const supabase = (() => {
         )
       },
       auth: {
-        getUser: async () => ({ data: { user: null } })
+        getUser: async () => ({ data: { user: null } }),
+        getSession: async () => ({ data: { session: null } }),
+        signOut: async () => ({ data: {}, error: null }),
+        updateUser: async () => ({ data: {}, error: null })
       }
     } as unknown as ReturnType<typeof createBrowserClient<Database>>
   }
