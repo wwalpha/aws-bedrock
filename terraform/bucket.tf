@@ -33,3 +33,20 @@ EOT
     ]
   }
 }
+
+# ----------------------------------------------------------------------------------------------
+# Chat Service Environment file
+# ----------------------------------------------------------------------------------------------
+resource "aws_s3_object" "chat" {
+  bucket  = aws_s3_bucket.materials.bucket
+  key     = local.ecs_service_env_file_chat
+  content = <<EOT
+TZ=Asia/Tokyo
+EOT
+
+  lifecycle {
+    ignore_changes = [
+      content,
+    ]
+  }
+}

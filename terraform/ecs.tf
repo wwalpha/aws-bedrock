@@ -66,7 +66,7 @@ resource "aws_ecs_service" "auth" {
   name                               = local.ecs_service_name_auth
   cluster                            = aws_ecs_cluster.this.id
   desired_count                      = 0
-  platform_version                   = "LATEST"
+  platform_version                   = "1.4.0"
   task_definition                    = data.aws_ecs_task_definition.auth.arn
   deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 100
@@ -151,7 +151,7 @@ resource "aws_ecs_task_definition" "chat" {
       container_name  = local.ecs_container_name_chat
       container_image = "${module.ecr_repo_chat.repository_url}:latest"
       container_port  = 8080
-      env_file_arn    = "${aws_s3_bucket.materials.arn}/${aws_s3_object.auth.key}"
+      env_file_arn    = "${aws_s3_bucket.materials.arn}/${aws_s3_object.chat.key}"
     }
   )
 }

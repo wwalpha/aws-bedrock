@@ -28,6 +28,12 @@ output "api_gateway_url" {
   value = aws_apigatewayv2_stage.this.invoke_url
 }
 
+# ----------------------------------------------------------------------------------------------
+# API Gateway URL
+# ----------------------------------------------------------------------------------------------
+output "table_name_chat_history" {
+  value = aws_dynamodb_table.chat_history.name
+}
 # output "test" {
 #   value = aws_ecs_service.auth
 # }
