@@ -1,9 +1,10 @@
+import { BACKEND_URL } from "@/lib/consts"
 import { NextResponse } from "next/server"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
-const backendBase = process.env.BACKEND_URL || ""
+const backendBase = BACKEND_URL
 
 export async function POST(req: Request) {
   const { username, confirmationCode } = await req.json().catch(() => ({}))
