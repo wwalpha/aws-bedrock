@@ -4,6 +4,19 @@ import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 
 export async function getServerProfile() {
+  const hasSupabase =
+    Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
+    Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+
+  if (!hasSupabase) {
+    // Build a minimal profile object using env keys when Supabase is disabled
+    const envOnlyProfile: any = {
+      id: "env-profile",
+      user_id: null
+    }
+    return addApiKeysToProfile(envOnlyProfile)
+  }
+
   const cookieStore = cookies()
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -1,7 +1,7 @@
 # A string used to distinguish different Supabase projects on the same host. Defaults to the
 # working directory name when running `supabase init`.
 project_id = "chatbotui"
-
+// removed - Supabase local config is not used in this project
 [api]
 # Port to use for the API URL.
 port = 54321

@@ -1,6 +1,6 @@
 -- Enable HTTP extension
 create extension http with schema extensions;
-
+-- removed - Supabase migrations not used
 -- Enable vector extension
 create extension vector with schema extensions;
 

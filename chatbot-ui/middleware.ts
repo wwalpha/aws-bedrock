@@ -8,6 +8,19 @@ export async function middleware(request: NextRequest) {
   if (i18nResult) return i18nResult
 
   try {
+    // If Supabase env is not configured, skip auth/session handling
+    const hasSupabase =
+      Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
+      Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+
+    if (!hasSupabase) {
+      return NextResponse.next({
+        request: {
+          headers: request.headers
+        }
+      })
+    }
+
     const { supabase, response } = createClient(request)
 
     const session = await supabase.auth.getSession()

@@ -1,5 +1,5 @@
 --------------- FOLDERS ---------------
-
+-- removed - Supabase migrations not used
 -- TABLE --
 
 CREATE TABLE IF NOT EXISTS folders (
