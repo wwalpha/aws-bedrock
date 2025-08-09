@@ -1,8 +1,17 @@
 import { NextResponse } from "next/server"
 
+export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
+
 const backendBase = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || ""
 
 export async function POST(req: Request) {
+  if (!backendBase) {
+    return NextResponse.json(
+      { error: "BACKEND_URL not configured" },
+      { status: 500 }
+    )
+  }
   const body = await req.text()
   const url = `${backendBase}/v1/auth/login`
   const res = await fetch(url, {
