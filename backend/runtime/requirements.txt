@@ -1,0 +1,11 @@
+awscli==1.29.60
+boto3==1.38.40
+langchain==0.3.25
+langchain-aws==0.2.26
+langchain-community==0.3.25
+langchain-core==0.3.65
+langchain-openai==0.3.24
+numpy==1.26.4
+openai==1.88.0
+python-dateutil==2.8.2
+streamlit==1.46.0
