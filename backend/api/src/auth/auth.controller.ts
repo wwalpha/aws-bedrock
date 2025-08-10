@@ -9,11 +9,37 @@ import {
   SignupRequest,
   SignupResponse,
   LogoutResponse,
+  RefreshTokenRequest,
+  RefreshTokenResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
 } from './auth.interfaces';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Post('refresh')
+  async refresh(@Body() body: RefreshTokenRequest): Promise<RefreshTokenResponse> {
+    if (!body.refreshToken) {
+      throw new BadRequestException('Refresh token is required');
+    }
+    const response = await this.authService.refresh(body.refreshToken);
+    return {
+      accessToken: response.AccessToken!,
+      idToken: response.IdToken!,
+      refreshToken: response.RefreshToken!,
+    };
+  }
+
+  @Post('reset')
+  async reset(@Body() body: ResetPasswordRequest): Promise<ResetPasswordResponse> {
+    if (!body.username) {
+      throw new BadRequestException('Username (email) is required');
+    }
+    await this.authService.resetPassword(body.username);
+    return { message: 'Password reset initiated' };
+  }
 
   @Post('login')
   async login(@Body() body: LoginRequest): Promise<LoginResponse> {
