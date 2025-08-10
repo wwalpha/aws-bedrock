@@ -23,6 +23,39 @@ export class AuthService {
   });
   COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID;
 
+
+  async refresh(refreshToken: string): Promise<AuthenticationResultType> {
+    if (!this.COGNITO_CLIENT_ID) {
+      throw new BadRequestException('COGNITO_CLIENT_ID is not configured');
+    }
+    const params: InitiateAuthCommandInput = {
+      AuthFlow: 'REFRESH_TOKEN_AUTH',
+      ClientId: this.COGNITO_CLIENT_ID,
+      AuthParameters: {
+        REFRESH_TOKEN: refreshToken,
+      },
+    };
+    const command = new InitiateAuthCommand(params);
+    const response = await this.cognitoClient.send(command);
+    const result = response.AuthenticationResult;
+    if (!result) {
+      throw new UnauthorizedException('Token refresh failed.');
+    }
+    return result;
+  }
+
+  async resetPassword(username: string): Promise<void> {
+    if (!this.COGNITO_CLIENT_ID) {
+      throw new BadRequestException('COGNITO_CLIENT_ID is not configured');
+    }
+    const { ForgotPasswordCommand } = await import('@aws-sdk/client-cognito-identity-provider');
+    const command = new ForgotPasswordCommand({
+      ClientId: this.COGNITO_CLIENT_ID,
+      Username: username,
+    });
+    await this.cognitoClient.send(command);
+  }
+
   /**
    * ユーザーをログインさせます。
    * @param username - ユーザー名

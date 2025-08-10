@@ -1,3 +1,20 @@
+export interface RefreshTokenRequest {
+  refreshToken: string;
+}
+
+export interface RefreshTokenResponse {
+  accessToken: string;
+  idToken: string;
+  refreshToken: string;
+}
+
+export interface ResetPasswordRequest {
+  username: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+}
 export interface LoginRequest {
   // username is the user's email address
   username: string;
