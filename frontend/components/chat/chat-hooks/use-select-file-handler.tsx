@@ -1,8 +1,8 @@
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { createDocXFile, createFile } from "@/db/files"
 import { LLM_LIST } from "@/lib/models/llm/llm-list"
 import mammoth from "mammoth"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export const ACCEPTED_FILE_TYPES = [
@@ -24,7 +24,16 @@ export const useSelectFileHandler = () => {
     setShowFilesDisplay,
     setFiles,
     setUseRetrieval
-  } = useContext(ChatbotUIContext)
+  } = useChatStore(s => ({
+    selectedWorkspace: s.selectedWorkspace,
+    profile: s.profile,
+    chatSettings: s.chatSettings,
+    setNewMessageImages: s.setNewMessageImages,
+    setNewMessageFiles: s.setNewMessageFiles,
+    setShowFilesDisplay: s.setShowFilesDisplay,
+    setFiles: s.setFiles,
+    setUseRetrieval: s.setUseRetrieval
+  }))
 
   const [filesToAccept, setFilesToAccept] = useState(ACCEPTED_FILE_TYPES)
 
@@ -63,9 +72,9 @@ export const useSelectFileHandler = () => {
           simplifiedFileType = "pdf"
         } else if (
           simplifiedFileType.includes(
-            "vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-              "docx"
-          )
+            "vnd.openxmlformats-officedocument.wordprocessingml.document"
+          ) ||
+          simplifiedFileType.includes("docx")
         ) {
           simplifiedFileType = "docx"
         }
@@ -83,9 +92,9 @@ export const useSelectFileHandler = () => {
         // Handle docx files
         if (
           file.type.includes(
-            "vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-              "docx"
-          )
+            "vnd.openxmlformats-officedocument.wordprocessingml.document"
+          ) ||
+          file.type.includes("docx")
         ) {
           const arrayBuffer = await file.arrayBuffer()
           const result = await mammoth.extractRawText({

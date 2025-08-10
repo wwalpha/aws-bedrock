@@ -1,4 +1,4 @@
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { updateAssistant } from "@/db/assistants"
 import { updateChat } from "@/db/chats"
 import { updateCollection } from "@/db/collections"
@@ -10,7 +10,7 @@ import { updateTool } from "@/db/tools"
 import { cn } from "@/lib/utils"
 import { Tables } from "@/types/db"
 import { ContentType, DataItemType, DataListType } from "@/types"
-import { FC, useContext, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 import { Separator } from "../ui/separator"
 import { AssistantItem } from "./items/assistants/assistant-item"
 import { ChatItem } from "./items/chat/chat-item"
@@ -33,16 +33,14 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
   data,
   folders
 }) => {
-  const {
-    setChats,
-    setPresets,
-    setPrompts,
-    setFiles,
-    setCollections,
-    setAssistants,
-    setTools,
-    setModels
-  } = useContext(ChatbotUIContext)
+  const setChats = useChatStore(s => s.setChats)
+  const setPresets = useChatStore(s => s.setPresets)
+  const setPrompts = useChatStore(s => s.setPrompts)
+  const setFiles = useChatStore(s => s.setFiles)
+  const setCollections = useChatStore(s => s.setCollections)
+  const setAssistants = useChatStore(s => s.setAssistants)
+  const setTools = useChatStore(s => s.setTools)
+  const setModels = useChatStore(s => s.setModels)
 
   const divRef = useRef<HTMLDivElement>(null)
 

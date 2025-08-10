@@ -1,7 +1,7 @@
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { Tables } from "@/types/db"
 import { IconBooks } from "@tabler/icons-react"
-import { FC, useContext, useEffect, useRef } from "react"
+import { FC, useEffect, useRef } from "react"
 import { FileIcon } from "../ui/file-icon"
 
 interface FilePickerProps {
@@ -25,8 +25,8 @@ export const FilePicker: FC<FilePickerProps> = ({
   onSelectCollection,
   isFocused
 }) => {
-  const { files, collections, setIsFilePickerOpen } =
-    useContext(ChatbotUIContext)
+  const files = useChatStore(s => s.files)
+  const collections = useChatStore(s => s.collections)
 
   const itemsRef = useRef<(HTMLDivElement | null)[]>([])
 
@@ -67,7 +67,7 @@ export const FilePicker: FC<FilePickerProps> = ({
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "Escape") {
         e.preventDefault()
-        setIsFilePickerOpen(false)
+        handleOpenChange(false)
       } else if (e.key === "Backspace") {
         e.preventDefault()
       } else if (e.key === "Enter") {

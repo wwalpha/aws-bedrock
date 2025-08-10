@@ -1,4 +1,4 @@
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { getAssistantCollectionsByAssistantId } from "@/db/assistant-collections"
 import { getAssistantFilesByAssistantId } from "@/db/assistant-files"
 import { getAssistantToolsByAssistantId } from "@/db/assistant-tools"
@@ -9,7 +9,7 @@ import { Tables } from "@/types/db"
 import { LLMID } from "@/types"
 import { IconChevronDown, IconRobotFace } from "@tabler/icons-react"
 import Image from "next/image"
-import { FC, useContext, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { ModelIcon } from "../models/model-icon"
 import { Button } from "../ui/button"
@@ -29,21 +29,19 @@ export const QuickSettings: FC<QuickSettingsProps> = ({}) => {
 
   useHotkey("p", () => setIsOpen(prevState => !prevState))
 
-  const {
-    presets,
-    assistants,
-    selectedAssistant,
-    selectedPreset,
-    chatSettings,
-    setSelectedPreset,
-    setSelectedAssistant,
-    setChatSettings,
-    assistantImages,
-    setChatFiles,
-    setSelectedTools,
-    setShowFilesDisplay,
-    selectedWorkspace
-  } = useContext(ChatbotUIContext)
+  const presets = useChatStore(s => s.presets)
+  const assistants = useChatStore(s => s.assistants)
+  const selectedAssistant = useChatStore(s => s.selectedAssistant)
+  const selectedPreset = useChatStore(s => s.selectedPreset)
+  const chatSettings = useChatStore(s => s.chatSettings)
+  const setSelectedPreset = useChatStore(s => s.setSelectedPreset)
+  const setSelectedAssistant = useChatStore(s => s.setSelectedAssistant)
+  const setChatSettings = useChatStore(s => s.setChatSettings)
+  const assistantImages = useChatStore(s => s.assistantImages)
+  const setChatFiles = useChatStore(s => s.setChatFiles)
+  const setSelectedTools = useChatStore(s => s.setSelectedTools)
+  const setShowFilesDisplay = useChatStore(s => s.setShowFilesDisplay)
+  const selectedWorkspace = useChatStore(s => s.selectedWorkspace)
 
   const inputRef = useRef<HTMLInputElement>(null)
 

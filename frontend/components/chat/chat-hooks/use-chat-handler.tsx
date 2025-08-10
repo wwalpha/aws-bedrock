@@ -1,4 +1,4 @@
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { getAssistantCollectionsByAssistantId } from "@/db/assistant-collections"
 import { getAssistantFilesByAssistantId } from "@/db/assistant-files"
 import { getAssistantToolsByAssistantId } from "@/db/assistant-tools"
@@ -9,7 +9,7 @@ import { buildFinalMessages } from "@/lib/build-prompt"
 import { Tables } from "@/types/db"
 import { ChatMessage, ChatPayload, LLMID, ModelProvider } from "@/types"
 import { useRouter } from "next/navigation"
-import { useContext, useEffect, useRef } from "react"
+import { useEffect, useRef } from "react"
 import { LLM_LIST } from "../../../lib/models/llm/llm-list"
 import {
   createTempMessages,
@@ -24,7 +24,6 @@ import {
 
 export const useChatHandler = () => {
   const router = useRouter()
-
   const {
     userInput,
     chatFiles,
@@ -67,7 +66,49 @@ export const useChatHandler = () => {
     isPromptPickerOpen,
     isFilePickerOpen,
     isToolPickerOpen
-  } = useContext(ChatbotUIContext)
+  } = useChatStore(s => ({
+    userInput: s.userInput,
+    chatFiles: s.chatFiles,
+    setUserInput: s.setUserInput,
+    setNewMessageImages: s.setNewMessageImages,
+    profile: s.profile,
+    setIsGenerating: s.setIsGenerating,
+    setChatMessages: s.setChatMessages,
+    setFirstTokenReceived: s.setFirstTokenReceived,
+    selectedChat: s.selectedChat,
+    selectedWorkspace: s.selectedWorkspace,
+    setSelectedChat: s.setSelectedChat,
+    setChats: s.setChats,
+    setSelectedTools: s.setSelectedTools,
+    availableLocalModels: s.availableLocalModels,
+    availableOpenRouterModels: s.availableOpenRouterModels,
+    abortController: s.abortController,
+    setAbortController: s.setAbortController,
+    chatSettings: s.chatSettings,
+    newMessageImages: s.newMessageImages,
+    selectedAssistant: s.selectedAssistant,
+    chatMessages: s.chatMessages,
+    chatImages: s.chatImages,
+    setChatImages: s.setChatImages,
+    setChatFiles: s.setChatFiles,
+    setNewMessageFiles: s.setNewMessageFiles,
+    setShowFilesDisplay: s.setShowFilesDisplay,
+    newMessageFiles: s.newMessageFiles,
+    chatFileItems: s.chatFileItems,
+    setChatFileItems: s.setChatFileItems,
+    setToolInUse: s.setToolInUse,
+    useRetrieval: s.useRetrieval,
+    sourceCount: s.sourceCount,
+    setIsPromptPickerOpen: s.setIsPromptPickerOpen,
+    setIsFilePickerOpen: s.setIsFilePickerOpen,
+    selectedTools: s.selectedTools,
+    selectedPreset: s.selectedPreset,
+    setChatSettings: s.setChatSettings,
+    models: s.models,
+    isPromptPickerOpen: s.isPromptPickerOpen,
+    isFilePickerOpen: s.isFilePickerOpen,
+    isToolPickerOpen: s.isToolPickerOpen
+  }))
 
   const chatInputRef = useRef<HTMLTextAreaElement>(null)
 

@@ -1,4 +1,4 @@
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { createAssistants } from "@/db/assistants"
 import { createChats } from "@/db/chats"
 import { createCollections } from "@/db/collections"
@@ -7,7 +7,7 @@ import { createPresets } from "@/db/presets"
 import { createPrompts } from "@/db/prompts"
 import { createTools } from "@/db/tools"
 import { IconUpload, IconX } from "@tabler/icons-react"
-import { FC, useContext, useRef, useState } from "react"
+import { FC, useRef, useState } from "react"
 import { toast } from "sonner"
 import { SIDEBAR_ICON_SIZE } from "../sidebar/sidebar-switcher"
 import { Badge } from "../ui/badge"
@@ -24,17 +24,15 @@ import { Input } from "../ui/input"
 interface ImportProps {}
 
 export const Import: FC<ImportProps> = ({}) => {
-  const {
-    profile,
-    selectedWorkspace,
-    setChats,
-    setPresets,
-    setPrompts,
-    setFiles,
-    setCollections,
-    setAssistants,
-    setTools
-  } = useContext(ChatbotUIContext)
+  const profile = useChatStore(s => s.profile)
+  const selectedWorkspace = useChatStore(s => s.selectedWorkspace)
+  const setChats = useChatStore(s => s.setChats)
+  const setPresets = useChatStore(s => s.setPresets)
+  const setPrompts = useChatStore(s => s.setPrompts)
+  const setFiles = useChatStore(s => s.setFiles)
+  const setCollections = useChatStore(s => s.setCollections)
+  const setAssistants = useChatStore(s => s.setAssistants)
+  const setTools = useChatStore(s => s.setTools)
 
   const inputRef = useRef<HTMLInputElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)

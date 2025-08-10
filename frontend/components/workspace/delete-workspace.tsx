@@ -9,10 +9,10 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { deleteWorkspace } from "@/db/workspaces"
 import { Tables } from "@/types/db"
-import { FC, useContext, useRef, useState } from "react"
+import { FC, useRef, useState } from "react"
 import { Input } from "../ui/input"
 import { useRouter } from "next/navigation"
 
@@ -25,7 +25,8 @@ export const DeleteWorkspace: FC<DeleteWorkspaceProps> = ({
   workspace,
   onDelete
 }) => {
-  const { setWorkspaces, setSelectedWorkspace } = useContext(ChatbotUIContext)
+  const setWorkspaces = useChatStore(s => s.setWorkspaces)
+  const setSelectedWorkspace = useChatStore(s => s.setSelectedWorkspace)
   const { handleNewChat } = useChatHandler()
   const router = useRouter()
 

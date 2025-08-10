@@ -1,13 +1,14 @@
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { getAssistantCollectionsByAssistantId } from "@/db/assistant-collections"
 import { getAssistantFilesByAssistantId } from "@/db/assistant-files"
 import { getAssistantToolsByAssistantId } from "@/db/assistant-tools"
 import { getCollectionFilesByCollectionId } from "@/db/collection-files"
 import { Tables } from "@/types/db"
 import { LLMID } from "@/types"
-import { useContext } from "react"
+import { useMemo } from "react"
 
 export const usePromptAndCommand = () => {
+  // select once to avoid re-subscribing too broadly
   const {
     chatFiles,
     setNewMessageFiles,
@@ -27,7 +28,26 @@ export const usePromptAndCommand = () => {
     setSelectedAssistant,
     setChatSettings,
     setChatFiles
-  } = useContext(ChatbotUIContext)
+  } = useChatStore(s => ({
+    chatFiles: s.chatFiles,
+    setNewMessageFiles: s.setNewMessageFiles,
+    userInput: s.userInput,
+    setUserInput: s.setUserInput,
+    setShowFilesDisplay: s.setShowFilesDisplay,
+    setIsPromptPickerOpen: s.setIsPromptPickerOpen,
+    setIsFilePickerOpen: s.setIsFilePickerOpen,
+    setSlashCommand: s.setSlashCommand,
+    setHashtagCommand: s.setHashtagCommand,
+    setUseRetrieval: s.setUseRetrieval,
+    setToolCommand: s.setToolCommand,
+    setIsToolPickerOpen: s.setIsToolPickerOpen,
+    setSelectedTools: s.setSelectedTools,
+    setAtCommand: s.setAtCommand,
+    setIsAssistantPickerOpen: s.setIsAssistantPickerOpen,
+    setSelectedAssistant: s.setSelectedAssistant,
+    setChatSettings: s.setChatSettings,
+    setChatFiles: s.setChatFiles
+  }))
 
   const handleInputChange = (value: string) => {
     const atTextRegex = /@([^ ]*)$/

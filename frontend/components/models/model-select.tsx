@@ -1,7 +1,7 @@
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { LLM, LLMID, ModelProvider } from "@/types"
 import { IconCheck, IconChevronDown } from "@tabler/icons-react"
-import { FC, useContext, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 import { Button } from "../ui/button"
 import {
   DropdownMenu,
@@ -22,13 +22,13 @@ export const ModelSelect: FC<ModelSelectProps> = ({
   selectedModelId,
   onSelectModel
 }) => {
-  const {
-    profile,
-    models,
-    availableHostedModels,
-    availableLocalModels,
-    availableOpenRouterModels
-  } = useContext(ChatbotUIContext)
+  const profile = useChatStore(s => s.profile)
+  const models = useChatStore(s => s.models)
+  const availableHostedModels = useChatStore(s => s.availableHostedModels)
+  const availableLocalModels = useChatStore(s => s.availableLocalModels)
+  const availableOpenRouterModels = useChatStore(
+    s => s.availableOpenRouterModels
+  )
 
   const inputRef = useRef<HTMLInputElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)

@@ -1,13 +1,13 @@
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { IconInfoCircle, IconMessagePlus } from "@tabler/icons-react"
-import { FC, useContext } from "react"
+import { FC } from "react"
 import { WithTooltip } from "../ui/with-tooltip"
 
 interface ChatSecondaryButtonsProps {}
 
 export const ChatSecondaryButtons: FC<ChatSecondaryButtonsProps> = ({}) => {
-  const { selectedChat } = useContext(ChatbotUIContext)
+  const selectedChat = useChatStore(s => s.selectedChat)
 
   const { handleNewChat } = useChatHandler()
 

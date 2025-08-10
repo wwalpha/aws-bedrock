@@ -1,6 +1,6 @@
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { Tables } from "@/types/db"
-import { FC, useContext, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 import { Button } from "../ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
 import { Label } from "../ui/label"
@@ -10,13 +10,11 @@ import { usePromptAndCommand } from "./chat-hooks/use-prompt-and-command"
 interface PromptPickerProps {}
 
 export const PromptPicker: FC<PromptPickerProps> = ({}) => {
-  const {
-    prompts,
-    isPromptPickerOpen,
-    setIsPromptPickerOpen,
-    focusPrompt,
-    slashCommand
-  } = useContext(ChatbotUIContext)
+  const prompts = useChatStore(s => s.prompts)
+  const isPromptPickerOpen = useChatStore(s => s.isPromptPickerOpen)
+  const setIsPromptPickerOpen = useChatStore(s => s.setIsPromptPickerOpen)
+  const focusPrompt = useChatStore(s => s.focusPrompt)
+  const slashCommand = useChatStore(s => s.slashCommand)
 
   const { handleSelectPrompt } = usePromptAndCommand()
 

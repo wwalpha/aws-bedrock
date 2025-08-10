@@ -1,21 +1,19 @@
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { Tables } from "@/types/db"
 import { IconRobotFace } from "@tabler/icons-react"
 import Image from "next/image"
-import { FC, useContext, useEffect, useRef } from "react"
+import { FC, useEffect, useRef } from "react"
 import { usePromptAndCommand } from "./chat-hooks/use-prompt-and-command"
 
 interface AssistantPickerProps {}
 
 export const AssistantPicker: FC<AssistantPickerProps> = ({}) => {
-  const {
-    assistants,
-    assistantImages,
-    focusAssistant,
-    atCommand,
-    isAssistantPickerOpen,
-    setIsAssistantPickerOpen
-  } = useContext(ChatbotUIContext)
+  const assistants = useChatStore(s => s.assistants)
+  const assistantImages = useChatStore(s => s.assistantImages)
+  const focusAssistant = useChatStore(s => s.focusAssistant)
+  const atCommand = useChatStore(s => s.atCommand)
+  const isAssistantPickerOpen = useChatStore(s => s.isAssistantPickerOpen)
+  const setIsAssistantPickerOpen = useChatStore(s => s.setIsAssistantPickerOpen)
 
   const { handleSelectAssistant } = usePromptAndCommand()
 

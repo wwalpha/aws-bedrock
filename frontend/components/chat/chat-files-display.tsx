@@ -1,4 +1,4 @@
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { getFileFromStorage } from "@/db/storage/files"
 import useHotkey from "@/lib/hooks/use-hotkey"
 import { cn } from "@/lib/utils"
@@ -16,7 +16,7 @@ import {
   IconX
 } from "@tabler/icons-react"
 import Image from "next/image"
-import { FC, useContext, useState } from "react"
+import { FC, useState } from "react"
 import { Button } from "../ui/button"
 import { FilePreview } from "../ui/file-preview"
 import { WithTooltip } from "../ui/with-tooltip"
@@ -28,20 +28,18 @@ export const ChatFilesDisplay: FC<ChatFilesDisplayProps> = ({}) => {
   useHotkey("f", () => setShowFilesDisplay(prev => !prev))
   useHotkey("e", () => setUseRetrieval(prev => !prev))
 
-  const {
-    files,
-    newMessageImages,
-    setNewMessageImages,
-    newMessageFiles,
-    setNewMessageFiles,
-    setShowFilesDisplay,
-    showFilesDisplay,
-    chatFiles,
-    chatImages,
-    setChatImages,
-    setChatFiles,
-    setUseRetrieval
-  } = useContext(ChatbotUIContext)
+  const files = useChatStore(s => s.files)
+  const newMessageImages = useChatStore(s => s.newMessageImages)
+  const setNewMessageImages = useChatStore(s => s.setNewMessageImages)
+  const newMessageFiles = useChatStore(s => s.newMessageFiles)
+  const setNewMessageFiles = useChatStore(s => s.setNewMessageFiles)
+  const setShowFilesDisplay = useChatStore(s => s.setShowFilesDisplay)
+  const showFilesDisplay = useChatStore(s => s.showFilesDisplay)
+  const chatFiles = useChatStore(s => s.chatFiles)
+  const chatImages = useChatStore(s => s.chatImages)
+  const setChatImages = useChatStore(s => s.setChatImages)
+  const setChatFiles = useChatStore(s => s.setChatFiles)
+  const setUseRetrieval = useChatStore(s => s.setUseRetrieval)
 
   const [selectedFile, setSelectedFile] = useState<ChatFile | null>(null)
   const [selectedImage, setSelectedImage] = useState<MessageImage | null>(null)
@@ -249,7 +247,8 @@ export const ChatFilesDisplay: FC<ChatFilesDisplayProps> = ({}) => {
 }
 
 const RetrievalToggle = ({}) => {
-  const { useRetrieval, setUseRetrieval } = useContext(ChatbotUIContext)
+  const useRetrieval = useChatStore(s => s.useRetrieval)
+  const setUseRetrieval = useChatStore(s => s.setUseRetrieval)
 
   return (
     <div className="flex items-center">

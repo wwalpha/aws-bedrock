@@ -1,5 +1,5 @@
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { LLM_LIST } from "@/lib/models/llm/llm-list"
 import { cn } from "@/lib/utils"
 import { Tables } from "@/types/db"
@@ -14,7 +14,7 @@ import {
   IconPencil
 } from "@tabler/icons-react"
 import Image from "next/image"
-import { FC, useContext, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 import { ModelIcon } from "../models/model-icon"
 import { Button } from "../ui/button"
 import { FileIcon } from "../ui/file-icon"
@@ -45,22 +45,22 @@ export const Message: FC<MessageProps> = ({
   onCancelEdit,
   onSubmitEdit
 }) => {
-  const {
-    assistants,
-    profile,
-    isGenerating,
-    setIsGenerating,
-    firstTokenReceived,
-    availableLocalModels,
-    availableOpenRouterModels,
-    chatMessages,
-    selectedAssistant,
-    chatImages,
-    assistantImages,
-    toolInUse,
-    files,
-    models
-  } = useContext(ChatbotUIContext)
+  const assistants = useChatStore(s => s.assistants)
+  const profile = useChatStore(s => s.profile)
+  const isGenerating = useChatStore(s => s.isGenerating)
+  const setIsGenerating = useChatStore(s => s.setIsGenerating)
+  const firstTokenReceived = useChatStore(s => s.firstTokenReceived)
+  const availableLocalModels = useChatStore(s => s.availableLocalModels)
+  const availableOpenRouterModels = useChatStore(
+    s => s.availableOpenRouterModels
+  )
+  const chatMessages = useChatStore(s => s.chatMessages)
+  const selectedAssistant = useChatStore(s => s.selectedAssistant)
+  const chatImages = useChatStore(s => s.chatImages)
+  const assistantImages = useChatStore(s => s.assistantImages)
+  const toolInUse = useChatStore(s => s.toolInUse)
+  const files = useChatStore(s => s.files)
+  const models = useChatStore(s => s.models)
 
   const { handleSendMessage } = useChatHandler()
 
@@ -262,7 +262,7 @@ export const Message: FC<MessageProps> = ({
                     : selectedAssistant
                       ? selectedAssistant?.name
                       : MODEL_DATA?.modelName
-                  : profile?.display_name ?? profile?.username}
+                  : (profile?.display_name ?? profile?.username)}
               </div>
             </div>
           )}

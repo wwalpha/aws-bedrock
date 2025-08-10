@@ -1,6 +1,6 @@
 import Loading from "@/app/[locale]/loading"
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { getAssistantToolsByAssistantId } from "@/db/assistant-tools"
 import { getChatFilesByChatId } from "@/db/chat-files"
 import { getChatById } from "@/db/chats"
@@ -11,7 +11,7 @@ import { convertBlobToBase64 } from "@/lib/blob-to-b64"
 import useHotkey from "@/lib/hooks/use-hotkey"
 import { LLMID, MessageImage } from "@/types"
 import { useParams } from "next/navigation"
-import { FC, useContext, useEffect, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import { ChatHelp } from "./chat-help"
 import { useScroll } from "./chat-hooks/use-scroll"
 import { ChatInput } from "./chat-input"
@@ -26,20 +26,18 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
 
   const params = useParams()
 
-  const {
-    setChatMessages,
-    selectedChat,
-    setSelectedChat,
-    setChatSettings,
-    setChatImages,
-    assistants,
-    setSelectedAssistant,
-    setChatFileItems,
-    setChatFiles,
-    setShowFilesDisplay,
-    setUseRetrieval,
-    setSelectedTools
-  } = useContext(ChatbotUIContext)
+  const setChatMessages = useChatStore(s => s.setChatMessages)
+  const selectedChat = useChatStore(s => s.selectedChat)
+  const setSelectedChat = useChatStore(s => s.setSelectedChat)
+  const setChatSettings = useChatStore(s => s.setChatSettings)
+  const setChatImages = useChatStore(s => s.setChatImages)
+  const assistants = useChatStore(s => s.assistants)
+  const setSelectedAssistant = useChatStore(s => s.setSelectedAssistant)
+  const setChatFileItems = useChatStore(s => s.setChatFileItems)
+  const setChatFiles = useChatStore(s => s.setChatFiles)
+  const setShowFilesDisplay = useChatStore(s => s.setShowFilesDisplay)
+  const setUseRetrieval = useChatStore(s => s.setUseRetrieval)
+  const setSelectedTools = useChatStore(s => s.setSelectedTools)
 
   const { handleNewChat, handleFocusChatInput } = useChatHandler()
 

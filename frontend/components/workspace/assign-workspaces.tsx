@@ -1,7 +1,7 @@
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { Tables } from "@/types/db"
 import { IconChevronDown, IconCircleCheckFilled } from "@tabler/icons-react"
-import { FC, useContext, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 import { Button } from "../ui/button"
 import {
   DropdownMenu,
@@ -20,7 +20,7 @@ export const AssignWorkspaces: FC<AssignWorkspaces> = ({
   selectedWorkspaces,
   onSelectWorkspace
 }) => {
-  const { workspaces } = useContext(ChatbotUIContext)
+  const workspaces = useChatStore(s => s.workspaces)
 
   const inputRef = useRef<HTMLInputElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)

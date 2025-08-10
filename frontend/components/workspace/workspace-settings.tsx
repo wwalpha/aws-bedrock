@@ -1,4 +1,4 @@
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { WORKSPACE_INSTRUCTIONS_MAX } from "@/db/limits"
 import {
   getWorkspaceImageFromStorage,
@@ -8,7 +8,7 @@ import { updateWorkspace } from "@/db/workspaces"
 import { convertBlobToBase64 } from "@/lib/blob-to-b64"
 import { LLMID } from "@/types"
 import { IconHome, IconSettings } from "@tabler/icons-react"
-import { FC, useContext, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "../ui/button"
 import { ChatSettingsForm } from "../ui/chat-settings-form"
@@ -31,15 +31,13 @@ import { DeleteWorkspace } from "./delete-workspace"
 interface WorkspaceSettingsProps {}
 
 export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
-  const {
-    profile,
-    selectedWorkspace,
-    setSelectedWorkspace,
-    setWorkspaces,
-    setChatSettings,
-    workspaceImages,
-    setWorkspaceImages
-  } = useContext(ChatbotUIContext)
+  const profile = useChatStore(s => s.profile)
+  const selectedWorkspace = useChatStore(s => s.selectedWorkspace)
+  const setSelectedWorkspace = useChatStore(s => s.setSelectedWorkspace)
+  const setWorkspaces = useChatStore(s => s.setWorkspaces)
+  const setChatSettings = useChatStore(s => s.setChatSettings)
+  const workspaceImages = useChatStore(s => s.workspaceImages)
+  const setWorkspaceImages = useChatStore(s => s.setWorkspaceImages)
 
   const buttonRef = useRef<HTMLButtonElement>(null)
 
