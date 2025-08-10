@@ -6,35 +6,7 @@
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { apply } from "../utils"
-
-export interface ItemsSlice {
-  // Assistants
-  assistants: Tables<"assistants">[]
-  setAssistants: Dispatch<SetStateAction<Tables<"assistants">[]>>
-  // Collections
-  collections: Tables<"collections">[]
-  setCollections: Dispatch<SetStateAction<Tables<"collections">[]>>
-  // Chats
-  chats: Tables<"chats">[]
-  setChats: Dispatch<SetStateAction<Tables<"chats">[]>>
-  // Files and folders
-  files: Tables<"files">[]
-  setFiles: Dispatch<SetStateAction<Tables<"files">[]>>
-  folders: Tables<"folders">[]
-  setFolders: Dispatch<SetStateAction<Tables<"folders">[]>>
-  // Models/presets/prompts/tools
-  models: Tables<"models">[]
-  setModels: Dispatch<SetStateAction<Tables<"models">[]>>
-  presets: Tables<"presets">[]
-  setPresets: Dispatch<SetStateAction<Tables<"presets">[]>>
-  prompts: Tables<"prompts">[]
-  setPrompts: Dispatch<SetStateAction<Tables<"prompts">[]>>
-  tools: Tables<"tools">[]
-  setTools: Dispatch<SetStateAction<Tables<"tools">[]>>
-  // Workspaces
-  workspaces: Tables<"workspaces">[]
-  setWorkspaces: Dispatch<SetStateAction<Tables<"workspaces">[]>>
-}
+import type { ItemsSlice } from "@/typings/slices.types"
 
 /**
  * Factory to create the items slice.

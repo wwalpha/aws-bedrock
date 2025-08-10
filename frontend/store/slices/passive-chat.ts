@@ -7,19 +7,7 @@ import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { ChatFile, ChatMessage, ChatSettings } from "@/types"
 import { apply } from "../utils"
-
-export interface PassiveChatSlice {
-  userInput: string
-  setUserInput: Dispatch<SetStateAction<string>>
-  chatMessages: ChatMessage[]
-  setChatMessages: Dispatch<SetStateAction<ChatMessage[]>>
-  chatSettings: ChatSettings
-  setChatSettings: Dispatch<SetStateAction<ChatSettings>>
-  selectedChat: Tables<"chats"> | null
-  setSelectedChat: Dispatch<SetStateAction<Tables<"chats"> | null>>
-  chatFileItems: Tables<"file_items">[]
-  setChatFileItems: Dispatch<SetStateAction<Tables<"file_items">[]>>
-}
+import type { PassiveChatSlice } from "@/typings/slices.types"
 
 /**
  * Factory to create the passive chat slice.

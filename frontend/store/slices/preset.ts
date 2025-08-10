@@ -5,11 +5,7 @@
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { apply } from "../utils"
-
-export interface PresetSlice {
-  selectedPreset: Tables<"presets"> | null
-  setSelectedPreset: Dispatch<SetStateAction<Tables<"presets"> | null>>
-}
+import type { PresetSlice } from "@/typings/slices.types"
 
 /**
  * Factory to create the preset slice.

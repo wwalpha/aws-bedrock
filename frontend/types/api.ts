@@ -19,14 +19,13 @@ export interface LogoutRequest {
 }
 
 export interface SignupRequest {
+  email: string
   password: string
-  email?: string
-  username?: string
 }
 
 export interface SignupResponse {
-  userId?: string
-  [key: string]: any
+  userConfirmed: boolean
+  userSub: string
 }
 
 export interface GenericErrorResponse {

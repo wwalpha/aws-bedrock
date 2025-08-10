@@ -8,17 +8,7 @@ import { Dispatch, SetStateAction } from "react"
 import { LLM, OpenRouterLLM } from "@/types"
 import { VALID_ENV_KEYS } from "@/types/valid-keys"
 import { apply } from "../utils"
-
-export interface ModelsSlice {
-  envKeyMap: Record<string, VALID_ENV_KEYS>
-  setEnvKeyMap: Dispatch<SetStateAction<Record<string, VALID_ENV_KEYS>>>
-  availableHostedModels: LLM[]
-  setAvailableHostedModels: Dispatch<SetStateAction<LLM[]>>
-  availableLocalModels: LLM[]
-  setAvailableLocalModels: Dispatch<SetStateAction<LLM[]>>
-  availableOpenRouterModels: OpenRouterLLM[]
-  setAvailableOpenRouterModels: Dispatch<SetStateAction<OpenRouterLLM[]>>
-}
+import type { ModelsSlice } from "@/typings/slices.types"
 
 /**
  * Factory to create the models slice.

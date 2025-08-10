@@ -7,13 +7,7 @@ import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { WorkspaceImage } from "@/types"
 import { apply } from "../utils"
-
-export interface WorkspaceSlice {
-  selectedWorkspace: Tables<"workspaces"> | null
-  setSelectedWorkspace: Dispatch<SetStateAction<Tables<"workspaces"> | null>>
-  workspaceImages: WorkspaceImage[]
-  setWorkspaceImages: Dispatch<SetStateAction<WorkspaceImage[]>>
-}
+import type { WorkspaceSlice } from "@/typings/slices.types"
 
 /**
  * Factory to create the workspace slice.

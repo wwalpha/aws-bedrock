@@ -5,13 +5,7 @@
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { apply } from "../utils"
-
-export interface ToolsSlice {
-  selectedTools: Tables<"tools">[]
-  setSelectedTools: Dispatch<SetStateAction<Tables<"tools">[]>>
-  toolInUse: string
-  setToolInUse: Dispatch<SetStateAction<string>>
-}
+import type { ToolsSlice } from "@/typings/slices.types"
 
 /**
  * Factory to create the tools slice.

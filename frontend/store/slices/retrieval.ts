@@ -4,13 +4,7 @@
  */
 import { Dispatch, SetStateAction } from "react"
 import { apply } from "../utils"
-
-export interface RetrievalSlice {
-  useRetrieval: boolean
-  setUseRetrieval: Dispatch<SetStateAction<boolean>>
-  sourceCount: number
-  setSourceCount: Dispatch<SetStateAction<number>>
-}
+import type { RetrievalSlice } from "@/typings/slices.types"
 
 /**
  * Factory to create the retrieval slice.

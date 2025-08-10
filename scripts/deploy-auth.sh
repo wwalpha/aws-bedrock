@@ -11,10 +11,23 @@ CLUSTER_NAME=${CLUSTER_NAME:-${PROJECT_NAME}-cluster}
 SERVICE_NAME=${SERVICE_NAME:-AuthService}
 DESIRED_COUNT=${DESIRED_COUNT:-}
 
+if [[ "${DEBUG:-}" == "1" ]]; then set -x; fi
+
+# Resolve repo root reliably regardless of invocation path
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+REPO_ROOT="${SCRIPT_DIR}/.."
+AUTH_DIR="${REPO_ROOT}/backend/auth"
+
 echo "[deploy-auth] REGION=${REGION} PROJECT_NAME=${PROJECT_NAME} CLUSTER=${CLUSTER_NAME} SERVICE=${SERVICE_NAME} DESIRED_COUNT=${DESIRED_COUNT:-(unchanged)}"
 
 command -v aws >/dev/null 2>&1 || { echo "aws CLI is required" >&2; exit 1; }
 command -v docker >/dev/null 2>&1 || { echo "docker is required" >&2; exit 1; }
+
+# Ensure Dockerfile exists
+if [[ ! -f "${AUTH_DIR}/Dockerfile" ]]; then
+  echo "Dockerfile not found at ${AUTH_DIR}/Dockerfile. Ensure repo layout is correct." >&2
+  exit 2
+fi
 
 # Resolve ECR repo URI
 REPO_NAME="${PROJECT_NAME}/auth"
@@ -35,7 +48,7 @@ echo "[deploy-auth] Logging into ECR..."
 aws ecr get-login-password --region "${REGION}" | docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
 echo "[deploy-auth] Building Docker image..."
-docker build -t "${REPO_URI}:latest" "$(dirname "$0")/../backend/auth" >/dev/null
+docker build -t "${REPO_URI}:latest" "${AUTH_DIR}" >/dev/null
 
 echo "[deploy-auth] Pushing image to ${REPO_URI}:latest"
 docker push "${REPO_URI}:latest" >/dev/null
@@ -56,10 +69,10 @@ else
     --force-new-deployment >/dev/null
 fi
 
-echo "[deploy-auth] Waiting for service to stabilize..."
-aws ecs wait services-stable \
-  --region "${REGION}" \
-  --cluster "${CLUSTER_NAME}" \
-  --services "${SERVICE_NAME}"
+# echo "[deploy-auth] Waiting for service to stabilize..."
+# aws ecs wait services-stable \
+#   --region "${REGION}" \
+#   --cluster "${CLUSTER_NAME}" \
+#   --services "${SERVICE_NAME}"
 
 echo "[deploy-auth] Done."

@@ -4,33 +4,7 @@
  */
 import { Dispatch, SetStateAction } from "react"
 import { apply } from "../utils"
-
-export interface ChatInputSlice {
-  isPromptPickerOpen: boolean
-  setIsPromptPickerOpen: Dispatch<SetStateAction<boolean>>
-  slashCommand: string
-  setSlashCommand: Dispatch<SetStateAction<string>>
-  isFilePickerOpen: boolean
-  setIsFilePickerOpen: Dispatch<SetStateAction<boolean>>
-  hashtagCommand: string
-  setHashtagCommand: Dispatch<SetStateAction<string>>
-  isToolPickerOpen: boolean
-  setIsToolPickerOpen: Dispatch<SetStateAction<boolean>>
-  toolCommand: string
-  setToolCommand: Dispatch<SetStateAction<string>>
-  focusPrompt: boolean
-  setFocusPrompt: Dispatch<SetStateAction<boolean>>
-  focusFile: boolean
-  setFocusFile: Dispatch<SetStateAction<boolean>>
-  focusTool: boolean
-  setFocusTool: Dispatch<SetStateAction<boolean>>
-  focusAssistant: boolean
-  setFocusAssistant: Dispatch<SetStateAction<boolean>>
-  atCommand: string
-  setAtCommand: Dispatch<SetStateAction<string>>
-  isAssistantPickerOpen: boolean
-  setIsAssistantPickerOpen: Dispatch<SetStateAction<boolean>>
-}
+import type { ChatInputSlice } from "@/typings/slices.types"
 
 /**
  * Factory to create the chat-input slice.

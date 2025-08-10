@@ -5,15 +5,7 @@
  */
 import { Dispatch, SetStateAction } from "react"
 import { apply } from "../utils"
-
-export interface ActiveChatSlice {
-  abortController: AbortController | null
-  setAbortController: Dispatch<SetStateAction<AbortController | null>>
-  firstTokenReceived: boolean
-  setFirstTokenReceived: Dispatch<SetStateAction<boolean>>
-  isGenerating: boolean
-  setIsGenerating: Dispatch<SetStateAction<boolean>>
-}
+import type { ActiveChatSlice } from "@/typings/slices.types"
 
 /**
  * Factory to create the active chat slice.

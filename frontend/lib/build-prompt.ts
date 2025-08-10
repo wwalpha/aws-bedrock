@@ -30,6 +30,16 @@ const buildBasePrompt = (
   return fullPrompt
 }
 
+type FinalMessage = {
+  role: string
+  content:
+    | string
+    | Array<
+        | { type: "text"; text: string }
+        | { type: "image_url"; image_url: { url: string } }
+      >
+}
+
 export async function buildFinalMessages(
   payload: ChatPayload,
   profile: Tables<"profiles">,
@@ -90,7 +100,9 @@ export async function buildFinalMessages(
     return chatMessage
   })
 
-  let finalMessages = []
+  let finalMessages: Array<
+    Tables<"messages"> | FinalMessage | Tables<"messages">
+  > = []
 
   for (let i = processedChatMessages.length - 1; i >= 0; i--) {
     const message = processedChatMessages[i].message
@@ -121,7 +133,7 @@ export async function buildFinalMessages(
 
   finalMessages.unshift(tempSystemMessage)
 
-  finalMessages = finalMessages.map(message => {
+  finalMessages = finalMessages.map((message: any) => {
     let content
 
     if (message.image_paths.length > 0) {
@@ -164,15 +176,14 @@ export async function buildFinalMessages(
   if (messageFileItems.length > 0) {
     const retrievalText = buildRetrievalText(messageFileItems)
 
+    const last: any = finalMessages[finalMessages.length - 1]
     finalMessages[finalMessages.length - 1] = {
-      ...finalMessages[finalMessages.length - 1],
-      content: `${
-        finalMessages[finalMessages.length - 1].content
-      }\n\n${retrievalText}`
-    }
+      ...last,
+      content: `${last.content}\n\n${retrievalText}`
+    } as any
   }
 
-  return finalMessages
+  return finalMessages as FinalMessage[]
 }
 
 function buildRetrievalText(fileItems: Tables<"file_items">[]) {
@@ -183,10 +194,19 @@ function buildRetrievalText(fileItems: Tables<"file_items">[]) {
   return `You may use the following sources if needed to answer the user's question. If you don't know the answer, say "I don't know."\n\n${retrievalText}`
 }
 
-function adaptSingleMessageForGoogleGemini(message: any) {
-  let adaptedParts = []
+type GeminiPartText = { text: string }
+type GeminiPartImage = {
+  inlineData: { data: string | null; mimeType: string | null }
+}
+type GeminiMessage = {
+  role: string
+  parts: (GeminiPartText | GeminiPartImage)[]
+}
 
-  let rawParts = []
+function adaptSingleMessageForGoogleGemini(message: any): GeminiMessage {
+  let adaptedParts: (GeminiPartText | GeminiPartImage)[] = []
+
+  let rawParts: any[] = []
   if (!Array.isArray(message.content)) {
     rawParts.push({ type: "text", text: message.content })
   } else {
@@ -221,21 +241,24 @@ function adaptSingleMessageForGoogleGemini(message: any) {
   }
 }
 
-function adaptMessagesForGeminiVision(messages: any[]) {
+function adaptMessagesForGeminiVision(messages: GeminiMessage[]) {
   // Gemini Pro Vision cannot process multiple messages
   // Reformat, using all texts and last visual only
 
-  const basePrompt = messages[0].parts[0].text
+  const firstPart = messages[0].parts[0] as any
+  const basePrompt = (firstPart as GeminiPartText).text
   const baseRole = messages[0].role
   const lastMessage = messages[messages.length - 1]
-  const visualMessageParts = lastMessage.parts
-  let visualQueryMessages = [
+  const visualMessageParts = lastMessage.parts as any[]
+  let visualQueryMessages: GeminiMessage[] = [
     {
       role: "user",
       parts: [
-        `${baseRole}:\n${basePrompt}\n\nuser:\n${visualMessageParts[0].text}\n\n`,
-        visualMessageParts.slice(1)
-      ]
+        {
+          text: `${baseRole}:\n${basePrompt}\n\nuser:\n${(visualMessageParts[0] as any).text}\n\n`
+        },
+        ...(visualMessageParts.slice(1) as any)
+      ] as any
     }
   ]
   return visualQueryMessages
@@ -245,7 +268,7 @@ export async function adaptMessagesForGoogleGemini(
   payload: ChatPayload,
   messages: any[]
 ) {
-  let geminiMessages = []
+  let geminiMessages: GeminiMessage[] = []
   for (let i = 0; i < messages.length; i++) {
     let adaptedMessage = adaptSingleMessageForGoogleGemini(messages[i])
     geminiMessages.push(adaptedMessage)

@@ -1,12 +1,10 @@
-import { Brand } from "@/components/ui/brand"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { API } from "@/lib/api/endpoints"
 import { get } from "@vercel/edge-config"
 import { Metadata } from "next"
 import { cookies, headers } from "next/headers"
 import { redirect } from "next/navigation"
+import LoginClientForm from "@/components/auth/LoginClientForm"
 
 export const metadata: Metadata = {
   title: "Login"
@@ -31,40 +29,7 @@ export default async function Login({
     }
   } catch {}
 
-  const signIn = async (formData: FormData) => {
-    "use server"
-
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
-    try {
-      const res = await fetch(`/api${API.auth.login}`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email, password })
-      })
-      if (!res.ok) {
-        const msg = (await res.text()) || "Login failed"
-        return redirect(`/login?message=${encodeURIComponent(msg)}`)
-      }
-    } catch (e: any) {
-      return redirect(
-        `/login?message=${encodeURIComponent(e?.message || "Login failed")}`
-      )
-    }
-
-    // After login, try to fetch profile/me for redirect
-    try {
-      const meRes = await fetch(`/api${API.auth.me}`, {
-        cache: "no-store"
-      })
-      if (meRes.ok) {
-        const me = await meRes.json()
-        const dest = me?.homeWorkspaceId ? `/${me.homeWorkspaceId}/chat` : "/"
-        return redirect(dest)
-      }
-    } catch {}
-    return redirect("/")
-  }
+  // Login is handled by the client component using Zustand store.
 
   const getEnvVarOrEdgeConfigValue = async (name: string) => {
     "use server"
@@ -121,7 +86,7 @@ export default async function Login({
       const res = await fetch(`/api${API.auth.signup}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email, username: email, password })
+        body: JSON.stringify({ email, password })
       })
       if (!res.ok) {
         const msg = (await res.text()) || "Sign up failed"
@@ -172,59 +137,28 @@ export default async function Login({
 
   return (
     <div className="flex w-full flex-1 flex-col justify-center gap-2 px-8 sm:max-w-md">
-      <form
-        className="animate-in text-foreground flex w-full flex-1 flex-col justify-center gap-2"
-        action={signIn}
-      >
-        <Brand />
+      <LoginClientForm />
 
-        <Label className="text-md mt-4" htmlFor="email">
-          Email
-        </Label>
-        <Input
-          className="mb-3 rounded-md border bg-inherit px-4 py-2"
-          name="email"
-          placeholder="you@example.com"
-          required
-        />
-
-        <Label className="text-md" htmlFor="password">
-          Password
-        </Label>
-        <Input
-          className="mb-6 rounded-md border bg-inherit px-4 py-2"
-          type="password"
-          name="password"
-          placeholder="••••••••"
-        />
-
-        <SubmitButton className="mb-2 rounded-md bg-blue-700 px-4 py-2 text-white">
-          Login
-        </SubmitButton>
-
-        <SubmitButton
-          formAction={signUp}
-          className="border-foreground/20 mb-2 rounded-md border px-4 py-2"
-        >
+      <form className="mt-6 flex w-full flex-col gap-2" action={signUp}>
+        <SubmitButton className="border-foreground/20 rounded-md border px-4 py-2">
           Sign Up
         </SubmitButton>
+      </form>
 
-        <div className="text-muted-foreground mt-1 flex justify-center text-sm">
-          <span className="mr-1">Forgot your password?</span>
-          <button
-            formAction={handleResetPassword}
-            className="text-primary ml-1 underline hover:opacity-80"
-          >
+      <div className="text-muted-foreground mt-3 flex justify-center text-sm">
+        <span className="mr-1">Forgot your password?</span>
+        <form action={handleResetPassword}>
+          <button className="text-primary ml-1 underline hover:opacity-80">
             Reset
           </button>
-        </div>
+        </form>
+      </div>
 
-        {sp?.message && (
-          <p className="bg-foreground/10 text-foreground mt-4 p-4 text-center">
-            {sp.message}
-          </p>
-        )}
-      </form>
+      {sp?.message && (
+        <p className="bg-foreground/10 text-foreground mt-4 p-4 text-center">
+          {sp.message}
+        </p>
+      )}
     </div>
   )
 }

@@ -120,10 +120,9 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
     profile?.openrouter_api_key || ""
   )
 
+  const logoutApi = useChatStore(s => s.logoutApi)
   const handleSignOut = async () => {
-    try {
-      await fetch(`/api${API.auth.logout}`, { method: "POST" })
-    } catch {}
+    await logoutApi()
     router.push("/login")
     router.refresh()
     return

@@ -6,16 +6,10 @@
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { AssistantImage } from "@/types/images/assistant-image"
+import type { AssistantSlice } from "@/typings/slices.types"
 import { apply } from "../utils"
 
-export interface AssistantSlice {
-  selectedAssistant: Tables<"assistants"> | null
-  setSelectedAssistant: Dispatch<SetStateAction<Tables<"assistants"> | null>>
-  assistantImages: AssistantImage[]
-  setAssistantImages: Dispatch<SetStateAction<AssistantImage[]>>
-  openaiAssistants: any[]
-  setOpenaiAssistants: Dispatch<SetStateAction<any[]>>
-}
+// types moved to typings/slices.types.d.ts
 
 /**
  * Factory to create the assistant slice.

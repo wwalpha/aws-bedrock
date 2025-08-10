@@ -169,7 +169,7 @@ export const usePromptAndCommand = () => {
       embeddingsProvider: assistant.embeddings_provider as "openai" | "local"
     })
 
-    let allFiles = []
+    let allFiles: Tables<"files">[] = []
 
     const assistantFiles = (await getAssistantFilesByAssistantId(assistant.id))
       .files
