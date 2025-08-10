@@ -1,5 +1,6 @@
 import { uploadFile } from "@/lib/api/upload"
 import { api } from "@/lib/api/client"
+import { API } from "@/lib/api/endpoints"
 
 export const uploadMessageImage = async (path: string, image: File) => {
   const imageSizeLimit = 6000000 // 6MB
@@ -13,8 +14,6 @@ export const uploadMessageImage = async (path: string, image: File) => {
 }
 
 export const getMessageImageFromStorage = async (filePath: string) => {
-  const res = await api.get(
-    `/v1/upload/signed-url?scope=messages&path=${encodeURIComponent(filePath)}&ttl=86400`
-  )
+  const res = await api.get(API.upload.signedUrl("messages", filePath))
   return (res as any).url as string
 }

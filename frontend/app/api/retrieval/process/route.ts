@@ -11,52 +11,39 @@ import OpenAI from "openai/index.mjs"
 
 const base = process.env.BACKEND_URL || ""
 import { FileItemChunk } from "@/types"
+import { api } from "@/lib/api/client"
+import { API } from "@/lib/api/endpoints"
+export const runtime = "nodejs"
 
 export async function POST(req: Request) {
   try {
     if (!base) {
       return new NextResponse("BACKEND_URL not configured", { status: 500 })
     }
-    const profileRes = await fetch(`${base}/v1/profile/me`, {
-      credentials: "include",
+    const profile = await api.get(API.backend.profile.me, {
       headers: { cookie: req.headers.get("cookie") || "" }
     })
-    if (!profileRes.ok) {
-      return new NextResponse("Unauthorized", { status: 401 })
-    }
-    const profile = await profileRes.json()
 
     const formData = await req.formData()
 
     const file_id = formData.get("file_id") as string
     const embeddingsProvider = formData.get("embeddingsProvider") as string
 
-    const metaRes = await fetch(
-      `${base}/v1/files/${encodeURIComponent(file_id)}`,
-      {
-        credentials: "include",
-        headers: { cookie: req.headers.get("cookie") || "" }
-      }
-    )
-    if (!metaRes.ok) throw new Error("Failed to load file metadata")
-    const fileMetadata = await metaRes.json()
+    const fileMetadata = await api.get(API.backend.files(file_id), {
+      headers: { cookie: req.headers.get("cookie") || "" }
+    })
 
     if (fileMetadata.user_id !== profile.user_id) {
       throw new Error("Unauthorized")
     }
 
     // Fetch signed URL from backend, then download the file
-    const signedRes = await fetch(
-      `${base}/v1/upload/signed-url?scope=files&path=${encodeURIComponent(
+    const signed = await api.get(
+      `/v1/upload/signed-url?scope=files&path=${encodeURIComponent(
         fileMetadata.file_path
       )}&ttl=300`,
-      {
-        credentials: "include",
-        headers: { cookie: req.headers.get("cookie") || "" }
-      }
+      { headers: { cookie: req.headers.get("cookie") || "" } }
     )
-    if (!signedRes.ok) throw new Error("Failed to retrieve signed url")
-    const signed = await signedRes.json()
     const fileRes = await fetch(signed.url)
     if (!fileRes.ok) throw new Error("Failed to retrieve file from storage")
 
@@ -151,27 +138,19 @@ export async function POST(req: Request) {
           : null
     }))
 
-    await fetch(`${base}/v1/file_items/bulk`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "content-type": "application/json",
-        cookie: req.headers.get("cookie") || ""
-      },
-      body: JSON.stringify({ items: file_items })
-    })
+    await api.post(
+      API.backend.fileItemsBulk,
+      { items: file_items },
+      { headers: { cookie: req.headers.get("cookie") || "" } }
+    )
 
     const totalTokens = file_items.reduce((acc, item) => acc + item.tokens, 0)
 
-    await fetch(`${base}/v1/files/${encodeURIComponent(file_id)}`, {
-      method: "PUT",
-      credentials: "include",
-      headers: {
-        "content-type": "application/json",
-        cookie: req.headers.get("cookie") || ""
-      },
-      body: JSON.stringify({ tokens: totalTokens })
-    })
+    await api.put(
+      API.backend.files(file_id),
+      { tokens: totalTokens },
+      { headers: { cookie: req.headers.get("cookie") || "" } }
+    )
 
     return new NextResponse("Embed Successful", {
       status: 200

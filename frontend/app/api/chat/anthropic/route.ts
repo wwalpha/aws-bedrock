@@ -4,8 +4,9 @@ import { ChatSettings } from "@/types"
 import Anthropic from "@anthropic-ai/sdk"
 import { AnthropicStream, StreamingTextResponse } from "ai"
 import { NextRequest, NextResponse } from "next/server"
+import { api } from "@/lib/api/client"
 
-export const runtime = "edge"
+export const runtime = "nodejs"
 
 export async function POST(request: NextRequest) {
   const json = await request.json()
@@ -17,9 +18,9 @@ export async function POST(request: NextRequest) {
   try {
     const base = process.env.BACKEND_URL || ""
     if (!base) throw new Error("BACKEND_URL not configured")
-    const res = await fetch(`${base}/v1/profile/me`, { credentials: "include" })
-    if (!res.ok) return new NextResponse("Unauthorized", { status: 401 })
-    const profile = await res.json()
+    const profile = await api.get("/v1/profile/me", {
+      headers: { cookie: request.headers.get("cookie") || "" }
+    })
     if (!profile.anthropic_api_key)
       return new NextResponse("Anthropic API Key not found", { status: 400 })
 

@@ -1,15 +1,17 @@
 const base = process.env.BACKEND_URL
 import { ServerRuntime } from "next"
+import { api } from "@/lib/api/client"
+import { API } from "@/lib/api/endpoints"
 import OpenAI from "openai/index.mjs"
 
-export const runtime: ServerRuntime = "edge"
+export const runtime: ServerRuntime = "nodejs"
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     if (!base) throw new Error("BACKEND_URL not configured")
-    const res = await fetch(`${base}/v1/profile/me`, { credentials: "include" })
-    if (!res.ok) return new Response("Unauthorized", { status: 401 })
-    const profile = await res.json()
+    const profile = await api.get(API.backend.profile.me, {
+      headers: { cookie: request.headers.get("cookie") || "" }
+    })
     if (!profile.openai_api_key)
       return new Response("OpenAI API Key not found", { status: 400 })
 

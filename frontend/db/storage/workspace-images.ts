@@ -1,6 +1,7 @@
 import { uploadFile } from "@/lib/api/upload"
 import { api } from "@/lib/api/client"
 import { Tables } from "@/types/db"
+import { API } from "@/lib/api/endpoints"
 
 export const uploadWorkspaceImage = async (
   workspace: Tables<"workspaces">,
@@ -17,7 +18,7 @@ export const uploadWorkspaceImage = async (
   // Optionally request backend to delete old image
   if (currentPath && currentPath.length > 0) {
     try {
-      await api.post(`/v1/upload/delete`, {
+      await api.post(API.upload.delete, {
         path: currentPath,
         scope: "workspaces"
       })
@@ -29,9 +30,7 @@ export const uploadWorkspaceImage = async (
 
 export const getWorkspaceImageFromStorage = async (filePath: string) => {
   try {
-    const res = await api.get(
-      `/v1/upload/signed-url?scope=workspaces&path=${encodeURIComponent(filePath)}&ttl=86400`
-    )
+    const res = await api.get(API.upload.signedUrl("workspaces", filePath))
     return res.url as string
   } catch (error) {
     console.error(error)

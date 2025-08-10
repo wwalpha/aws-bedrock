@@ -3,6 +3,7 @@ import { TablesInsert, TablesUpdate } from "@/types/db"
 import mammoth from "mammoth"
 import { toast } from "sonner"
 import { uploadFile } from "./storage/files"
+import { API } from "@/lib/api/endpoints"
 
 export const getFileById = async (fileId: string) => {
   return api.get(`/v1/files/${encodeURIComponent(fileId)}`)
@@ -84,7 +85,7 @@ export const createFile = async (
   formData.append("file_id", createdFile.id)
   formData.append("embeddingsProvider", embeddingsProvider)
 
-  const response = await fetch("/api/retrieval/process", {
+  const response = await fetch(`/api${API.retrieval.process}`, {
     method: "POST",
     body: formData
   })
@@ -130,7 +131,7 @@ export const createDocXFile = async (
 
   await updateFile(createdFile.id, { file_path: filePath })
 
-  const response = await fetch("/api/retrieval/process/docx", {
+  const response = await fetch(`/api${API.retrieval.processDocx}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"

@@ -14,8 +14,7 @@ export async function uploadFile(
   }
   // Use centralized api client and error handling
   try {
-    // API.UPLOAD should be '/v1/upload'
-  const res = await api.post(API.upload, form)
+    const res = await api.post(API.upload.root, form)
     return res
   } catch (e) {
     // api client already handles error, but rethrow for clarity

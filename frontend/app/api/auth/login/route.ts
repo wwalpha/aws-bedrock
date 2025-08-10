@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { api } from "@/lib/api/client"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -21,18 +22,20 @@ export async function POST(req: Request) {
     )
   }
 
-  const url = `${backendBase}/auth/login`
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ username: email, password })
-  })
-
-  const data = await res.json().catch(() => null)
-  const nextRes = NextResponse.json(data ?? {}, { status: res.status })
+  let data: any = null
+  let status = 500
+  try {
+    data = await api.post("/auth/login", { username: email, password })
+    status = 200
+  } catch (e: any) {
+    // Best effort to extract status/message from api client error
+    data = { error: e.message }
+    status = 401
+  }
+  const nextRes = NextResponse.json(data ?? {}, { status })
 
   // Set auth cookies if available
-  if (res.ok && data) {
+  if (status >= 200 && status < 300 && data) {
     const cookieOpts = {
       httpOnly: true,
       sameSite: "lax" as const,

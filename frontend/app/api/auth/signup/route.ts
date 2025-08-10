@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { api } from "@/lib/api/client"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -14,12 +15,10 @@ export async function POST(req: Request) {
     )
   }
 
-  const res = await fetch(`${backendBase}/auth/signup`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ email, password })
-  })
-  return NextResponse.json(await res.json().catch(() => ({})), {
-    status: res.status
-  })
+  try {
+    const data = await api.post("/auth/signup", { email, password })
+    return NextResponse.json(data, { status: 200 })
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message }, { status: 400 })
+  }
 }

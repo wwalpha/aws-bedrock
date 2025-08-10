@@ -2,6 +2,7 @@ import { Tables } from "@/types/db"
 import { LLM, LLMID, OpenRouterLLM } from "@/types"
 import { toast } from "sonner"
 import { LLM_LIST_MAP } from "./llm/llm-list"
+import { API } from "@/lib/api/endpoints"
 
 export const fetchHostedModels = async (profile: Tables<"profiles">) => {
   try {
@@ -13,7 +14,7 @@ export const fetchHostedModels = async (profile: Tables<"profiles">) => {
       providers.push("openai")
     }
 
-    const response = await fetch("/api/keys")
+    const response = await fetch(`/api${API.keys}`)
 
     if (!response.ok) {
       throw new Error(`Server is not responding.`)

@@ -2,8 +2,10 @@ const base = process.env.BACKEND_URL || ""
 import { ChatSettings } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import OpenAI from "openai/index.mjs"
+import { api } from "@/lib/api/client"
+import { API } from "@/lib/api/endpoints"
 
-export const runtime = "edge"
+export const runtime = "nodejs"
 
 export async function POST(request: Request) {
   const json = await request.json()
@@ -14,9 +16,9 @@ export async function POST(request: Request) {
 
   try {
     if (!base) throw new Error("BACKEND_URL not configured")
-    const res = await fetch(`${base}/v1/profile/me`, { credentials: "include" })
-    if (!res.ok) return new Response("Unauthorized", { status: 401 })
-    const profile = await res.json()
+    const profile = await api.get(API.backend.profile.me, {
+      headers: { cookie: request.headers.get("cookie") || "" }
+    })
     if (!profile.perplexity_api_key)
       return new Response("Perplexity API Key not found", { status: 400 })
 

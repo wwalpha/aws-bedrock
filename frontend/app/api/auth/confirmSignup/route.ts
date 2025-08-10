@@ -1,5 +1,6 @@
 import { BACKEND_URL } from "@/lib/consts"
 import { NextResponse } from "next/server"
+import { api } from "@/lib/api/client"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -15,12 +16,13 @@ export async function POST(req: Request) {
     )
   }
 
-  const res = await fetch(`${backendBase}/auth/confirmSignup`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ username, confirmationCode })
-  })
-  return NextResponse.json(await res.json().catch(() => ({})), {
-    status: res.status
-  })
+  try {
+    const data = await api.post("/auth/confirmSignup", {
+      username,
+      confirmationCode
+    })
+    return NextResponse.json(data, { status: 200 })
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message }, { status: 400 })
+  }
 }

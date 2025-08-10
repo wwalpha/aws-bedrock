@@ -22,6 +22,7 @@ import {
 import React from "react"
 import { toast } from "sonner"
 import { v4 as uuidv4 } from "uuid"
+import { API } from "@/lib/api/endpoints"
 
 export const validateChatSettings = (
   chatSettings: ChatSettings | null,
@@ -58,7 +59,7 @@ export const handleRetrieval = async (
   embeddingsProvider: "openai" | "local",
   sourceCount: number
 ) => {
-  const response = await fetch("/api/retrieval/retrieve", {
+  const response = await fetch(`/api${API.retrieval.retrieve}`, {
     method: "POST",
     body: JSON.stringify({
       userInput,
@@ -219,7 +220,9 @@ export const handleHostedChat = async (
   }
 
   const apiEndpoint =
-    provider === "custom" ? "/api/chat/custom" : `/api/chat/${provider}`
+    provider === "custom"
+      ? `/api${API.chat.custom}`
+      : `/api${API.chat[provider as keyof typeof API.chat]}`
 
   const requestBody = {
     chatSettings: payload.chatSettings,

@@ -5,6 +5,9 @@ import { NextResponse } from "next/server"
 import OpenAI from "openai/index.mjs"
 
 const base = process.env.BACKEND_URL || ""
+import { api } from "@/lib/api/client"
+import { API } from "@/lib/api/endpoints"
+export const runtime = "nodejs"
 
 export async function POST(req: Request) {
   if (!base) {
@@ -19,12 +22,9 @@ export async function POST(req: Request) {
   }
 
   try {
-    const profileRes = await fetch(`${base}/v1/profile/me`, {
-      credentials: "include",
+    const profile = await api.get(API.backend.profile.me, {
       headers: { cookie: req.headers.get("cookie") || "" }
     })
-    if (!profileRes.ok) return new NextResponse("Unauthorized", { status: 401 })
-    const profile = await profileRes.json()
 
     if (embeddingsProvider === "openai") {
       if (profile.use_azure_openai && !profile.azure_openai_api_key)
@@ -99,27 +99,19 @@ export async function POST(req: Request) {
           : null
     }))
 
-    await fetch(`${base}/v1/file_items/bulk`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "content-type": "application/json",
-        cookie: req.headers.get("cookie") || ""
-      },
-      body: JSON.stringify({ items: file_items })
-    })
+    await api.post(
+      API.backend.fileItemsBulk,
+      { items: file_items },
+      { headers: { cookie: req.headers.get("cookie") || "" } }
+    )
 
     const totalTokens = file_items.reduce((acc, item) => acc + item.tokens, 0)
 
-    await fetch(`${base}/v1/files/${encodeURIComponent(fileId)}`, {
-      method: "PUT",
-      credentials: "include",
-      headers: {
-        "content-type": "application/json",
-        cookie: req.headers.get("cookie") || ""
-      },
-      body: JSON.stringify({ tokens: totalTokens })
-    })
+    await api.put(
+      API.backend.files(fileId),
+      { tokens: totalTokens },
+      { headers: { cookie: req.headers.get("cookie") || "" } }
+    )
 
     return new NextResponse("Embed Successful", {
       status: 200

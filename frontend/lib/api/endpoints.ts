@@ -34,5 +34,24 @@ export const API = {
   assistants: {
     openai: "/assistants/openai"
   },
-  upload: "/v1/upload"
+  upload: {
+    root: "/v1/upload",
+    delete: "/v1/upload/delete",
+    signedUrl: (
+      scope: "files" | "workspaces" | "messages" | "assistants",
+      path: string,
+      ttl = 86400
+    ) =>
+      `/v1/upload/signed-url?scope=${scope}&path=${encodeURIComponent(path)}&ttl=${ttl}`
+  },
+  backend: {
+    profile: {
+      me: "/v1/profile/me"
+    },
+    files: (id: string) => `/v1/files/${encodeURIComponent(id)}`,
+    fileItemsBulk: "/v1/file_items/bulk",
+    retrieval: {
+      match: "/v1/retrieval/match"
+    }
+  }
 }

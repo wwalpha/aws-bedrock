@@ -3,8 +3,10 @@ import { OpenAIStream, StreamingTextResponse } from "ai"
 import { ServerRuntime } from "next"
 import OpenAI from "openai/index.mjs"
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions.mjs"
+import { api } from "@/lib/api/client"
+import { API } from "@/lib/api/endpoints"
 
-export const runtime: ServerRuntime = "edge"
+export const runtime: ServerRuntime = "nodejs"
 
 export async function POST(request: Request) {
   const json = await request.json()
@@ -17,15 +19,10 @@ export async function POST(request: Request) {
   try {
     const base = process.env.BACKEND_URL || ""
     if (!base) throw new Error("BACKEND_URL not configured")
-    const res = await fetch(
-      `${base}/v1/models/${encodeURIComponent(customModelId)}`,
-      {
-        credentials: "include",
-        headers: { cookie: request.headers.get("cookie") || "" }
-      }
+    const customModel = await api.get(
+      `/v1/models/${encodeURIComponent(customModelId)}`,
+      { headers: { cookie: request.headers.get("cookie") || "" } }
     )
-    if (!res.ok) throw new Error("Custom model not found")
-    const customModel = await res.json()
 
     const custom = new OpenAI({
       apiKey: customModel.api_key || "",

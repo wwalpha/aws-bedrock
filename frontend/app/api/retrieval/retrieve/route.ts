@@ -1,6 +1,8 @@
 import { generateLocalEmbedding } from "@/lib/generate-local-embedding"
 const base = process.env.BACKEND_URL || ""
 import OpenAI from "openai/index.mjs"
+import { api } from "@/lib/api/client"
+import { API } from "@/lib/api/endpoints"
 
 export async function POST(request: Request) {
   const json = await request.json()
@@ -15,12 +17,9 @@ export async function POST(request: Request) {
 
   try {
     if (!base) throw new Error("BACKEND_URL not configured")
-    const profRes = await fetch(`${base}/v1/profile/me`, {
-      credentials: "include",
+    const profile = await api.get(API.backend.profile.me, {
       headers: { cookie: request.headers.get("cookie") || "" }
     })
-    if (!profRes.ok) return new Response("Unauthorized", { status: 401 })
-    const profile = await profRes.json()
 
     // Validate required API keys client-side; backend should also enforce
     if (embeddingsProvider === "openai") {
@@ -55,41 +54,29 @@ export async function POST(request: Request) {
 
       const openaiEmbedding = response.data.map(item => item.embedding)[0]
 
-      const matchRes = await fetch(`${base}/v1/retrieval/match`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "content-type": "application/json",
-          cookie: request.headers.get("cookie") || ""
-        },
-        body: JSON.stringify({
+      chunks = await api.post(
+        API.backend.retrieval.match,
+        {
           provider: "openai",
           query_embedding: openaiEmbedding,
           match_count: sourceCount,
           file_ids: uniqueFileIds
-        })
-      })
-      if (!matchRes.ok) throw new Error("Match failed")
-      chunks = await matchRes.json()
+        },
+        { headers: { cookie: request.headers.get("cookie") || "" } }
+      )
     } else if (embeddingsProvider === "local") {
       const localEmbedding = await generateLocalEmbedding(userInput)
 
-      const matchRes = await fetch(`${base}/v1/retrieval/match`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "content-type": "application/json",
-          cookie: request.headers.get("cookie") || ""
-        },
-        body: JSON.stringify({
+      chunks = await api.post(
+        API.backend.retrieval.match,
+        {
           provider: "local",
           query_embedding: localEmbedding,
           match_count: sourceCount,
           file_ids: uniqueFileIds
-        })
-      })
-      if (!matchRes.ok) throw new Error("Match failed")
-      chunks = await matchRes.json()
+        },
+        { headers: { cookie: request.headers.get("cookie") || "" } }
+      )
     }
 
     const mostSimilarChunks = chunks?.sort(

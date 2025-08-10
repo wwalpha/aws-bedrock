@@ -1,5 +1,4 @@
-
-import axios, { AxiosInstance } from "axios"
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios"
 
 const base = process.env.BACKEND_URL || ""
 
@@ -23,46 +22,46 @@ function handleError(error: any): never {
 }
 
 export const api = {
-  get: async (p: string) => {
+  get: async (p: string, config?: AxiosRequestConfig) => {
     try {
       if (!base) throw new Error("BACKEND_URL not configured")
-      const res = await client.get(p)
+      const res = await client.get(p, config)
       return res.data
     } catch (e) {
       handleError(e)
     }
   },
-  post: async (p: string, body?: any) => {
+  post: async (p: string, body?: any, config?: AxiosRequestConfig) => {
     try {
       if (!base) throw new Error("BACKEND_URL not configured")
-      const res = await client.post(p, body)
+      const res = await client.post(p, body, config)
       return res.data
     } catch (e) {
       handleError(e)
     }
   },
-  put: async (p: string, body?: any) => {
+  put: async (p: string, body?: any, config?: AxiosRequestConfig) => {
     try {
       if (!base) throw new Error("BACKEND_URL not configured")
-      const res = await client.put(p, body)
+      const res = await client.put(p, body, config)
       return res.data
     } catch (e) {
       handleError(e)
     }
   },
-  patch: async (p: string, body?: any) => {
+  patch: async (p: string, body?: any, config?: AxiosRequestConfig) => {
     try {
       if (!base) throw new Error("BACKEND_URL not configured")
-      const res = await client.patch(p, body)
+      const res = await client.patch(p, body, config)
       return res.data
     } catch (e) {
       handleError(e)
     }
   },
-  delete: async (p: string) => {
+  delete: async (p: string, config?: AxiosRequestConfig) => {
     try {
       if (!base) throw new Error("BACKEND_URL not configured")
-      const res = await client.delete(p)
+      const res = await client.delete(p, config)
       return res.data
     } catch (e) {
       handleError(e)

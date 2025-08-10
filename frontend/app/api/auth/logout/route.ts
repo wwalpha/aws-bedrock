@@ -1,5 +1,6 @@
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
+import { api } from "@/lib/api/client"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -15,16 +16,20 @@ export async function POST(req: Request) {
     bodyToken = b?.accessToken
   } catch {}
 
-  const res = await fetch(`${backendBase}/auth/logout`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ accessToken: bodyToken || accessToken })
-  })
+  let data: any = {}
+  let status = 200
+  try {
+    data = await api.post("/auth/logout", {
+      accessToken: bodyToken || accessToken
+    })
+    status = 200
+  } catch (e: any) {
+    data = { error: e.message }
+    status = 401
+  }
 
   // Clear cookies on frontend regardless of backend response
-  const nextRes = NextResponse.json(await res.json().catch(() => ({})), {
-    status: res.status
-  })
+  const nextRes = NextResponse.json(data, { status })
   nextRes.cookies.set("idToken", "", { path: "/", maxAge: 0 })
   nextRes.cookies.set("accessToken", "", { path: "/", maxAge: 0 })
   nextRes.cookies.set("refreshToken", "", { path: "/", maxAge: 0 })
