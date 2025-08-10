@@ -8,13 +8,13 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { deleteFolder } from "@/db/folders"
 import { api } from "@/lib/api/client"
 import { Tables } from "@/types/db"
 import { ContentType } from "@/types"
 import { IconTrash } from "@tabler/icons-react"
-import { FC, useContext, useRef, useState } from "react"
+import { FC, useRef, useState } from "react"
 import { toast } from "sonner"
 
 interface DeleteFolderProps {
@@ -26,17 +26,15 @@ export const DeleteFolder: FC<DeleteFolderProps> = ({
   folder,
   contentType
 }) => {
-  const {
-    setChats,
-    setFolders,
-    setPresets,
-    setPrompts,
-    setFiles,
-    setCollections,
-    setAssistants,
-    setTools,
-    setModels
-  } = useContext(ChatbotUIContext)
+  const setChats = useChatStore(s => s.setChats)
+  const setFolders = useChatStore(s => s.setFolders)
+  const setPresets = useChatStore(s => s.setPresets)
+  const setPrompts = useChatStore(s => s.setPrompts)
+  const setFiles = useChatStore(s => s.setFiles)
+  const setCollections = useChatStore(s => s.setCollections)
+  const setAssistants = useChatStore(s => s.setAssistants)
+  const setTools = useChatStore(s => s.setTools)
+  const setModels = useChatStore(s => s.setModels)
 
   const buttonRef = useRef<HTMLButtonElement>(null)
 

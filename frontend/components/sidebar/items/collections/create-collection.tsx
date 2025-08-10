@@ -1,11 +1,11 @@
 import { SidebarCreateItem } from "@/components/sidebar/items/all/sidebar-create-item"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { COLLECTION_DESCRIPTION_MAX, COLLECTION_NAME_MAX } from "@/db/limits"
 import { TablesInsert } from "@/types/db"
 import { CollectionFile } from "@/types"
-import { FC, useContext, useState } from "react"
+import { FC, useState } from "react"
 import { CollectionFileSelect } from "./collection-file-select"
 
 interface CreateCollectionProps {
@@ -17,7 +17,8 @@ export const CreateCollection: FC<CreateCollectionProps> = ({
   isOpen,
   onOpenChange
 }) => {
-  const { profile, selectedWorkspace } = useContext(ChatbotUIContext)
+  const profile = useChatStore(s => s.profile)
+  const selectedWorkspace = useChatStore(s => s.selectedWorkspace)
 
   const [name, setName] = useState("")
   const [isTyping, setIsTyping] = useState(false)

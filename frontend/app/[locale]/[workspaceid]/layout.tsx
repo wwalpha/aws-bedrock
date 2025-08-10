@@ -1,7 +1,7 @@
 "use client"
 
 import { Dashboard } from "@/components/ui/dashboard"
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { getAssistantWorkspacesByWorkspaceId } from "@/db/assistants"
 import { getChatsByWorkspaceId } from "@/db/chats"
 import { getCollectionWorkspacesByWorkspaceId } from "@/db/collections"
@@ -16,7 +16,7 @@ import { getWorkspaceById } from "@/db/workspaces"
 import { convertBlobToBase64 } from "@/lib/blob-to-b64"
 import { LLMID } from "@/types"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { ReactNode, useContext, useEffect, useState } from "react"
+import { ReactNode, useEffect, useState } from "react"
 import Loading from "../loading"
 
 interface WorkspaceLayoutProps {
@@ -54,7 +54,7 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     setNewMessageFiles,
     setNewMessageImages,
     setShowFilesDisplay
-  } = useContext(ChatbotUIContext)
+  } = useChatStore()
 
   const [loading, setLoading] = useState(true)
 

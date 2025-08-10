@@ -6,7 +6,7 @@ import {
   SheetHeader,
   SheetTitle
 } from "@/components/ui/sheet"
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { createAssistantCollections } from "@/db/assistant-collections"
 import { createAssistantFiles } from "@/db/assistant-files"
 import { createAssistantTools } from "@/db/assistant-tools"
@@ -26,7 +26,7 @@ import { createTool } from "@/db/tools"
 import { convertBlobToBase64 } from "@/lib/blob-to-b64"
 import { Tables, TablesInsert } from "@/types/db"
 import { ContentType } from "@/types"
-import { FC, useContext, useRef, useState } from "react"
+import { FC, useRef, useState } from "react"
 import { toast } from "sonner"
 
 interface SidebarCreateItemProps {
@@ -46,18 +46,16 @@ export const SidebarCreateItem: FC<SidebarCreateItemProps> = ({
   createState,
   isTyping
 }) => {
-  const {
-    selectedWorkspace,
-    setChats,
-    setPresets,
-    setPrompts,
-    setFiles,
-    setCollections,
-    setAssistants,
-    setAssistantImages,
-    setTools,
-    setModels
-  } = useContext(ChatbotUIContext)
+  const selectedWorkspace = useChatStore(s => s.selectedWorkspace)
+  const setChats = useChatStore(s => s.setChats)
+  const setPresets = useChatStore(s => s.setPresets)
+  const setPrompts = useChatStore(s => s.setPrompts)
+  const setFiles = useChatStore(s => s.setFiles)
+  const setCollections = useChatStore(s => s.setCollections)
+  const setAssistants = useChatStore(s => s.setAssistants)
+  const setAssistantImages = useChatStore(s => s.setAssistantImages)
+  const setTools = useChatStore(s => s.setTools)
+  const setModels = useChatStore(s => s.setModels)
 
   const buttonRef = useRef<HTMLButtonElement>(null)
 

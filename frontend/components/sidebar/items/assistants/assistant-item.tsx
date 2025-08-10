@@ -2,12 +2,12 @@ import { ChatSettingsForm } from "@/components/ui/chat-settings-form"
 import ImagePicker from "@/components/ui/image-picker"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { ASSISTANT_DESCRIPTION_MAX, ASSISTANT_NAME_MAX } from "@/db/limits"
 import { Tables } from "@/types/db"
 import { IconRobotFace } from "@tabler/icons-react"
 import Image from "next/image"
-import { FC, useContext, useEffect, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import profile from "react-syntax-highlighter/dist/esm/languages/hljs/profile"
 import { SidebarItem } from "../all/sidebar-display-item"
 import { AssistantRetrievalSelect } from "./assistant-retrieval-select"
@@ -18,7 +18,8 @@ interface AssistantItemProps {
 }
 
 export const AssistantItem: FC<AssistantItemProps> = ({ assistant }) => {
-  const { selectedWorkspace, assistantImages } = useContext(ChatbotUIContext)
+  const selectedWorkspace = useChatStore(s => s.selectedWorkspace)
+  const assistantImages = useChatStore(s => s.assistantImages)
 
   const [name, setName] = useState(assistant.name)
   const [isTyping, setIsTyping] = useState(false)

@@ -13,6 +13,7 @@ interface SidebarProps {
   showSidebar: boolean
 }
 
+export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar }) => {
   const folders = useChatStore(s => s.folders)
   const chats = useChatStore(s => s.chats)
   const presets = useChatStore(s => s.presets)

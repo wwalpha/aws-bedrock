@@ -9,7 +9,7 @@ import {
   SheetTrigger
 } from "@/components/ui/sheet"
 import { AssignWorkspaces } from "@/components/workspace/assign-workspaces"
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import {
   createAssistantCollection,
   deleteAssistantCollection,
@@ -80,7 +80,7 @@ import {
 import { convertBlobToBase64 } from "@/lib/blob-to-b64"
 import { Tables, TablesUpdate } from "@/types/db"
 import { CollectionFile, ContentType, DataItemType } from "@/types"
-import { FC, useContext, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 import profile from "react-syntax-highlighter/dist/esm/languages/hljs/profile"
 import { toast } from "sonner"
 import { SidebarDeleteItem } from "./sidebar-delete-item"
@@ -102,19 +102,17 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
   updateState,
   isTyping
 }) => {
-  const {
-    workspaces,
-    selectedWorkspace,
-    setChats,
-    setPresets,
-    setPrompts,
-    setFiles,
-    setCollections,
-    setAssistants,
-    setTools,
-    setModels,
-    setAssistantImages
-  } = useContext(ChatbotUIContext)
+  const workspaces = useChatStore(s => s.workspaces)
+  const selectedWorkspace = useChatStore(s => s.selectedWorkspace)
+  const setChats = useChatStore(s => s.setChats)
+  const setPresets = useChatStore(s => s.setPresets)
+  const setPrompts = useChatStore(s => s.setPrompts)
+  const setFiles = useChatStore(s => s.setFiles)
+  const setCollections = useChatStore(s => s.setCollections)
+  const setAssistants = useChatStore(s => s.setAssistants)
+  const setTools = useChatStore(s => s.setTools)
+  const setModels = useChatStore(s => s.setModels)
+  const setAssistantImages = useChatStore(s => s.setAssistantImages)
 
   const buttonRef = useRef<HTMLButtonElement>(null)
 

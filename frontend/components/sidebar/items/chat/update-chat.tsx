@@ -9,18 +9,18 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { updateChat } from "@/db/chats"
 import { Tables } from "@/types/db"
 import { IconEdit } from "@tabler/icons-react"
-import { FC, useContext, useRef, useState } from "react"
+import { FC, useRef, useState } from "react"
 
 interface UpdateChatProps {
   chat: Tables<"chats">
 }
 
 export const UpdateChat: FC<UpdateChatProps> = ({ chat }) => {
-  const { setChats } = useContext(ChatbotUIContext)
+  const setChats = useChatStore(s => s.setChats)
 
   const buttonRef = useRef<HTMLButtonElement>(null)
 

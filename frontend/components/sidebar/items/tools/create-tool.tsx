@@ -2,11 +2,11 @@ import { SidebarCreateItem } from "@/components/sidebar/items/all/sidebar-create
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { TextareaAutosize } from "@/components/ui/textarea-autosize"
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { TOOL_DESCRIPTION_MAX, TOOL_NAME_MAX } from "@/db/limits"
 import { validateOpenAPI } from "@/lib/openapi-conversion"
 import { TablesInsert } from "@/types/db"
-import { FC, useContext, useState } from "react"
+import { FC, useState } from "react"
 
 interface CreateToolProps {
   isOpen: boolean
@@ -14,7 +14,8 @@ interface CreateToolProps {
 }
 
 export const CreateTool: FC<CreateToolProps> = ({ isOpen, onOpenChange }) => {
-  const { profile, selectedWorkspace } = useContext(ChatbotUIContext)
+  const profile = useChatStore(s => s.profile)
+  const selectedWorkspace = useChatStore(s => s.selectedWorkspace)
 
   const [name, setName] = useState("")
   const [isTyping, setIsTyping] = useState(false)

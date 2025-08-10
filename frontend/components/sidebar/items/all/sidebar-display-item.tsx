@@ -1,10 +1,10 @@
-import { ChatbotUIContext } from "@/context/context"
 import { createChat } from "@/db/chats"
 import { cn } from "@/lib/utils"
 import { Tables } from "@/types/db"
 import { ContentType, DataItemType } from "@/types"
 import { useRouter } from "next/navigation"
-import { FC, useContext, useRef, useState } from "react"
+import { FC, useRef, useState } from "react"
+import { useChatStore } from "@/store"
 import { SidebarUpdateItem } from "./sidebar-update-item"
 
 interface SidebarItemProps {
@@ -24,8 +24,9 @@ export const SidebarItem: FC<SidebarItemProps> = ({
   icon,
   isTyping
 }) => {
-  const { selectedWorkspace, setChats, setSelectedAssistant } =
-    useContext(ChatbotUIContext)
+  const selectedWorkspace = useChatStore(s => s.selectedWorkspace)
+  const setChats = useChatStore(s => s.setChats)
+  const setSelectedAssistant = useChatStore(s => s.setSelectedAssistant)
 
   const router = useRouter()
 

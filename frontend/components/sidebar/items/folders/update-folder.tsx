@@ -9,18 +9,18 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ChatbotUIContext } from "@/context/context"
+import { useChatStore } from "@/store"
 import { updateFolder } from "@/db/folders"
 import { Tables } from "@/types/db"
 import { IconEdit } from "@tabler/icons-react"
-import { FC, useContext, useRef, useState } from "react"
+import { FC, useRef, useState } from "react"
 
 interface UpdateFolderProps {
   folder: Tables<"folders">
 }
 
 export const UpdateFolder: FC<UpdateFolderProps> = ({ folder }) => {
-  const { setFolders } = useContext(ChatbotUIContext)
+  const setFolders = useChatStore(s => s.setFolders)
 
   const buttonRef = useRef<HTMLButtonElement>(null)
 
