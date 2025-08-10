@@ -20,6 +20,19 @@ locals {
   # ----------------------------------------------------------------------------------------------
   api_stage_name        = "v1"
   api_allow_origins_dev = ["http://localhost:3000", "http://localhost:3001"]
+
+  # ----------------------------------------------------------------------------------------------
+  # Lambda
+  # ----------------------------------------------------------------------------------------------
+  lambda_default_content = <<EOT
+exports.handler = async (event) => {
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify('Hello from Lambda!'),
+  };
+  return response;
+};
+EOT
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -31,3 +44,16 @@ data "aws_region" "this" {}
 # AWS Account
 # ----------------------------------------------------------------------------------------------
 data "aws_caller_identity" "this" {}
+
+# ----------------------------------------------------------------------------------------------
+# Archive file 
+# ----------------------------------------------------------------------------------------------
+data "archive_file" "default" {
+  type        = "zip"
+  output_path = "${path.module}/dist/default.zip"
+
+  source {
+    content  = local.lambda_default_content
+    filename = "index.js"
+  }
+}

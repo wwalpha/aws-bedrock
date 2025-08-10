@@ -1,6 +1,3 @@
-# --------------------------------------------------------------------------------------------------------------
-# Amazon Cognito User Pool
-# --------------------------------------------------------------------------------------------------------------
 resource "aws_cognito_user_pool" "this" {
   name                     = "${local.prefix}_UserPool"
   auto_verified_attributes = ["email"]
@@ -41,6 +38,9 @@ resource "aws_cognito_user_pool" "this" {
     }
   }
 
+  lambda_config {
+    post_confirmation = aws_lambda_function.cognito_post_signup.arn
+  }
 }
 
 # -------------------------------------------------------
