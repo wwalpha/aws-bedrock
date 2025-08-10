@@ -1,25 +1,18 @@
 import { openapiToFunctions } from "@/lib/openapi-conversion"
-import { Tables } from "@/types/db"
-import { ChatSettings } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import OpenAI from "openai/index.mjs"
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions.mjs"
 import { api } from "@/lib/api/client"
 import { API } from "@/lib/api/endpoints"
+import type { ChatToolsRequest, ProfileMeResponse } from "@/types/api"
 export const runtime = "nodejs"
 
 export async function POST(request: Request) {
-  const json = await request.json()
-  const { chatSettings, messages, selectedTools } = json as {
-    chatSettings: ChatSettings
-    messages: any[]
-    selectedTools: Tables<"tools">[]
-  }
+  const json = (await request.json()) as ChatToolsRequest
+  const { chatSettings, messages, selectedTools } = json
 
   try {
-    const base = process.env.BACKEND_URL || ""
-
-    const profile = await api.get(API.backend.profile.me, {
+    const profile = await api.get<ProfileMeResponse>(API.backend.profile.me, {
       headers: { cookie: request.headers.get("cookie") || "" }
     })
     if (!profile.openai_api_key)
@@ -31,8 +24,15 @@ export async function POST(request: Request) {
     })
 
     let allTools: OpenAI.Chat.Completions.ChatCompletionTool[] = []
-    let allRouteMaps = {}
-    let schemaDetails = []
+    let allRouteMaps: Record<string, string> = {}
+    let schemaDetails: Array<{
+      title: string
+      description?: string
+      url: string
+      headers?: unknown
+      routeMap: Record<string, string>
+      requestInBody?: boolean
+    }> = []
 
     for (const selectedTool of selectedTools) {
       try {
@@ -123,7 +123,7 @@ export async function POST(request: Request) {
 
         // Determine if the request should be in the body or as a query
         const isRequestInBody = schemaDetail.requestInBody
-        let data = {}
+        let data: any = {}
 
         if (isRequestInBody) {
           // If the type is set to body
@@ -132,7 +132,7 @@ export async function POST(request: Request) {
           }
 
           // Check if custom headers are set
-          const customHeaders = schemaDetail.headers // Moved this line up to the loop
+          const customHeaders = schemaDetail.headers
           // Check if custom headers are set and are of type string
           if (customHeaders && typeof customHeaders === "string") {
             let parsedCustomHeaders = JSON.parse(customHeaders) as Record<
@@ -198,7 +198,6 @@ export async function POST(request: Request) {
         messages.push({
           tool_call_id: toolCall.id,
           role: "tool",
-          name: functionName,
           content: JSON.stringify(data)
         })
       }

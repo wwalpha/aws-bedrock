@@ -2,6 +2,7 @@ import { Brand } from "@/components/ui/brand"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { API } from "@/lib/api/endpoints"
 import { get } from "@vercel/edge-config"
 import { Metadata } from "next"
 import { cookies, headers } from "next/headers"
@@ -20,12 +21,9 @@ export default async function Login({
   const sp = (await searchParams) as { message?: string } | undefined
   // If already logged in (via backend), redirect away
   try {
-    const meRes = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/api/auth/me`,
-      {
-        cache: "no-store"
-      }
-    )
+    const meRes = await fetch(`/api${API.auth.me}`, {
+      cache: "no-store"
+    })
     if (meRes.ok) {
       const me = await meRes.json()
       const dest = me?.homeWorkspaceId ? `/${me.homeWorkspaceId}/chat` : "/"
@@ -39,14 +37,11 @@ export default async function Login({
     const email = formData.get("email") as string
     const password = formData.get("password") as string
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/api/auth/login`,
-        {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ email, password })
-        }
-      )
+      const res = await fetch(`/api${API.auth.login}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, password })
+      })
       if (!res.ok) {
         const msg = (await res.text()) || "Login failed"
         return redirect(`/login?message=${encodeURIComponent(msg)}`)
@@ -59,12 +54,9 @@ export default async function Login({
 
     // After login, try to fetch profile/me for redirect
     try {
-      const meRes = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/api/auth/me`,
-        {
-          cache: "no-store"
-        }
-      )
+      const meRes = await fetch(`/api${API.auth.me}`, {
+        cache: "no-store"
+      })
       if (meRes.ok) {
         const me = await meRes.json()
         const dest = me?.homeWorkspaceId ? `/${me.homeWorkspaceId}/chat` : "/"
@@ -114,14 +106,11 @@ export default async function Login({
 
     // Delegate to backend if it supports sign up, otherwise skip
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/api/auth/signup`,
-        {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ email, password })
-        }
-      )
+      const res = await fetch(`/api${API.auth.signup}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, password })
+      })
       if (!res.ok) {
         const msg = (await res.text()) || "Sign up failed"
         return redirect(`/login?message=${encodeURIComponent(msg)}`)
@@ -148,18 +137,15 @@ export default async function Login({
     const email = formData.get("email") as string
     // Optionally proxy to backend reset endpoint if exists
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/api/auth/login`,
-        {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({
-            email,
-            reset: true,
-            redirectTo: `${origin}/login/password`
-          })
-        }
-      )
+      const res = await fetch(`/api${API.auth.login}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          email,
+          reset: true,
+          redirectTo: `${origin}/login/password`
+        })
+      })
       if (!res.ok) {
         const msg = (await res.text()) || "Reset failed"
         return redirect(`/login?message=${encodeURIComponent(msg)}`)

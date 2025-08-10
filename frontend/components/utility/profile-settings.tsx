@@ -22,6 +22,7 @@ import {
 } from "@tabler/icons-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { API } from "@/lib/api/endpoints"
 import { FC, useCallback, useRef, useState } from "react"
 import { toast } from "sonner"
 import { SIDEBAR_ICON_SIZE } from "../sidebar/sidebar-switcher"
@@ -121,7 +122,7 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
 
   const handleSignOut = async () => {
     try {
-      await fetch("/api/auth/logout", { method: "POST" })
+      await fetch(`/api${API.auth.logout}`, { method: "POST" })
     } catch {}
     router.push("/login")
     router.refresh()
@@ -269,7 +270,7 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
 
       setLoadingUsername(true)
 
-      const response = await fetch(`/api/username/available`, {
+      const response = await fetch(`/api${API.username.available}`, {
         method: "POST",
         body: JSON.stringify({ username })
       })

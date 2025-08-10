@@ -3,6 +3,7 @@ const base = process.env.BACKEND_URL || ""
 import OpenAI from "openai/index.mjs"
 import { api } from "@/lib/api/client"
 import { API } from "@/lib/api/endpoints"
+import type { ProfileMeResponse, RetrievalChunk } from "@/types/api"
 
 export async function POST(request: Request) {
   const json = await request.json()
@@ -16,7 +17,7 @@ export async function POST(request: Request) {
   const uniqueFileIds = [...new Set(fileIds)]
 
   try {
-    const profile = await api.get(API.backend.profile.me, {
+    const profile = await api.get<ProfileMeResponse>(API.backend.profile.me, {
       headers: { cookie: request.headers.get("cookie") || "" }
     })
 
@@ -53,7 +54,7 @@ export async function POST(request: Request) {
 
       const openaiEmbedding = response.data.map(item => item.embedding)[0]
 
-      chunks = await api.post(
+      chunks = await api.post<RetrievalChunk[]>(
         API.backend.retrieval.match,
         {
           provider: "openai",
@@ -66,7 +67,7 @@ export async function POST(request: Request) {
     } else if (embeddingsProvider === "local") {
       const localEmbedding = await generateLocalEmbedding(userInput)
 
-      chunks = await api.post(
+      chunks = await api.post<RetrievalChunk[]>(
         API.backend.retrieval.match,
         {
           provider: "local",

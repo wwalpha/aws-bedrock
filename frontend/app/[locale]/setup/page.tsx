@@ -14,6 +14,7 @@ import { TablesUpdate } from "@/types/db"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { APIStep } from "../../../components/setup/api-step"
+import { API } from "@/lib/api/endpoints"
 import { FinishStep } from "../../../components/setup/finish-step"
 import { ProfileStep } from "../../../components/setup/profile-step"
 import {
@@ -62,7 +63,7 @@ export default function SetupPage() {
 
   useEffect(() => {
     ;(async () => {
-      const meRes = await fetch(`/api/auth/me`, { cache: "no-store" })
+      const meRes = await fetch(`/api${API.auth.me}`, { cache: "no-store" })
       if (!meRes.ok) {
         return router.push("/login")
       } else {
@@ -109,7 +110,7 @@ export default function SetupPage() {
   }
 
   const handleSaveSetupSetting = async () => {
-    const meRes = await fetch(`/api/auth/me`, { cache: "no-store" })
+    const meRes = await fetch(`/api${API.auth.me}`, { cache: "no-store" })
     if (!meRes.ok) {
       return router.push("/login")
     }

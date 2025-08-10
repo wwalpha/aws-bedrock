@@ -2,6 +2,7 @@ import { useChatStore } from "@/store"
 import useHotkey from "@/lib/hooks/use-hotkey"
 import { IconLoader2, IconSend } from "@tabler/icons-react"
 import { FC, useState } from "react"
+import { API } from "@/lib/api/endpoints"
 import { Dialog, DialogContent } from "../ui/dialog"
 import { TextareaAutosize } from "../ui/textarea-autosize"
 
@@ -20,7 +21,7 @@ export const CommandK: FC<CommandKProps> = ({}) => {
   const handleCommandK = async () => {
     setLoading(true)
 
-    const response = await fetch("/api/command", {
+    const response = await fetch(`/api${API.command}`, {
       method: "POST",
       body: JSON.stringify({
         input: value

@@ -18,6 +18,7 @@ import { LLMID } from "@/types"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { ReactNode, useEffect, useState } from "react"
 import Loading from "../loading"
+import { API } from "@/lib/api/endpoints"
 
 interface WorkspaceLayoutProps {
   children: ReactNode
@@ -60,12 +61,13 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
 
   useEffect(() => {
     ;(async () => {
-      const res = await fetch("/api/auth/me", { credentials: "include" })
+      const res = await fetch(`/api${API.auth.me}`, {
+        credentials: "include"
+      })
       if (!res.ok) {
         return router.push("/login")
-      } else {
-        await fetchWorkspaceData(workspaceId)
       }
+      await fetchWorkspaceData(workspaceId)
     })()
   }, [])
 

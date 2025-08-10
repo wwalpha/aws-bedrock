@@ -11,6 +11,7 @@ import { ChatMessage, ChatPayload, LLMID, ModelProvider } from "@/types"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef } from "react"
 import { LLM_LIST } from "../../../lib/models/llm/llm-list"
+import { API } from "@/lib/api/endpoints"
 import {
   createTempMessages,
   handleCreateChat,
@@ -322,7 +323,7 @@ export const useChatHandler = () => {
           chatImages
         )
 
-        const response = await fetch("/api/chat/tools", {
+        const response = await fetch(`/api${API.chat.tools}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

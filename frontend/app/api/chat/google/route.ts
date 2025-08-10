@@ -1,8 +1,8 @@
-const base = process.env.BACKEND_URL || ""
 import { ChatSettings } from "@/types"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { api } from "@/lib/api/client"
 import { API } from "@/lib/api/endpoints"
+import type { ProfileMeResponse } from "@/types/api"
 
 export const runtime = "nodejs"
 
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const profile = await api.get(API.backend.profile.me, {
+    const profile = await api.get<ProfileMeResponse>(API.backend.profile.me, {
       headers: { cookie: request.headers.get("cookie") || "" }
     })
     if (!profile.google_gemini_api_key)

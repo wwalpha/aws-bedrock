@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from "axios"
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios"
 
 const base = process.env.BACKEND_URL || ""
 
@@ -22,42 +22,57 @@ function handleError(error: any): never {
 }
 
 export const api = {
-  get: async (p: string, config?: AxiosRequestConfig) => {
+  get: async <T = any>(p: string, config?: AxiosRequestConfig): Promise<T> => {
     try {
-      const res = await client.get(p, config)
-      return res.data
+      const res: AxiosResponse<T> = await client.get(p, config)
+      return res.data as T
     } catch (e) {
       handleError(e)
     }
   },
-  post: async (p: string, body?: any, config?: AxiosRequestConfig) => {
+  post: async <T = any>(
+    p: string,
+    body?: any,
+    config?: AxiosRequestConfig
+  ): Promise<T> => {
     try {
-      const res = await client.post(p, body, config)
-      return res.data
+      const res: AxiosResponse<T> = await client.post(p, body, config)
+      return res.data as T
     } catch (e) {
       handleError(e)
     }
   },
-  put: async (p: string, body?: any, config?: AxiosRequestConfig) => {
+  put: async <T = any>(
+    p: string,
+    body?: any,
+    config?: AxiosRequestConfig
+  ): Promise<T> => {
     try {
-      const res = await client.put(p, body, config)
-      return res.data
+      const res: AxiosResponse<T> = await client.put(p, body, config)
+      return res.data as T
     } catch (e) {
       handleError(e)
     }
   },
-  patch: async (p: string, body?: any, config?: AxiosRequestConfig) => {
+  patch: async <T = any>(
+    p: string,
+    body?: any,
+    config?: AxiosRequestConfig
+  ): Promise<T> => {
     try {
-      const res = await client.patch(p, body, config)
-      return res.data
+      const res: AxiosResponse<T> = await client.patch(p, body, config)
+      return res.data as T
     } catch (e) {
       handleError(e)
     }
   },
-  delete: async (p: string, config?: AxiosRequestConfig) => {
+  delete: async <T = any>(
+    p: string,
+    config?: AxiosRequestConfig
+  ): Promise<T> => {
     try {
-      const res = await client.delete(p, config)
-      return res.data
+      const res: AxiosResponse<T> = await client.delete(p, config)
+      return res.data as T
     } catch (e) {
       handleError(e)
     }

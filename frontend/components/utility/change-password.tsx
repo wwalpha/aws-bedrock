@@ -1,6 +1,7 @@
 "use client"
 import { useRouter } from "next/navigation"
 import { FC, useState } from "react"
+import { API } from "@/lib/api/endpoints"
 import { Button } from "../ui/button"
 import {
   Dialog,
@@ -23,7 +24,7 @@ export const ChangePassword: FC<ChangePasswordProps> = () => {
   const handleResetPassword = async () => {
     if (!newPassword) return toast.info("Please enter your new password.")
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch(`/api${API.auth.login}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ newPassword, changePassword: true })

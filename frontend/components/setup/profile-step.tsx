@@ -13,6 +13,7 @@ import {
 import { FC, useCallback, useState } from "react"
 import { LimitDisplay } from "../ui/limit-display"
 import { toast } from "sonner"
+import { API } from "@/lib/api/endpoints"
 
 interface ProfileStepProps {
   username: string
@@ -72,7 +73,7 @@ export const ProfileStep: FC<ProfileStepProps> = ({
 
       setLoading(true)
 
-      const response = await fetch(`/api/username/available`, {
+      const response = await fetch(`/api${API.username.available}`, {
         method: "POST",
         body: JSON.stringify({ username })
       })

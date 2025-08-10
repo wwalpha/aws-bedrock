@@ -1,11 +1,14 @@
-const base = process.env.BACKEND_URL || ""
 import { ChatSettings } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import { ServerRuntime } from "next"
 import OpenAI from "openai/index.mjs"
-import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions.mjs"
+import {
+  ChatCompletionCreateParamsBase,
+  ChatCompletionMessageParam
+} from "openai/resources/chat/completions.mjs"
 import { api } from "@/lib/api/client"
 import { API } from "@/lib/api/endpoints"
+import type { ProfileMeResponse } from "@/types/api"
 
 export const runtime: ServerRuntime = "nodejs"
 
@@ -13,11 +16,11 @@ export async function POST(request: Request) {
   const json = await request.json()
   const { chatSettings, messages } = json as {
     chatSettings: ChatSettings
-    messages: any[]
+    messages: ChatCompletionMessageParam[]
   }
 
   try {
-    const profile = await api.get(API.backend.profile.me, {
+    const profile = await api.get<ProfileMeResponse>(API.backend.profile.me, {
       headers: { cookie: request.headers.get("cookie") || "" }
     })
     if (!profile.openrouter_api_key)

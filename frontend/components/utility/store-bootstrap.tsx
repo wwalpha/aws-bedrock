@@ -12,6 +12,7 @@ import {
 import { useChatStore } from "@/store"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { API } from "@/lib/api/endpoints"
 
 /**
  * StoreBootstrap
@@ -70,7 +71,7 @@ export default function StoreBootstrap() {
 
   const fetchStartingData = async () => {
     try {
-      const meRes = await fetch(`/api/auth/me`, { cache: "no-store" })
+      const meRes = await fetch(`/api${API.auth.me}`, { cache: "no-store" })
       if (!meRes.ok) return
       const me = await meRes.json()
       const userId = me?.user?.id || me?.id
