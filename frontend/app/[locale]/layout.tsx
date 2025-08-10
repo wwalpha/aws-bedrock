@@ -1,5 +1,6 @@
 import { Toaster } from "@/components/ui/sonner"
-import { GlobalState } from "@/components/utility/global-state"
+import StoreBootstrap from "@/components/utility/store-bootstrap"
+import ChatbotContextBridge from "@/components/utility/chatbot-context-bridge"
 import { Providers } from "@/components/utility/providers"
 import TranslationsProvider from "@/components/utility/translations-provider"
 import initTranslations from "@/lib/i18n"
@@ -90,7 +91,8 @@ export default async function RootLayout(props: RootLayoutProps) {
               duration={3000}
             />
             <div className="bg-background text-foreground flex h-dvh flex-col items-center overflow-x-auto">
-              <GlobalState>{children}</GlobalState>
+              <StoreBootstrap />
+              <ChatbotContextBridge>{children}</ChatbotContextBridge>
             </div>
           </TranslationsProvider>
         </Providers>
