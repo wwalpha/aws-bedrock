@@ -3,9 +3,6 @@ import { api } from "@/lib/api/client"
 import type { LoginRequest, LoginResponse } from "@/types/api"
 import { API } from "@/lib/api/endpoints"
 
-export const runtime = "nodejs"
-export const dynamic = "force-dynamic"
-
 const backendBase = process.env.BACKEND_URL || ""
 
 export async function POST(req: Request) {

@@ -78,7 +78,7 @@ export default async function Login({
   const signUp = async (formData: FormData) => {
     "use server"
 
-    const email = formData.get("email") as string
+  const email = (formData.get("email") as string) || ""
     const password = formData.get("password") as string
 
     const emailDomainWhitelistPatternsString = await getEnvVarOrEdgeConfigValue(
@@ -94,8 +94,9 @@ export default async function Login({
       : []
 
     // If there are whitelist patterns, check if the email is allowed to sign up
-    if (emailDomainWhitelist.length > 0 || emailWhitelist.length > 0) {
-      const domainMatch = emailDomainWhitelist?.includes(email.split("@")[1])
+    if (email && (emailDomainWhitelist.length > 0 || emailWhitelist.length > 0)) {
+      const domain = email.includes("@") ? email.split("@")[1] : ""
+      const domainMatch = domain ? emailDomainWhitelist?.includes(domain) : false
       const emailMatch = emailWhitelist?.includes(email)
       if (!domainMatch && !emailMatch) {
         return redirect(
@@ -109,7 +110,7 @@ export default async function Login({
       const res = await fetch(`/api${API.auth.signup}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify(email ? { email, password } : { password })
       })
       if (!res.ok) {
         const msg = (await res.text()) || "Sign up failed"
@@ -192,6 +193,7 @@ export default async function Login({
 
         <SubmitButton
           formAction={signUp}
+          formNoValidate
           className="border-foreground/20 mb-2 rounded-md border px-4 py-2"
         >
           Sign Up

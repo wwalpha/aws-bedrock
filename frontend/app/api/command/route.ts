@@ -3,8 +3,6 @@ import OpenAI from "openai/index.mjs"
 import { api } from "@/lib/api/client"
 import { API } from "@/lib/api/endpoints"
 
-export const runtime = "nodejs"
-
 export async function POST(request: Request) {
   const json = await request.json()
   const { input } = json as {

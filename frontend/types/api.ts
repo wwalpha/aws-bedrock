@@ -2,6 +2,7 @@
 
 // Auth
 export interface LoginRequest {
+  // Backend expects `username`; our UI maps email->username on login
   username: string
   password: string
 }
@@ -15,6 +16,16 @@ export interface LoginResponse {
 
 export interface LogoutRequest {
   accessToken?: string
+}
+
+export interface SignupRequest {
+  password: string
+  email?: string
+}
+
+export interface SignupResponse {
+  userId?: string
+  [key: string]: any
 }
 
 export interface GenericErrorResponse {

@@ -71,9 +71,9 @@ export default function StoreBootstrap() {
 
   const fetchStartingData = async () => {
     try {
-      const meRes = await fetch(`/api${API.auth.me}`, { cache: "no-store" })
-      if (!meRes.ok) return
-      const me = await meRes.json()
+  const meRes = await fetch(`/api${API.auth.me}`, { cache: "no-store" })
+  if (!meRes.ok) return
+  const me = await meRes.json()
       const userId = me?.user?.id || me?.id
       if (!userId) return
 

@@ -2,9 +2,6 @@ import { BACKEND_URL } from "@/lib/consts"
 import { NextResponse } from "next/server"
 import { api } from "@/lib/api/client"
 
-export const runtime = "nodejs"
-export const dynamic = "force-dynamic"
-
 const backendBase = BACKEND_URL
 
 export async function POST(req: Request) {

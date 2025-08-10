@@ -7,7 +7,6 @@ import OpenAI from "openai/index.mjs"
 const base = process.env.BACKEND_URL || ""
 import { api } from "@/lib/api/client"
 import { API } from "@/lib/api/endpoints"
-export const runtime = "nodejs"
 
 export async function POST(req: Request) {
   if (!base) {
