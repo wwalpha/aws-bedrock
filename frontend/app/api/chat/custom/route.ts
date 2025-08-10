@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
   try {
     const base = process.env.BACKEND_URL || ""
-    if (!base) throw new Error("BACKEND_URL not configured")
+
     const customModel = await api.get(
       `/v1/models/${encodeURIComponent(customModelId)}`,
       { headers: { cookie: request.headers.get("cookie") || "" } }

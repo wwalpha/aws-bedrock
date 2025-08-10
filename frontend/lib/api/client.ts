@@ -24,7 +24,6 @@ function handleError(error: any): never {
 export const api = {
   get: async (p: string, config?: AxiosRequestConfig) => {
     try {
-      if (!base) throw new Error("BACKEND_URL not configured")
       const res = await client.get(p, config)
       return res.data
     } catch (e) {
@@ -33,7 +32,6 @@ export const api = {
   },
   post: async (p: string, body?: any, config?: AxiosRequestConfig) => {
     try {
-      if (!base) throw new Error("BACKEND_URL not configured")
       const res = await client.post(p, body, config)
       return res.data
     } catch (e) {
@@ -42,7 +40,6 @@ export const api = {
   },
   put: async (p: string, body?: any, config?: AxiosRequestConfig) => {
     try {
-      if (!base) throw new Error("BACKEND_URL not configured")
       const res = await client.put(p, body, config)
       return res.data
     } catch (e) {
@@ -51,7 +48,6 @@ export const api = {
   },
   patch: async (p: string, body?: any, config?: AxiosRequestConfig) => {
     try {
-      if (!base) throw new Error("BACKEND_URL not configured")
       const res = await client.patch(p, body, config)
       return res.data
     } catch (e) {
@@ -60,7 +56,6 @@ export const api = {
   },
   delete: async (p: string, config?: AxiosRequestConfig) => {
     try {
-      if (!base) throw new Error("BACKEND_URL not configured")
       const res = await client.delete(p, config)
       return res.data
     } catch (e) {

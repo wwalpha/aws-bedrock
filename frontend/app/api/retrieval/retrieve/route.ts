@@ -16,7 +16,6 @@ export async function POST(request: Request) {
   const uniqueFileIds = [...new Set(fileIds)]
 
   try {
-    if (!base) throw new Error("BACKEND_URL not configured")
     const profile = await api.get(API.backend.profile.me, {
       headers: { cookie: request.headers.get("cookie") || "" }
     })

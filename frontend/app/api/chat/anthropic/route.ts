@@ -6,8 +6,6 @@ import { AnthropicStream, StreamingTextResponse } from "ai"
 import { NextRequest, NextResponse } from "next/server"
 import { api } from "@/lib/api/client"
 
-export const runtime = "nodejs"
-
 export async function POST(request: NextRequest) {
   const json = await request.json()
   const { chatSettings, messages } = json as {
@@ -16,8 +14,6 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const base = process.env.BACKEND_URL || ""
-    if (!base) throw new Error("BACKEND_URL not configured")
     const profile = await api.get("/v1/profile/me", {
       headers: { cookie: request.headers.get("cookie") || "" }
     })
