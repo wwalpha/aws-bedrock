@@ -1,18 +1,28 @@
+/**
+ * ItemsSlice
+ * - Aggregates lists of primary entities used throughout the app (assistants, chats, files, etc.).
+ * - Each setter supports React.SetStateAction via `apply`, enabling functional updates.
+ */
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { apply } from "../utils"
 
 export interface ItemsSlice {
+  // Assistants
   assistants: Tables<"assistants">[]
   setAssistants: Dispatch<SetStateAction<Tables<"assistants">[]>>
+  // Collections
   collections: Tables<"collections">[]
   setCollections: Dispatch<SetStateAction<Tables<"collections">[]>>
+  // Chats
   chats: Tables<"chats">[]
   setChats: Dispatch<SetStateAction<Tables<"chats">[]>>
+  // Files and folders
   files: Tables<"files">[]
   setFiles: Dispatch<SetStateAction<Tables<"files">[]>>
   folders: Tables<"folders">[]
   setFolders: Dispatch<SetStateAction<Tables<"folders">[]>>
+  // Models/presets/prompts/tools
   models: Tables<"models">[]
   setModels: Dispatch<SetStateAction<Tables<"models">[]>>
   presets: Tables<"presets">[]
@@ -21,10 +31,14 @@ export interface ItemsSlice {
   setPrompts: Dispatch<SetStateAction<Tables<"prompts">[]>>
   tools: Tables<"tools">[]
   setTools: Dispatch<SetStateAction<Tables<"tools">[]>>
+  // Workspaces
   workspaces: Tables<"workspaces">[]
   setWorkspaces: Dispatch<SetStateAction<Tables<"workspaces">[]>>
 }
 
+/**
+ * Factory to create the items slice.
+ */
 export const createItemsSlice = (set: any) =>
   ({
     assistants: [],

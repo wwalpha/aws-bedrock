@@ -1,3 +1,8 @@
+/**
+ * AttachmentsSlice
+ * - Tracks files/images attached to the chat and new message buffers.
+ * - Includes a UI toggle for file display.
+ */
 import { Dispatch, SetStateAction } from "react"
 import { ChatFile, MessageImage } from "@/types"
 import { apply } from "../utils"
@@ -15,6 +20,9 @@ export interface AttachmentsSlice {
   setShowFilesDisplay: Dispatch<SetStateAction<boolean>>
 }
 
+/**
+ * Factory to create the attachments slice.
+ */
 export const createAttachmentsSlice = (set: any) =>
   ({
     chatFiles: [],

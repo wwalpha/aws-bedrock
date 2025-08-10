@@ -1,3 +1,7 @@
+/**
+ * ChatInputSlice
+ * - UI state for pickers (prompt/file/tool/assistant), slash/hashtag/at commands, and focus flags.
+ */
 import { Dispatch, SetStateAction } from "react"
 import { apply } from "../utils"
 
@@ -28,6 +32,9 @@ export interface ChatInputSlice {
   setIsAssistantPickerOpen: Dispatch<SetStateAction<boolean>>
 }
 
+/**
+ * Factory to create the chat-input slice.
+ */
 export const createChatInputSlice = (set: any) =>
   ({
     isPromptPickerOpen: false,

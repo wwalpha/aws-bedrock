@@ -1,3 +1,8 @@
+/**
+ * PassiveChatSlice
+ * - Non-streaming chat state: input text, accumulated messages, chat settings, selected chat, and matched file items.
+ * - Provides sensible defaults for chatSettings; override via setter as needed.
+ */
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { ChatFile, ChatMessage, ChatSettings } from "@/types"
@@ -16,6 +21,9 @@ export interface PassiveChatSlice {
   setChatFileItems: Dispatch<SetStateAction<Tables<"file_items">[]>>
 }
 
+/**
+ * Factory to create the passive chat slice.
+ */
 export const createPassiveChatSlice = (set: any) =>
   ({
     userInput: "",

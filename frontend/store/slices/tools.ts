@@ -1,3 +1,7 @@
+/**
+ * ToolsSlice
+ * - Manages selected tools and the current tool-in-use status for chat.
+ */
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { apply } from "../utils"
@@ -9,6 +13,9 @@ export interface ToolsSlice {
   setToolInUse: Dispatch<SetStateAction<string>>
 }
 
+/**
+ * Factory to create the tools slice.
+ */
 export const createToolsSlice = (set: any) =>
   ({
     selectedTools: [],

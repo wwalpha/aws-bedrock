@@ -1,3 +1,8 @@
+/**
+ * WorkspaceSlice
+ * - Tracks the currently selected workspace and its associated images (for quick display).
+ * - Setters support either values or updater functions via `apply`.
+ */
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { WorkspaceImage } from "@/types"
@@ -10,6 +15,9 @@ export interface WorkspaceSlice {
   setWorkspaceImages: Dispatch<SetStateAction<WorkspaceImage[]>>
 }
 
+/**
+ * Factory to create the workspace slice.
+ */
 export const createWorkspaceSlice = (set: any) =>
   ({
     selectedWorkspace: null,

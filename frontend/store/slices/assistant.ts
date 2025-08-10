@@ -1,3 +1,8 @@
+/**
+ * AssistantSlice
+ * - Manages the currently selected assistant, cached images, and remote OpenAI Assistants list.
+ * - Setters leverage `apply` for value or functional updates.
+ */
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { AssistantImage } from "@/types/images/assistant-image"
@@ -12,6 +17,9 @@ export interface AssistantSlice {
   setOpenaiAssistants: Dispatch<SetStateAction<any[]>>
 }
 
+/**
+ * Factory to create the assistant slice.
+ */
 export const createAssistantSlice = (set: any) =>
   ({
     selectedAssistant: null,

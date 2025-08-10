@@ -1,3 +1,7 @@
+/**
+ * RetrievalSlice
+ * - Feature flags and parameters for RAG retrieval (toggle + number of sources).
+ */
 import { Dispatch, SetStateAction } from "react"
 import { apply } from "../utils"
 
@@ -8,6 +12,9 @@ export interface RetrievalSlice {
   setSourceCount: Dispatch<SetStateAction<number>>
 }
 
+/**
+ * Factory to create the retrieval slice.
+ */
 export const createRetrievalSlice = (set: any) =>
   ({
     useRetrieval: true,

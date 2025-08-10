@@ -1,3 +1,9 @@
+/**
+ * ProfileSlice
+ * - Holds the authenticated user's profile record.
+ * - Setters accept React.SetStateAction and are run through `apply()` so you can pass
+ *   either a value or an updater function: setProfile(prev => ({ ...prev, ... }))
+ */
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { apply } from "../utils"
@@ -7,6 +13,9 @@ export interface ProfileSlice {
   setProfile: Dispatch<SetStateAction<Tables<"profiles"> | null>>
 }
 
+/**
+ * Factory to create the profile slice. Avoid mutating state directly; always use setters.
+ */
 export const createProfileSlice = (set: any) =>
   ({
     profile: null,

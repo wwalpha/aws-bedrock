@@ -1,3 +1,8 @@
+/**
+ * ActiveChatSlice
+ * - Streaming chat state: AbortController, first-token flag, and generation flag.
+ * - Useful for controlling in-flight requests and UI spinners.
+ */
 import { Dispatch, SetStateAction } from "react"
 import { apply } from "../utils"
 
@@ -10,6 +15,9 @@ export interface ActiveChatSlice {
   setIsGenerating: Dispatch<SetStateAction<boolean>>
 }
 
+/**
+ * Factory to create the active chat slice.
+ */
 export const createActiveChatSlice = (set: any) =>
   ({
     abortController: null,

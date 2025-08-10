@@ -1,5 +1,11 @@
 "use client"
 
+/**
+ * Root Zustand store composition for ChatbotState.
+ * Each slice is self-contained and combined here; prefer using selectors
+ * like `useChatStore(state => state.chatMessages)` for fine-grained subscriptions.
+ */
+
 import { create } from "zustand"
 import { type ProfileSlice, createProfileSlice } from "./slices/profile"
 import { type ItemsSlice, createItemsSlice } from "./slices/items"

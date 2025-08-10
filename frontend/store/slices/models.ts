@@ -1,3 +1,9 @@
+/**
+ * ModelsSlice
+ * - envKeyMap indicates which providers are backed by environment keys on the server.
+ * - available*Models arrays power pickers for hosted/local/OpenRouter catalogs.
+ * - Setters accept values or updater functions via `apply`.
+ */
 import { Dispatch, SetStateAction } from "react"
 import { LLM, OpenRouterLLM } from "@/types"
 import { VALID_ENV_KEYS } from "@/types/valid-keys"
@@ -14,6 +20,9 @@ export interface ModelsSlice {
   setAvailableOpenRouterModels: Dispatch<SetStateAction<OpenRouterLLM[]>>
 }
 
+/**
+ * Factory to create the models slice.
+ */
 export const createModelsSlice = (set: any) =>
   ({
     envKeyMap: {},
