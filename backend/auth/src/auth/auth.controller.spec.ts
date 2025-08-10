@@ -83,11 +83,12 @@ describe('AppController', () => {
       const authService = app.get<AuthService>(AuthService);
       jest.spyOn(authService, 'logout').mockResolvedValue();
 
-      await appController.logout(mockRequestBody);
+      const resp = await appController.logout(mockRequestBody);
 
       expect(authService.logout).toHaveBeenCalledWith(
         mockRequestBody.accessToken,
       );
+      expect(resp).toEqual({ message: 'Logged out' });
     });
 
     it('should throw BadRequestException if access token is missing', async () => {
@@ -117,7 +118,7 @@ describe('AppController', () => {
   });
 
   describe('signup', () => {
-    it('should call AuthService.signup with username=email and password', async () => {
+    it('should call AuthService.signup with username=email and password and map response', async () => {
       const mockRequestBody = {
         email: 'test@example.com',
         password: 'password123',
@@ -139,7 +140,7 @@ describe('AppController', () => {
         mockRequestBody.password,
         mockRequestBody.email, // email attribute
       );
-      expect(result).toEqual(mockSignupResponse);
+      expect(result).toEqual({ userConfirmed: true, userSub: 'mockUserSub' });
     });
 
     it('should throw BadRequestException if email (username) or password is missing', async () => {

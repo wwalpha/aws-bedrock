@@ -1,4 +1,5 @@
 export interface LoginRequest {
+  // username is the user's email address
   username: string;
   password: string;
 }
@@ -14,21 +15,26 @@ export interface LogoutRequest {
 }
 
 export interface SignupRequest {
-  // Either username or email must be provided
-  username?: string;
-  email?: string;
+  // Email is required and will also be used as the Cognito username
+  username: string;
   password: string;
 }
 
 export interface SignupResponse {
-  message: string;
+  userConfirmed: boolean;
+  userSub: string;
 }
 
 export interface ConfirmSignupRequest {
+  // username is the user's email address
   username: string;
   confirmationCode: string;
 }
 
 export interface ConfirmSignupResponse {
+  message: string;
+}
+
+export interface LogoutResponse {
   message: string;
 }

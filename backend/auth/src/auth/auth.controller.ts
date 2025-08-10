@@ -2,10 +2,13 @@ import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   ConfirmSignupRequest,
+  ConfirmSignupResponse,
   LoginRequest,
   LoginResponse,
   LogoutRequest,
   SignupRequest,
+  SignupResponse,
+  LogoutResponse,
 } from './auth.interfaces';
 
 @Controller('auth')
@@ -30,7 +33,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Body() body: LogoutRequest): Promise<void> {
+  async logout(@Body() body: LogoutRequest): Promise<LogoutResponse> {
     // リクエストボディのバリデーション
     if (!body.accessToken) {
       throw new BadRequestException('Access token is required');
@@ -38,35 +41,28 @@ export class AuthController {
 
     // Cognitoのログアウト処理を呼び出す
     await this.authService.logout(body.accessToken);
+    return { message: 'Logged out' };
   }
 
   @Post('signup')
-  async signup(@Body() body: SignupRequest) {
-    // Either username or email is accepted; password required
-    if (!body.password) {
-      throw new BadRequestException('Password is required');
-    }
-    const rawUsername = (body.username || '').trim();
-    const rawEmail = (body.email || '').trim();
-
-    // In our system, username must be the email. If both provided, they must match.
-    if (rawUsername && rawEmail && rawUsername !== rawEmail) {
-      throw new BadRequestException('username must equal email');
+  async signup(@Body() body: SignupRequest): Promise<SignupResponse> {
+    // Require email and password; username will be email
+    const email = (body.username || '').trim();
+    if (!email || !body.password) {
+      throw new BadRequestException('Email and password are required');
     }
 
-    const username = (rawUsername || rawEmail).trim();
-    if (!username) {
-      throw new BadRequestException('Username or email is required');
-    }
-
-    // Call Cognito signup
-    // Ensure email attribute is set; when username is email, pass it through
-    const email = rawEmail || username;
-    return this.authService.signup(username, body.password, email);
+    const res = await this.authService.signup(email, body.password, email);
+    return {
+      userConfirmed: !!res.UserConfirmed,
+      userSub: res.UserSub || '',
+    };
   }
 
   @Post('confirmSignup')
-  async confirmSignup(@Body() body: ConfirmSignupRequest) {
+  async confirmSignup(
+    @Body() body: ConfirmSignupRequest,
+  ): Promise<ConfirmSignupResponse> {
     // リクエストボディのバリデーション
     if (!body.username || !body.confirmationCode) {
       throw new BadRequestException(
@@ -75,6 +71,7 @@ export class AuthController {
     }
 
     // Cognitoのサインアップ確認処理を呼び出す
-    return this.authService.confirmSignup(body.username, body.confirmationCode);
+    await this.authService.confirmSignup(body.username, body.confirmationCode);
+    return { message: 'Signup confirmed' };
   }
 }

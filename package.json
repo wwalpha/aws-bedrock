@@ -5,6 +5,9 @@
   "repository": "https://github.com/wwalpha/aws-bedrock.git",
   "author": "wwalpha <wwalpha@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "deploy:auth": "bash ./scripts/deploy-auth.sh"
+  },
   "devDependencies": {
     "prettier": "^3.3.3"
   }
