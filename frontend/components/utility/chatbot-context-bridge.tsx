@@ -1,19 +1,3 @@
-"use client"
-
-import { ChatbotUIContext } from "@/context/context"
-import { useChatStore } from "@/store"
-import { PropsWithChildren } from "react"
-
-/**
- * ChatbotContextBridge
- * Temporary compatibility provider that exposes the Zustand store via
- * the existing React Context until all components migrate to useChatStore.
- */
-export default function ChatbotContextBridge({ children }: PropsWithChildren) {
-  const value = useChatStore()
-  return (
-    <ChatbotUIContext.Provider value={value as any}>
-      {children}
-    </ChatbotUIContext.Provider>
-  )
-}
+// Removed: Temporary ChatbotContextBridge deleted after full migration to Zustand.
+// This file remains as a no-op to avoid accidental imports during incremental builds.
+export {}

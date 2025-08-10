@@ -1,2 +1,3 @@
-// Deprecated: legacy GlobalState removed in favor of StoreBootstrap + ChatbotContextBridge.
+// Removed: Legacy GlobalState deleted after migration to Zustand.
+export {}
 export {}

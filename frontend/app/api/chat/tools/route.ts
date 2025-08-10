@@ -150,20 +150,11 @@ export async function POST(request: Request) {
 
           const bodyContent = parsedArgs.requestBody || parsedArgs
 
-          const requestInit = {
-            method: "POST",
-            headers,
-            body: JSON.stringify(bodyContent) // Use the extracted requestBody or the entire parsedArgs
-          }
-
-          const response = await fetch(fullUrl, requestInit)
-
-          if (!response.ok) {
-            data = {
-              error: response.statusText
-            }
-          } else {
-            data = await response.json()
+          try {
+            const response = await api.post(fullUrl, bodyContent, { headers })
+            data = response.data
+          } catch (err: any) {
+            data = { error: err?.response?.statusText || err?.message }
           }
         } else {
           // If the type is set to query
@@ -181,17 +172,11 @@ export async function POST(request: Request) {
             headers = JSON.parse(customHeaders)
           }
 
-          const response = await fetch(fullUrl, {
-            method: "GET",
-            headers: headers
-          })
-
-          if (!response.ok) {
-            data = {
-              error: response.statusText
-            }
-          } else {
-            data = await response.json()
+          try {
+            const response = await api.get(fullUrl, { headers })
+            data = response.data
+          } catch (err: any) {
+            data = { error: err?.response?.statusText || err?.message }
           }
         }
 
