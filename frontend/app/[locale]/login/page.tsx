@@ -78,7 +78,7 @@ export default async function Login({
   const signUp = async (formData: FormData) => {
     "use server"
 
-  const email = (formData.get("email") as string) || ""
+    const email = (formData.get("email") as string) || ""
     const password = formData.get("password") as string
 
     const emailDomainWhitelistPatternsString = await getEnvVarOrEdgeConfigValue(
@@ -94,9 +94,14 @@ export default async function Login({
       : []
 
     // If there are whitelist patterns, check if the email is allowed to sign up
-    if (email && (emailDomainWhitelist.length > 0 || emailWhitelist.length > 0)) {
+    if (
+      email &&
+      (emailDomainWhitelist.length > 0 || emailWhitelist.length > 0)
+    ) {
       const domain = email.includes("@") ? email.split("@")[1] : ""
-      const domainMatch = domain ? emailDomainWhitelist?.includes(domain) : false
+      const domainMatch = domain
+        ? emailDomainWhitelist?.includes(domain)
+        : false
       const emailMatch = emailWhitelist?.includes(email)
       if (!domainMatch && !emailMatch) {
         return redirect(
@@ -105,12 +110,18 @@ export default async function Login({
       }
     }
 
-    // Delegate to backend if it supports sign up, otherwise skip
+    // Require email and send username=email to backend
+    if (!email || !password) {
+      return redirect(
+        `/login?message=${encodeURIComponent("Email and password are required")}`
+      )
+    }
+
     try {
       const res = await fetch(`/api${API.auth.signup}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(email ? { email, password } : { password })
+        body: JSON.stringify({ email, username: email, password })
       })
       if (!res.ok) {
         const msg = (await res.text()) || "Sign up failed"
@@ -193,7 +204,6 @@ export default async function Login({
 
         <SubmitButton
           formAction={signUp}
-          formNoValidate
           className="border-foreground/20 mb-2 rounded-md border px-4 py-2"
         >
           Sign Up

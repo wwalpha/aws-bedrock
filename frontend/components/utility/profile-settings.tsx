@@ -122,7 +122,7 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
 
   const handleSignOut = async () => {
     try {
-  await fetch(`/api${API.auth.logout}`, { method: "POST" })
+      await fetch(`/api${API.auth.logout}`, { method: "POST" })
     } catch {}
     router.push("/login")
     router.refresh()

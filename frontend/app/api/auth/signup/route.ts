@@ -8,18 +8,17 @@ export async function POST(req: Request) {
     email?: string
     password?: string
   }
-  // Only password is required; email is optional
-  if (!password) {
+
+  // Enforce username is email; thus email is required along with password
+  if (!email || !password) {
     return NextResponse.json(
-      { error: "Password is required" },
+      { error: "Email and password are required" },
       { status: 400 }
     )
   }
 
   try {
-    const body: SignupRequest = email
-      ? { password, email }
-      : { password }
+    const body: SignupRequest = { password, email, username: email }
     const data = await api.post(API.auth.signup, body)
     return NextResponse.json(data, { status: 200 })
   } catch (e: any) {

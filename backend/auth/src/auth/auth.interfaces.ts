@@ -14,7 +14,9 @@ export interface LogoutRequest {
 }
 
 export interface SignupRequest {
-  email: string;
+  // Either username or email must be provided
+  username?: string;
+  email?: string;
   password: string;
 }
 

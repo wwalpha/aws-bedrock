@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import {
   CognitoIdentityProviderClient,
   InitiateAuthCommand,
@@ -13,7 +17,10 @@ import {
 
 @Injectable()
 export class AuthService {
-  private cognitoClient = new CognitoIdentityProviderClient();
+  private cognitoClient = new CognitoIdentityProviderClient({
+    region:
+      process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1',
+  });
   COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID;
 
   /**
@@ -63,21 +70,30 @@ export class AuthService {
    * @param password - パスワード
    * @returns サインアップ結果
    */
-  async signup(email: string, password: string): Promise<SignUpCommandOutput> {
+  async signup(
+    username: string,
+    password: string,
+    email?: string,
+  ): Promise<SignUpCommandOutput> {
+    if (!this.COGNITO_CLIENT_ID) {
+      throw new BadRequestException('COGNITO_CLIENT_ID is not configured');
+    }
+
+    const attributes: { Name: string; Value: string }[] = [];
+    // Ensure email attribute is set to the provided email or username when it looks like an email
+    const effectiveEmail = email || username;
+    if (effectiveEmail) {
+      attributes.push({ Name: 'email', Value: effectiveEmail });
+    }
+
     const params: SignUpCommandInput = {
       ClientId: this.COGNITO_CLIENT_ID,
-      Username: email,
+      Username: username,
       Password: password,
-      UserAttributes: [
-        {
-          Name: 'email',
-          Value: email,
-        },
-      ],
+      UserAttributes: attributes,
     };
 
     const response = await this.cognitoClient.send(new SignUpCommand(params));
-    // サインアップ結果を返す
     return response;
   }
 

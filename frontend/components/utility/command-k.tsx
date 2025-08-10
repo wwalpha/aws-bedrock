@@ -30,7 +30,7 @@ export const CommandK: FC<CommandKProps> = ({}) => {
 
     const data = await response.json()
 
-  setContent(data.content)
+    setContent(data.content)
     setLoading(false)
     setValue("")
   }

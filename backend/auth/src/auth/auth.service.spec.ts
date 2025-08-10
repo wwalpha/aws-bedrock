@@ -58,7 +58,7 @@ describe('AuthService', () => {
   });
 
   describe('signup', () => {
-    it('should return response on successful signup', async () => {
+    it('should return response on successful signup with username=email', async () => {
       const mockResponse = { UserConfirmed: true };
 
       cognitoMock.on(SignUpCommand).resolves(mockResponse);
@@ -66,10 +66,32 @@ describe('AuthService', () => {
       const result = await authService.signup(
         'test@example.com',
         'password123',
+        'test@example.com',
       );
 
       expect(cognitoMock.calls()).toHaveLength(1);
       expect(cognitoMock.call(0).args[0]).toBeInstanceOf(SignUpCommand);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should include email attribute defaulting to username when email not provided', async () => {
+      const mockResponse = { UserConfirmed: false };
+
+      cognitoMock.on(SignUpCommand).resolves(mockResponse);
+
+      const result = await authService.signup(
+        'user@example.com',
+        'password123',
+      );
+
+      expect(cognitoMock.calls()).toHaveLength(1);
+      const sent = cognitoMock.call(0).args[0] as any;
+      expect(sent.input.Username).toBe('user@example.com');
+      expect(sent.input.UserAttributes).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ Name: 'email', Value: 'user@example.com' }),
+        ]),
+      );
       expect(result).toEqual(mockResponse);
     });
   });

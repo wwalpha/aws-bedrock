@@ -21,6 +21,7 @@ export interface LogoutRequest {
 export interface SignupRequest {
   password: string
   email?: string
+  username?: string
 }
 
 export interface SignupResponse {

@@ -42,13 +42,27 @@ export class AuthController {
 
   @Post('signup')
   async signup(@Body() body: SignupRequest) {
-    // リクエストボディのバリデーション
-    if (!body.email || !body.password) {
-      throw new BadRequestException('Email and password are required');
+    // Either username or email is accepted; password required
+    if (!body.password) {
+      throw new BadRequestException('Password is required');
+    }
+    const rawUsername = (body.username || '').trim();
+    const rawEmail = (body.email || '').trim();
+
+    // In our system, username must be the email. If both provided, they must match.
+    if (rawUsername && rawEmail && rawUsername !== rawEmail) {
+      throw new BadRequestException('username must equal email');
     }
 
-    // Cognitoのサインアップ処理を呼び出す
-    return this.authService.signup(body.email, body.password);
+    const username = (rawUsername || rawEmail).trim();
+    if (!username) {
+      throw new BadRequestException('Username or email is required');
+    }
+
+    // Call Cognito signup
+    // Ensure email attribute is set; when username is email, pass it through
+    const email = rawEmail || username;
+    return this.authService.signup(username, body.password, email);
   }
 
   @Post('confirmSignup')

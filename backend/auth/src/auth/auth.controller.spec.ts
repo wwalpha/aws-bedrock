@@ -117,7 +117,7 @@ describe('AppController', () => {
   });
 
   describe('signup', () => {
-    it('should call AuthService.signup with the correct email and password', async () => {
+    it('should call AuthService.signup with username=email and password', async () => {
       const mockRequestBody = {
         email: 'test@example.com',
         password: 'password123',
@@ -135,17 +135,30 @@ describe('AppController', () => {
       const result = await appController.signup(mockRequestBody);
 
       expect(authService.signup).toHaveBeenCalledWith(
-        mockRequestBody.email,
+        mockRequestBody.email, // username equals email
         mockRequestBody.password,
+        mockRequestBody.email, // email attribute
       );
       expect(result).toEqual(mockSignupResponse);
     });
 
-    it('should throw BadRequestException if email or password is missing', async () => {
+    it('should throw BadRequestException if email (username) or password is missing', async () => {
       const mockRequestBody = {
         email: '',
         password: '',
       };
+
+      await expect(appController.signup(mockRequestBody)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should throw BadRequestException if username and email are both provided but do not match', async () => {
+      const mockRequestBody = {
+        username: 'user@example.com',
+        email: 'different@example.com',
+        password: 'password123',
+      } as any;
 
       await expect(appController.signup(mockRequestBody)).rejects.toThrow(
         BadRequestException,

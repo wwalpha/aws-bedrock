@@ -1,8 +1,6 @@
-import { BACKEND_URL } from "@/lib/consts"
 import { NextResponse } from "next/server"
 import { api } from "@/lib/api/client"
-
-const backendBase = BACKEND_URL
+import { API } from "@/lib/api/endpoints"
 
 export async function POST(req: Request) {
   const { username, confirmationCode } = await req.json().catch(() => ({}))
@@ -14,7 +12,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const data = await api.post("/auth/confirmSignup", {
+    const data = await api.post(API.auth.confirmSignup, {
       username,
       confirmationCode
     })
