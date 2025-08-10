@@ -25,6 +25,7 @@ resource "aws_s3_object" "auth" {
   content = <<EOT
 TZ=Asia/Tokyo
 AWS_NODEJS_CONNECTION_REUSE_ENABLED=1
+COGNITO_CLIENT_ID=6hgubko3fjhm1b5b9hrcgq929
 EOT
 
   lifecycle {
