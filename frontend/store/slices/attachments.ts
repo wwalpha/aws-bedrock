@@ -6,7 +6,7 @@
 import { Dispatch, SetStateAction } from "react"
 import { ChatFile, MessageImage } from "@/types"
 import { apply } from "../utils"
-import type { AttachmentsSlice } from "@/typings/slices.types"
+import type { AttachmentsSlice } from "@/typings/index"
 
 /**
  * Factory to create the attachments slice.

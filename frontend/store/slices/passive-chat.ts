@@ -7,7 +7,7 @@ import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { ChatFile, ChatMessage, ChatSettings } from "@/types"
 import { apply } from "../utils"
-import type { PassiveChatSlice } from "@/typings/slices.types"
+import type { PassiveChatSlice } from "@/typings/index"
 
 /**
  * Factory to create the passive chat slice.

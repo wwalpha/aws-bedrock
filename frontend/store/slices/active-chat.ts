@@ -5,7 +5,7 @@
  */
 import { Dispatch, SetStateAction } from "react"
 import { apply } from "../utils"
-import type { ActiveChatSlice } from "@/typings/slices.types"
+import type { ActiveChatSlice } from "@/typings/index"
 
 /**
  * Factory to create the active chat slice.

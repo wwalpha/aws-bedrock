@@ -5,7 +5,7 @@
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { apply } from "../utils"
-import type { PresetSlice } from "@/typings/slices.types"
+import type { PresetSlice } from "@/typings/index"
 
 /**
  * Factory to create the preset slice.

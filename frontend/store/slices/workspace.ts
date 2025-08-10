@@ -7,7 +7,7 @@ import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { WorkspaceImage } from "@/types"
 import { apply } from "../utils"
-import type { WorkspaceSlice } from "@/typings/slices.types"
+import type { WorkspaceSlice } from "@/typings/index"
 
 /**
  * Factory to create the workspace slice.

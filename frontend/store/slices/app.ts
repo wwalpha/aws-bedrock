@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react"
 import { apply } from "../utils"
 import { API } from "@/lib/api/endpoints"
 import type { LoginResponse } from "@/types/api"
-import type { AppSlice } from "@/typings/store"
+import type { AppSlice } from "@/typings/index"
 
 export const createAppSlice = (set: any) =>
   ({

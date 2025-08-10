@@ -32,9 +32,9 @@ import type {
   AttachmentsSlice,
   RetrievalSlice,
   ToolsSlice
-} from "@/typings/slices"
+} from "@/typings/index"
 import { createAppSlice } from "./slices/app"
-import type { AppSlice } from "@/typings/store"
+import type { AppSlice } from "@/typings/index"
 
 export type ChatbotState = ProfileSlice &
   ItemsSlice &

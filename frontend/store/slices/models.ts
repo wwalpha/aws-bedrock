@@ -8,7 +8,7 @@ import { Dispatch, SetStateAction } from "react"
 import { LLM, OpenRouterLLM } from "@/types"
 import { VALID_ENV_KEYS } from "@/types/valid-keys"
 import { apply } from "../utils"
-import type { ModelsSlice } from "@/typings/slices.types"
+import type { ModelsSlice } from "@/typings/index"
 
 /**
  * Factory to create the models slice.

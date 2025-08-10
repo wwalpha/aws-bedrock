@@ -4,7 +4,7 @@
  */
 import { Dispatch, SetStateAction } from "react"
 import { apply } from "../utils"
-import type { RetrievalSlice } from "@/typings/slices.types"
+import type { RetrievalSlice } from "@/typings/index"
 
 /**
  * Factory to create the retrieval slice.

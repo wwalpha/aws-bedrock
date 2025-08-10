@@ -7,7 +7,7 @@
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { apply } from "../utils"
-import type { ProfileSlice } from "@/typings/slices.types"
+import type { ProfileSlice } from "@/typings/index"
 
 /**
  * Factory to create the profile slice. Avoid mutating state directly; always use setters.

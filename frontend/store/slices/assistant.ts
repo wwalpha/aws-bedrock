@@ -6,7 +6,7 @@
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { AssistantImage } from "@/types/images/assistant-image"
-import type { AssistantSlice } from "@/typings/slices.types"
+import type { AssistantSlice } from "@/typings/index"
 import { apply } from "../utils"
 
 // types moved to typings/slices.types.d.ts

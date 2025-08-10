@@ -5,7 +5,7 @@
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { apply } from "../utils"
-import type { ToolsSlice } from "@/typings/slices.types"
+import type { ToolsSlice } from "@/typings/index"
 
 /**
  * Factory to create the tools slice.

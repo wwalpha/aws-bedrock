@@ -4,7 +4,7 @@
  */
 import { Dispatch, SetStateAction } from "react"
 import { apply } from "../utils"
-import type { ChatInputSlice } from "@/typings/slices.types"
+import type { ChatInputSlice } from "@/typings/index"
 
 /**
  * Factory to create the chat-input slice.

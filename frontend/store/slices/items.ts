@@ -6,7 +6,7 @@
 import { Dispatch, SetStateAction } from "react"
 import { Tables } from "@/types/db"
 import { apply } from "../utils"
-import type { ItemsSlice } from "@/typings/slices.types"
+import type { ItemsSlice } from "@/typings/index"
 
 /**
  * Factory to create the items slice.
