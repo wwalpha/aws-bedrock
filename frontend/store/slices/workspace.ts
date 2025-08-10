@@ -1,0 +1,25 @@
+import { Dispatch, SetStateAction } from "react"
+import { Tables } from "@/types/db"
+import { WorkspaceImage } from "@/types"
+import { apply } from "../utils"
+
+export interface WorkspaceSlice {
+  selectedWorkspace: Tables<"workspaces"> | null
+  setSelectedWorkspace: Dispatch<SetStateAction<Tables<"workspaces"> | null>>
+  workspaceImages: WorkspaceImage[]
+  setWorkspaceImages: Dispatch<SetStateAction<WorkspaceImage[]>>
+}
+
+export const createWorkspaceSlice = (set: any) =>
+  ({
+    selectedWorkspace: null,
+    setSelectedWorkspace: (v: SetStateAction<Tables<"workspaces"> | null>) =>
+      set((s: WorkspaceSlice) => ({
+        selectedWorkspace: apply(s.selectedWorkspace, v)
+      })),
+    workspaceImages: [],
+    setWorkspaceImages: (v: SetStateAction<WorkspaceImage[]>) =>
+      set((s: WorkspaceSlice) => ({
+        workspaceImages: apply(s.workspaceImages, v)
+      }))
+  }) satisfies WorkspaceSlice as any

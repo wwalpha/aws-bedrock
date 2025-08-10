@@ -26,6 +26,7 @@ import { AssistantImage } from "@/types/images/assistant-image"
 import { VALID_ENV_KEYS } from "@/types/valid-keys"
 import { useRouter } from "next/navigation"
 import { FC, useEffect, useState } from "react"
+import { useChatStore } from "@/store/use-chat-store"
 
 interface GlobalStateProps {
   children: React.ReactNode
@@ -33,94 +34,139 @@ interface GlobalStateProps {
 
 export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const router = useRouter()
+  const store = useChatStore()
 
   // PROFILE STORE
-  const [profile, setProfile] = useState<Tables<"profiles"> | null>(null)
+  const { profile, setProfile } = store
 
   // ITEMS STORE
-  const [assistants, setAssistants] = useState<Tables<"assistants">[]>([])
-  const [collections, setCollections] = useState<Tables<"collections">[]>([])
-  const [chats, setChats] = useState<Tables<"chats">[]>([])
-  const [files, setFiles] = useState<Tables<"files">[]>([])
-  const [folders, setFolders] = useState<Tables<"folders">[]>([])
-  const [models, setModels] = useState<Tables<"models">[]>([])
-  const [presets, setPresets] = useState<Tables<"presets">[]>([])
-  const [prompts, setPrompts] = useState<Tables<"prompts">[]>([])
-  const [tools, setTools] = useState<Tables<"tools">[]>([])
-  const [workspaces, setWorkspaces] = useState<Tables<"workspaces">[]>([])
+  const {
+    assistants,
+    setAssistants,
+    collections,
+    setCollections,
+    chats,
+    setChats,
+    files,
+    setFiles,
+    folders,
+    setFolders,
+    models,
+    setModels,
+    presets,
+    setPresets,
+    prompts,
+    setPrompts,
+    tools,
+    setTools,
+    workspaces,
+    setWorkspaces
+  } = store
 
   // MODELS STORE
-  const [envKeyMap, setEnvKeyMap] = useState<Record<string, VALID_ENV_KEYS>>({})
-  const [availableHostedModels, setAvailableHostedModels] = useState<LLM[]>([])
-  const [availableLocalModels, setAvailableLocalModels] = useState<LLM[]>([])
-  const [availableOpenRouterModels, setAvailableOpenRouterModels] = useState<
-    OpenRouterLLM[]
-  >([])
+  const {
+    envKeyMap,
+    setEnvKeyMap,
+    availableHostedModels,
+    setAvailableHostedModels,
+    availableLocalModels,
+    setAvailableLocalModels,
+    availableOpenRouterModels,
+    setAvailableOpenRouterModels
+  } = store
 
   // WORKSPACE STORE
-  const [selectedWorkspace, setSelectedWorkspace] =
-    useState<Tables<"workspaces"> | null>(null)
-  const [workspaceImages, setWorkspaceImages] = useState<WorkspaceImage[]>([])
+  const {
+    selectedWorkspace,
+    setSelectedWorkspace,
+    workspaceImages,
+    setWorkspaceImages
+  } = store
 
   // PRESET STORE
-  const [selectedPreset, setSelectedPreset] =
-    useState<Tables<"presets"> | null>(null)
+  const { selectedPreset, setSelectedPreset } = store
 
   // ASSISTANT STORE
-  const [selectedAssistant, setSelectedAssistant] =
-    useState<Tables<"assistants"> | null>(null)
-  const [assistantImages, setAssistantImages] = useState<AssistantImage[]>([])
-  const [openaiAssistants, setOpenaiAssistants] = useState<any[]>([])
+  const {
+    selectedAssistant,
+    setSelectedAssistant,
+    assistantImages,
+    setAssistantImages,
+    openaiAssistants,
+    setOpenaiAssistants
+  } = store
 
   // PASSIVE CHAT STORE
-  const [userInput, setUserInput] = useState<string>("")
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
-  const [chatSettings, setChatSettings] = useState<ChatSettings>({
-    model: "gpt-4-turbo-preview",
-    prompt: "You are a helpful AI assistant.",
-    temperature: 0.5,
-    contextLength: 4000,
-    includeProfileContext: true,
-    includeWorkspaceInstructions: true,
-    embeddingsProvider: "openai"
-  })
-  const [selectedChat, setSelectedChat] = useState<Tables<"chats"> | null>(null)
-  const [chatFileItems, setChatFileItems] = useState<Tables<"file_items">[]>([])
+  const {
+    userInput,
+    setUserInput,
+    chatMessages,
+    setChatMessages,
+    chatSettings,
+    setChatSettings,
+    selectedChat,
+    setSelectedChat,
+    chatFileItems,
+    setChatFileItems
+  } = store
 
   // ACTIVE CHAT STORE
-  const [isGenerating, setIsGenerating] = useState<boolean>(false)
-  const [firstTokenReceived, setFirstTokenReceived] = useState<boolean>(false)
-  const [abortController, setAbortController] =
-    useState<AbortController | null>(null)
+  const {
+    isGenerating,
+    setIsGenerating,
+    firstTokenReceived,
+    setFirstTokenReceived,
+    abortController,
+    setAbortController
+  } = store
 
   // CHAT INPUT COMMAND STORE
-  const [isPromptPickerOpen, setIsPromptPickerOpen] = useState(false)
-  const [slashCommand, setSlashCommand] = useState("")
-  const [isFilePickerOpen, setIsFilePickerOpen] = useState(false)
-  const [hashtagCommand, setHashtagCommand] = useState("")
-  const [isToolPickerOpen, setIsToolPickerOpen] = useState(false)
-  const [toolCommand, setToolCommand] = useState("")
-  const [focusPrompt, setFocusPrompt] = useState(false)
-  const [focusFile, setFocusFile] = useState(false)
-  const [focusTool, setFocusTool] = useState(false)
-  const [focusAssistant, setFocusAssistant] = useState(false)
-  const [atCommand, setAtCommand] = useState("")
-  const [isAssistantPickerOpen, setIsAssistantPickerOpen] = useState(false)
+  const {
+    isPromptPickerOpen,
+    setIsPromptPickerOpen,
+    slashCommand,
+    setSlashCommand,
+    isFilePickerOpen,
+    setIsFilePickerOpen,
+    hashtagCommand,
+    setHashtagCommand,
+    isToolPickerOpen,
+    setIsToolPickerOpen,
+    toolCommand,
+    setToolCommand,
+    focusPrompt,
+    setFocusPrompt,
+    focusFile,
+    setFocusFile,
+    focusTool,
+    setFocusTool,
+    focusAssistant,
+    setFocusAssistant,
+    atCommand,
+    setAtCommand,
+    isAssistantPickerOpen,
+    setIsAssistantPickerOpen
+  } = store
 
   // ATTACHMENTS STORE
-  const [chatFiles, setChatFiles] = useState<ChatFile[]>([])
-  const [chatImages, setChatImages] = useState<MessageImage[]>([])
-  const [newMessageFiles, setNewMessageFiles] = useState<ChatFile[]>([])
-  const [newMessageImages, setNewMessageImages] = useState<MessageImage[]>([])
-  const [showFilesDisplay, setShowFilesDisplay] = useState<boolean>(false)
+  const {
+    chatFiles,
+    setChatFiles,
+    chatImages,
+    setChatImages,
+    newMessageFiles,
+    setNewMessageFiles,
+    newMessageImages,
+    setNewMessageImages,
+    showFilesDisplay,
+    setShowFilesDisplay
+  } = store
 
   // RETIEVAL STORE
-  const [useRetrieval, setUseRetrieval] = useState<boolean>(true)
-  const [sourceCount, setSourceCount] = useState<number>(4)
+  const { useRetrieval, setUseRetrieval, sourceCount, setSourceCount } = store
 
   // TOOL STORE
-  const [selectedTools, setSelectedTools] = useState<Tables<"tools">[]>([])
-  const [toolInUse, setToolInUse] = useState<string>("none")
+  const { selectedTools, setSelectedTools, toolInUse, setToolInUse } = store
 
   useEffect(() => {
     ;(async () => {

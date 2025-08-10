@@ -1,0 +1,20 @@
+import { Dispatch, SetStateAction } from "react"
+import { Tables } from "@/types/db"
+import { apply } from "../utils"
+
+export interface ToolsSlice {
+  selectedTools: Tables<"tools">[]
+  setSelectedTools: Dispatch<SetStateAction<Tables<"tools">[]>>
+  toolInUse: string
+  setToolInUse: Dispatch<SetStateAction<string>>
+}
+
+export const createToolsSlice = (set: any) =>
+  ({
+    selectedTools: [],
+    setSelectedTools: (v: SetStateAction<Tables<"tools">[]>) =>
+      set((s: ToolsSlice) => ({ selectedTools: apply(s.selectedTools, v) })),
+    toolInUse: "none",
+    setToolInUse: (v: SetStateAction<string>) =>
+      set((s: ToolsSlice) => ({ toolInUse: apply(s.toolInUse, v) }))
+  }) satisfies ToolsSlice as any
