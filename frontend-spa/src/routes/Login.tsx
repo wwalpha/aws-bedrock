@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/store/app';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -23,28 +25,35 @@ export default function Login() {
   };
 
   return (
-    <div className="max-w-sm mx-auto">
-      <h1 className="text-xl font-bold mb-4">Login</h1>
-      <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
-        <input
-          className="border p-2 rounded"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          className="border p-2 rounded"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button className="bg-black text-white p-2 rounded" type="submit">
-          Sign in
-        </button>
-      </form>
-      {!!message && <p className="mt-3 text-sm">{message}</p>}
+    <div className="mx-auto w-full max-w-sm">
+      <Card>
+        <CardHeader>
+          <CardTitle>Login</CardTitle>
+          <CardDescription>Sign in with your email and password.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
+            <input
+              className="border-input bg-background focus-visible:ring-ring rounded-md border p-2 focus-visible:outline-none focus-visible:ring-2"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              className="border-input bg-background focus-visible:ring-ring rounded-md border p-2 focus-visible:outline-none focus-visible:ring-2"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Button type="submit" className="w-full">
+              Sign in
+            </Button>
+          </form>
+          {!!message && <p className="mt-3 text-sm">{message}</p>}
+        </CardContent>
+      </Card>
     </div>
   );
 }

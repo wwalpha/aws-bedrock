@@ -1,17 +1,17 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
+import { Header } from '@/components/layout/Header';
+import { Sidebar } from '@/components/layout/Sidebar';
 
 export default function Root() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="p-4 border-b">
-        <nav className="flex gap-4">
-          <Link to="/">Home</Link>
-          <Link to="/login">Login</Link>
-        </nav>
-      </header>
-      <main className="p-6 flex-1">
-        <Outlet />
-      </main>
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
+      <Header />
+      <div className="container grid flex-1 gap-4 p-4 md:grid-cols-[240px_1fr]">
+        <Sidebar />
+        <main className="rounded-lg border p-4">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }
