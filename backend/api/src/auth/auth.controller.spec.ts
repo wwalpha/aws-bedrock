@@ -122,6 +122,7 @@ describe('AppController', () => {
       const mockRequestBody = {
         email: 'test@example.com',
         password: 'password123',
+        username: 'testuser',
       };
 
       const mockSignupResponse: SignUpCommandOutput = {
@@ -147,6 +148,7 @@ describe('AppController', () => {
       const mockRequestBody = {
         email: '',
         password: '',
+        username: 'testuser',
       };
 
       await expect(appController.signup(mockRequestBody)).rejects.toThrow(
@@ -170,6 +172,7 @@ describe('AppController', () => {
       const mockRequestBody = {
         email: 'test@example.com',
         password: 'password123',
+        username: 'testuser',
       };
 
       const authService = app.get<AuthService>(AuthService);
