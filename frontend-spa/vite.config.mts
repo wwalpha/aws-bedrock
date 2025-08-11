@@ -1,13 +1,18 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import tailwind from '@tailwindcss/vite';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwind()],
   server: {
+    host: true,
     port: 5173,
     open: false,
     proxy: {
-      // Forward API calls to the NestJS auth service during dev
       '/auth': {
         target: 'http://localhost:8080',
         changeOrigin: true,
@@ -16,7 +21,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': '/src',
+      '@': resolve(__dirname, 'src'),
     },
   },
 });

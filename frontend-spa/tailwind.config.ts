@@ -1,9 +1,10 @@
 import type { Config } from 'tailwindcss';
+import defaultTheme from 'tailwindcss/defaultTheme';
 import animate from 'tailwindcss-animate';
 import typography from '@tailwindcss/typography';
 
 export default {
-  darkMode: ['class'],
+  darkMode: ['class', '.dark'],
   content: [
     './index.html',
     './src/**/*.{ts,tsx}',
@@ -20,6 +21,9 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['InterVariable', 'Inter', ...defaultTheme.fontFamily.sans],
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

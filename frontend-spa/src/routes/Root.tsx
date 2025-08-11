@@ -14,8 +14,8 @@ export default function Root() {
   if (simpleLayout) {
     // Match Next.js landing/login layout: centered content, no header/sidebar
     return (
-      <div className="bg-background text-foreground flex min-h-screen flex-col items-center overflow-x-auto">
-        <main className="flex h-full w-full flex-1 items-center justify-center p-6">
+      <div className="bg-background text-foreground flex h-dvh flex-col items-center overflow-x-auto">
+        <main className="flex h-full w-full flex-1 items-center justify-center">
           <Outlet />
         </main>
       </div>

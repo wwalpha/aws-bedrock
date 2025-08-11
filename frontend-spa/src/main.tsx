@@ -11,6 +11,14 @@ import Demo from './routes/Demo';
 import { Toaster } from '@/components/ui/toaster';
 import { ROUTES } from '@/lib/routes';
 
+// Ensure dark mode by default to match Next.js frontend Providers(defaultTheme="dark")
+if (typeof document !== 'undefined') {
+  const root = document.documentElement;
+  if (!root.classList.contains('dark')) {
+    root.classList.add('dark');
+  }
+}
+
 const router = createBrowserRouter([
   {
     path: ROUTES.HOME,

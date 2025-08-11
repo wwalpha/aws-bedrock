@@ -1,1 +1,9 @@
-{"root":["./src/main.tsx","./src/routes/Login.tsx","./src/routes/Root.tsx","./vite-env.d.ts"],"version":"5.9.2"}
+{
+  "root": [
+    "./src/main.tsx",
+    "./src/routes/Login.tsx",
+    "./src/routes/Root.tsx",
+    "./vite-env.d.ts"
+  ],
+  "version": "5.9.2"
+}
