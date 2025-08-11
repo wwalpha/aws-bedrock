@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { ROUTES } from '@/lib/routes';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -15,6 +17,10 @@ export default function Signup() {
     setMessage('');
     setLoading(true);
     try {
+      if (password !== confirmPassword) {
+        setMessage('Passwords do not match');
+        return;
+      }
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/auth/signup`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -25,8 +31,8 @@ export default function Signup() {
         setMessage(msg);
         return;
       }
-      setMessage('Account created. Please sign in.');
-      navigate('/login');
+      setMessage('Account created. Please check your email for the verification code.');
+      navigate(ROUTES.VERIFY, { state: { username: email } });
     } catch (e: any) {
       setMessage(e?.message || 'Sign up failed');
     } finally {
@@ -59,6 +65,14 @@ export default function Signup() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <input
+              className="border-input bg-background focus-visible:ring-ring rounded-md border p-2 focus-visible:outline-none focus-visible:ring-2"
+              type="password"
+              placeholder="Confirm password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Creating…' : 'Create account'}
             </Button>
@@ -66,7 +80,7 @@ export default function Signup() {
           {!!message && <p className="mt-3 text-sm">{message}</p>}
           <p className="mt-4 text-center text-sm">
             Already have an account?{' '}
-            <Link className="underline" to="/login">
+            <Link className="underline" to={ROUTES.LOGIN}>
               Sign in
             </Link>
           </p>

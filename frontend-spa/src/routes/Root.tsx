@@ -1,10 +1,15 @@
 import { Outlet, useLocation } from 'react-router-dom';
+import { ROUTES } from '@/lib/routes';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 
 export default function Root() {
   const location = useLocation();
-  const simpleLayout = location.pathname === '/' || location.pathname === '/login' || location.pathname === '/signup';
+  const simpleLayout =
+    location.pathname === ROUTES.HOME ||
+    location.pathname === ROUTES.LOGIN ||
+    location.pathname === ROUTES.SIGNUP ||
+    location.pathname === ROUTES.VERIFY;
 
   if (simpleLayout) {
     // Match Next.js landing/login layout: centered content, no header/sidebar

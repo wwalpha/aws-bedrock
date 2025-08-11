@@ -4,20 +4,23 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
 import Login from './routes/Login';
 import Signup from './routes/Signup';
+import Verify from './routes/Verify';
 import Home from './routes/Home';
 import Root from './routes/Root';
 import Demo from './routes/Demo';
 import { Toaster } from '@/components/ui/toaster';
+import { ROUTES } from '@/lib/routes';
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: ROUTES.HOME,
     element: <Root />,
     children: [
       { index: true, element: <Home /> },
-      { path: '/login', element: <Login /> },
-      { path: '/signup', element: <Signup /> },
-      { path: '/demo', element: <Demo /> },
+      { path: ROUTES.LOGIN, element: <Login /> },
+      { path: ROUTES.SIGNUP, element: <Signup /> },
+      { path: ROUTES.VERIFY, element: <Verify /> },
+      { path: ROUTES.DEMO, element: <Demo /> },
     ],
   },
 ]);

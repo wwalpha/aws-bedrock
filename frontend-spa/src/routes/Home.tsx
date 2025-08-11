@@ -2,6 +2,7 @@ import { ChatbotUISVG } from '@/components/icons/chatbotui-svg';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/lib/routes';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function Home() {
 
       <Button
         className="mt-4 flex w-[200px] items-center justify-center bg-blue-500 p-2 font-semibold"
-        onClick={() => navigate('/login')}
+        onClick={() => navigate(ROUTES.LOGIN)}
       >
         Start Chatting
         <ArrowRight className="ml-1" size={20} />

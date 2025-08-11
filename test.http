@@ -1,0 +1,5 @@
+POST https://pp8ptu0lgl.execute-api.ap-northeast-1.amazonaws.com/auth/signup
+Content-Type: application/json
+
+
+{"username":"wwalpha@gmail.com","password":"Session30+"}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { ROUTES } from '@/lib/routes';
 import { useChatStore } from '@/store';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,7 +22,7 @@ export default function Login() {
     }
     setMessage('Logged in');
     // Navigate to home (or dashboard) after successful login
-    navigate('/');
+    navigate(ROUTES.HOME);
   };
 
   return (
@@ -54,7 +55,7 @@ export default function Login() {
           {!!message && <p className="mt-3 text-sm">{message}</p>}
           <p className="mt-4 text-center text-sm">
             No account?{' '}
-            <Link className="underline" to="/signup">
+            <Link className="underline" to={ROUTES.SIGNUP}>
               Create one
             </Link>
           </p>
