@@ -17,3 +17,6 @@ export interface AppSlice {
   logout: () => void;
   logoutApi: () => Promise<void>;
 }
+
+// Note: The SPA now exposes a single Zustand store at `src/store/index.ts` (useChatStore)
+// which includes this AppSlice. Prefer importing from '@/store'.

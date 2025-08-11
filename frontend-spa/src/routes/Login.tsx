@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppStore } from '@/store/app';
+import { useChatStore } from '@/store';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -8,7 +8,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const login = useAppStore((s) => s.login);
+  const login = useChatStore((s) => s.login);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {

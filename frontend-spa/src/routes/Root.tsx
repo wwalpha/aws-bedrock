@@ -1,8 +1,22 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 
 export default function Root() {
+  const location = useLocation();
+  const simpleLayout = location.pathname === '/' || location.pathname === '/login';
+
+  if (simpleLayout) {
+    // Match Next.js landing/login layout: centered content, no header/sidebar
+    return (
+      <div className="bg-background text-foreground flex min-h-screen flex-col items-center overflow-x-auto">
+        <main className="flex h-full w-full flex-1 items-center justify-center p-6">
+          <Outlet />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Header />
