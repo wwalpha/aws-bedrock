@@ -6,7 +6,7 @@ on:
       - 'backend/api/**'
       - 'backend/chatbot/**'
       - '.github/workflows/backend.yml'
-    branches: [master, main]
+    branches: [master]
   pull_request:
     paths:
       - 'backend/api/**'
