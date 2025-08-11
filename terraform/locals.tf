@@ -19,7 +19,7 @@ locals {
   # API Gateway
   # ----------------------------------------------------------------------------------------------
   api_stage_name        = "v1"
-  api_allow_origins_dev = ["http://localhost:3000", "http://localhost:3001"]
+  api_allow_origins_dev = ["http://localhost:3000", "http://localhost:5174"]
 
   # ----------------------------------------------------------------------------------------------
   # Lambda
