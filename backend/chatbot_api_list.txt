@@ -23,8 +23,6 @@ GET    /users/{id}                         ユーザープロフィール取得
 PATCH  /users/{id}                         プロフィール更新
 DELETE /users/{id}                         ユーザー削除
 GET    /users/{id}/sessions                過去セッション一覧取得
-GET    /users/{id}/permissions             権限一覧取得
-PATCH  /users/{id}/roles                   権限・ロール変更
 
 [モデル管理]
 GET    /models                             利用可能モデル一覧
