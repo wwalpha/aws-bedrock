@@ -3,12 +3,12 @@ name: Frontend CI/CD
 on:
   push:
     paths:
-      - 'frontend/**'
+      - 'frontend-spa/**'
       - '.github/workflows/frontend.yml'
     branches: [master]
   pull_request:
     paths:
-      - 'frontend/**'
+      - 'frontend-spa/**'
   workflow_dispatch: {}
 
 permissions:
@@ -24,14 +24,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: frontend
+        working-directory: frontend-spa
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
-          cache-dependency-path: 'frontend/package-lock.json'
+          cache-dependency-path: 'frontend-spa/package-lock.json'
       - name: Install deps
         run: npm ci
       - name: Lint
@@ -42,18 +42,12 @@ jobs:
         run: npm test --silent
       - name: Build
         run: npm run build --silent
-      - name: Export static site (if configured)
-        id: export
-        run: |
-          npx --yes next export || echo 'next export skipped.'
-          if [ -d out ]; then echo "has_out=true" >> $GITHUB_OUTPUT; fi
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: frontend-build-${{ github.sha }}
           path: |
-            frontend/.next/**
-            frontend/out/**
+            frontend-spa/dist/**
           if-no-files-found: warn
 
   deploy:
