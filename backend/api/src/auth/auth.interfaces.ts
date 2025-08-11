@@ -34,6 +34,7 @@ export interface LogoutRequest {
 export interface SignupRequest {
   // Email is required and will also be used as the Cognito username
   username: string;
+  email?: string;
   password: string;
 }
 

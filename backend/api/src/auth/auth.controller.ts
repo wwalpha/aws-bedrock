@@ -87,13 +87,30 @@ export class AuthController {
   // サインアップ処理
   @Post('signup')
   async signup(@Body() body: SignupRequest): Promise<SignupResponse> {
-    // メールアドレスとパスワードが必須（usernameはemailと同じ）
-    const email = (body.username || '').trim();
+    // メールアドレスとパスワードが必須（username は通常 email と同じ値を使用）
+    const providedUsername = (body.username || '').trim();
+    const providedEmail = (body as any).email
+      ? String((body as any).email).trim()
+      : '';
+
+    // username と email の両方が提供され、かつ両方がメール形式の場合のみ不一致をエラーにする
+    if (providedUsername && providedEmail) {
+      const isEmailLike = (v: string) => /@/.test(v);
+      if (
+        isEmailLike(providedUsername) &&
+        isEmailLike(providedEmail) &&
+        providedUsername.toLowerCase() !== providedEmail.toLowerCase()
+      ) {
+        throw new BadRequestException('Username and email must match');
+      }
+    }
+
+    const email = (providedEmail || providedUsername).trim();
     if (!email || !body.password) {
       throw new BadRequestException('Email and password are required');
     }
 
-    // サインアップ処理を呼び出す
+    // サインアップ処理を呼び出す（Cognito の Username として email を使用）
     const res = await this.authService.signup(email, body.password, email);
     return {
       userConfirmed: !!res.UserConfirmed,
