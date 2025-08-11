@@ -1,7 +1,8 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { ROUTES } from '@/lib/routes';
-import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
+import { SidebarSwitcher } from '@/components/sidebar/SidebarSwitcher';
+import { Tabs } from '@/components/ui/tabs';
 
 export default function Root() {
   const location = useLocation();
@@ -22,15 +23,16 @@ export default function Root() {
     );
   }
 
+  // Workspace layout (no global header per original UI)
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
-      <Header />
-      <div className="flex-1 grid grid-cols-[350px_1fr] gap-0">
+    <div className="min-h-screen flex bg-background text-foreground">
+      <Tabs defaultValue="chats" className="flex-1 grid grid-cols-[60px_350px_1fr] gap-0">
+        <SidebarSwitcher />
         <Sidebar />
         <main className="min-w-0 min-h-0 flex flex-col overflow-hidden">
           <Outlet />
         </main>
-      </div>
+      </Tabs>
     </div>
   );
 }

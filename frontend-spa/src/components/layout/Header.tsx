@@ -5,21 +5,12 @@ import { ChatbotUISVG } from '@/components/icons/chatbotui-svg';
 
 export function Header() {
   return (
-    <header className="border-b bg-background/60 sticky top-0 z-10 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link to={ROUTES.HOME} className="flex items-center">
-            <ChatbotUISVG scale={0.15} />
-          </Link>
-          <nav className="flex items-center gap-4 text-sm">
-            <Link to={ROUTES.HOME} className="hover:underline">
-              Home
-            </Link>
-            <Link to={ROUTES.LOGIN} className="hover:underline">
-              Login
-            </Link>
-          </nav>
-        </div>
+    <header className="sticky top-0 z-10 border-b bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center justify-between px-4 md:px-6">
+        <Link to={ROUTES.HOME} aria-label="Chatbot UI Home" className="flex items-center gap-3">
+          <ChatbotUISVG scale={0.15} />
+          <span className="select-none text-lg font-semibold tracking-wide sm:text-xl">Chatbot UI</span>
+        </Link>
         <ThemeToggle />
       </div>
     </header>
