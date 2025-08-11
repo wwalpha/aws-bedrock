@@ -9,6 +9,7 @@ resource "aws_lambda_function" "cognito_post_signup" {
   filename         = data.archive_file.default.output_path
   source_code_hash = data.archive_file.default.output_base64sha256
   timeout          = 10
+  kms_key_arn      = aws_kms_key.lambda_env.arn
 
   environment {
     variables = {
