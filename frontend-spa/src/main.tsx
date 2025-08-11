@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
 import Login from './routes/Login';
+import Signup from './routes/Signup';
 import Home from './routes/Home';
 import Root from './routes/Root';
 import Demo from './routes/Demo';
@@ -15,6 +16,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: '/login', element: <Login /> },
+      { path: '/signup', element: <Signup /> },
       { path: '/demo', element: <Demo /> },
     ],
   },
