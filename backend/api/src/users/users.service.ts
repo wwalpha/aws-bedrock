@@ -5,15 +5,14 @@ import {
   GetCommand,
   QueryCommand,
 } from '@aws-sdk/lib-dynamodb';
+import { Environment } from '../const/consts';
+import {
+  UserProfile,
+  UserSessionSummary,
+  UpdateUserRequest,
+} from './users.interfaces';
 
 // 簡易実装: 実データストア未連携のため、インメモリで擬似データを扱う
-export interface UserProfile {
-  id: string;
-  email?: string;
-  name?: string;
-  avatarUrl?: string;
-}
-
 @Injectable()
 export class UsersService {
   private readonly ddbDoc: DynamoDBDocumentClient;
@@ -21,19 +20,17 @@ export class UsersService {
   private readonly chatTable: string;
 
   constructor() {
-    const region =
-      process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1';
-    const ddb = new DynamoDBClient({ region });
+    const ddb = new DynamoDBClient({ region: Environment.AWS_REGION });
     this.ddbDoc = DynamoDBDocumentClient.from(ddb, {
       marshallOptions: { removeUndefinedValues: true },
     });
     // Expect table names from env. Fallback to Terraform naming convention if present.
     this.userTable =
-      process.env.USER_TABLE_NAME ||
-      `${process.env.PROJECT_NAME || 'app'}_user`;
+      Environment.USER_TABLE_NAME ||
+      `${Environment.PROJECT_NAME || 'app'}_user`;
     this.chatTable =
-      process.env.CHAT_HISTORY_TABLE_NAME ||
-      `${process.env.PROJECT_NAME || 'app'}_chat_history`;
+      Environment.CHAT_HISTORY_TABLE_NAME ||
+      `${Environment.PROJECT_NAME || 'app'}_chat_history`;
   }
 
   async getUser(id: string): Promise<UserProfile> {
@@ -55,7 +52,7 @@ export class UsersService {
 
   // For now, still keep a simple in-memory update stub until write permissions and schema are defined
   private users = new Map<string, UserProfile>();
-  updateUser(id: string, dto: Partial<UserProfile>): UserProfile {
+  updateUser(id: string, dto: UpdateUserRequest): UserProfile {
     const current = this.users.get(id) || { id };
     const next = { ...current, ...dto };
     this.users.set(id, next);
@@ -68,7 +65,7 @@ export class UsersService {
     return { message: 'User deleted' };
   }
 
-  async listSessions(id: string) {
+  async listSessions(id: string): Promise<UserSessionSummary[]> {
     // session_id is the partition key, timestamp is sort key in chat_history table.
     const res = await this.ddbDoc.send(
       new QueryCommand({

@@ -16,6 +16,20 @@ resource "aws_dynamodb_table" "chat_history" {
     name = "timestamp"
     type = "N"
   }
+
+  # Additional attribute for per-user listing GSI
+  attribute {
+    name = "user_id"
+    type = "S"
+  }
+
+  # GSI to list chats by type (e.g., meta) sorted by timestamp
+  global_secondary_index {
+    name            = "gsi_user_timestamp"
+    hash_key        = "user_id"
+    range_key       = "timestamp"
+    projection_type = "ALL"
+  }
 }
 
 # ----------------------------------------------------------------------------------------------
