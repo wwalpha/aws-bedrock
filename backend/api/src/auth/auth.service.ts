@@ -24,9 +24,6 @@ export class AuthService {
   COGNITO_CLIENT_ID = Environment.COGNITO_CLIENT_ID;
 
   async refresh(refreshToken: string): Promise<AuthenticationResultType> {
-    if (!this.COGNITO_CLIENT_ID) {
-      throw new BadRequestException('COGNITO_CLIENT_ID is not configured');
-    }
     const params: InitiateAuthCommandInput = {
       AuthFlow: 'REFRESH_TOKEN_AUTH',
       ClientId: this.COGNITO_CLIENT_ID,
@@ -44,9 +41,6 @@ export class AuthService {
   }
 
   async resetPassword(username: string): Promise<void> {
-    if (!this.COGNITO_CLIENT_ID) {
-      throw new BadRequestException('COGNITO_CLIENT_ID is not configured');
-    }
     const { ForgotPasswordCommand } = await import(
       '@aws-sdk/client-cognito-identity-provider'
     );
@@ -109,9 +103,6 @@ export class AuthService {
     password: string,
     email?: string,
   ): Promise<SignUpCommandOutput> {
-    // In unit tests, COGNITO_CLIENT_ID may be unset; allow a safe default
-    const clientId = this.COGNITO_CLIENT_ID || 'test-client-id';
-
     const attributes: { Name: string; Value: string }[] = [];
     // Ensure email attribute is set to the provided email or username when it looks like an email
     const effectiveEmail = email || username;
@@ -120,7 +111,7 @@ export class AuthService {
     }
 
     const params: SignUpCommandInput = {
-      ClientId: clientId,
+      ClientId: this.COGNITO_CLIENT_ID,
       Username: username,
       Password: password,
       UserAttributes: attributes,

@@ -19,8 +19,8 @@ RUN yarn build || npm run build
 FROM node:22-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production \
-    NO_COLOR=1 \
-    FORCE_COLOR=0
+  NO_COLOR=1 \
+  FORCE_COLOR=0
 
 # Copy only runtime artifacts
 COPY --from=builder /app/package.json ./
