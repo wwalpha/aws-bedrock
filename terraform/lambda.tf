@@ -15,8 +15,6 @@ resource "aws_lambda_function" "cognito_post_signup" {
       USER_TABLE_NAME = aws_dynamodb_table.user_table.name
     }
   }
-
-  # TerraformはdistのZipのみを参照。ビルドはTerraformの外で実行してください。
 }
 
 ## ビルドは外部で実行（例: npm run build）。TerraformはZipを配備するだけ。

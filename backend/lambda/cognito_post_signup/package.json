@@ -1,0 +1,22 @@
+{
+  "name": "cognito-post-signup",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "clean": "rm -rf dist index.js lambda_function.zip",
+    "zip": "rm -f index.js lambda_function.zip && cp dist/index.js index.js && zip -r lambda_function.zip index.js",
+    "deploy:cli": "npm install && npm run build && npm run zip && aws lambda update-function-code --region ap-northeast-1 --function-name $LAMBDA_FUNCTION_NAME --zip-file fileb://lambda_function.zip"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.631.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.138",
+    "@types/node": "^24.2.1",
+    "typescript": "^5.5.4"
+  }
+}
