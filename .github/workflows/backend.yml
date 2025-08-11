@@ -1,0 +1,118 @@
+name: Backend CI/CD
+
+on:
+  push:
+    paths:
+      - 'backend/api/**'
+      - 'backend/chatbot/**'
+      - '.github/workflows/backend.yml'
+    branches: [master, main]
+  pull_request:
+    paths:
+      - 'backend/api/**'
+      - 'backend/chatbot/**'
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-build-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'backend/api/package-lock.json'
+      - name: Install deps
+        run: npm ci
+      - name: Lint
+        run: npm run lint --silent || true
+      - name: Test
+        run: npm test --silent
+      - name: Build
+        run: npm run build --silent
+      - name: Upload artifact (api)
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-dist-${{ github.sha }}
+          path: backend/api/dist/**
+
+  chatbot-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/chatbot
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Lint (skip if no config)
+        run: |
+          flake8 || true
+      - name: Package app
+        run: |
+          mkdir -p dist
+          cp -r app dist/app
+      - name: Upload artifact (chatbot)
+        uses: actions/upload-artifact@v4
+        with:
+          name: chatbot-app-${{ github.sha }}
+          path: backend/chatbot/dist/**
+
+  dockerize-and-deploy:
+    needs: [api-build-test, chatbot-build]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ECR_AUTH_REPO: ${{ secrets.ECR_AUTH_REPO }}
+      ECR_CHAT_REPO: ${{ secrets.ECR_CHAT_REPO }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Build & push API image
+        working-directory: backend/api
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          IMAGE="$ECR_REGISTRY/${{ env.ECR_AUTH_REPO }}:latest"
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"
+      - name: Build & push Chatbot image
+        working-directory: backend/chatbot
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          IMAGE="$ECR_REGISTRY/${{ env.ECR_CHAT_REPO }}:latest"
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"
+      - name: Update ECS services (Auth & Chat)
+        run: |
+          CLUSTER_NAME=${{ secrets.PROJECT_NAME }}-cluster
+          if [ -z "$CLUSTER_NAME" ] || [ "$CLUSTER_NAME" = "-cluster" ]; then CLUSTER_NAME=bedrock-cluster; fi
+          aws ecs update-service --cluster "$CLUSTER_NAME" --service AuthService --force-new-deployment
+          aws ecs update-service --cluster "$CLUSTER_NAME" --service ChatService --force-new-deployment

@@ -1,0 +1,52 @@
+name: Terraform CI/CD
+
+on:
+  push:
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/terraform.yml'
+    branches: [master, main]
+  pull_request:
+    paths:
+      - 'terraform/**'
+  workflow_dispatch: {}
+
+concurrency:
+  group: terraform-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  plan-apply:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      TF_WORKING_DIR: terraform
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.5
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform init -input=false
+      - name: Terraform Validate
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform validate
+      - name: Terraform Plan
+        if: github.event_name == 'pull_request'
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform plan -input=false
+      - name: Terraform Apply
+        if: github.event_name != 'pull_request'
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform apply -auto-approve -input=false
