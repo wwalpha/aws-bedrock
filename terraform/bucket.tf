@@ -25,7 +25,7 @@ resource "aws_s3_object" "auth" {
   content = <<EOT
 TZ=Asia/Tokyo
 AWS_NODEJS_CONNECTION_REUSE_ENABLED=1
-COGNITO_CLIENT_ID=6hgubko3fjhm1b5b9hrcgq929
+COGNITO_CLIENT_ID=${aws_cognito_user_pool_client.this.id}
 KNOWLEDGE_TABLE_NAME=${local.prefix}_knowledge
 KNOWLEDGE_BUCKET_NAME=${local.prefix}-knowledge-${local.account_id}
 EOT
