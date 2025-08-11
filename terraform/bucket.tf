@@ -20,21 +20,16 @@ resource "aws_s3_bucket_versioning" "materials" {
 # Auth Service Environment file
 # ----------------------------------------------------------------------------------------------
 resource "aws_s3_object" "auth" {
-  bucket  = aws_s3_bucket.materials.bucket
-  key     = local.ecs_service_env_file_auth
-  content = <<EOT
+  bucket       = aws_s3_bucket.materials.bucket
+  key          = local.ecs_service_env_file_auth
+  content_type = "text/plain; charset=utf-8"
+  content      = <<EOT
 TZ=Asia/Tokyo
 AWS_NODEJS_CONNECTION_REUSE_ENABLED=1
 COGNITO_CLIENT_ID=${aws_cognito_user_pool_client.this.id}
 KNOWLEDGE_TABLE_NAME=${local.prefix}_knowledge
 KNOWLEDGE_BUCKET_NAME=${local.prefix}-knowledge-${local.account_id}
 EOT
-
-  lifecycle {
-    ignore_changes = [
-      content,
-    ]
-  }
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -61,20 +56,15 @@ resource "aws_s3_bucket_public_access_block" "frontend" {
 # Chat Service Environment file
 # ----------------------------------------------------------------------------------------------
 resource "aws_s3_object" "chat" {
-  bucket  = aws_s3_bucket.materials.bucket
-  key     = local.ecs_service_env_file_chat
-  content = <<EOT
+  bucket       = aws_s3_bucket.materials.bucket
+  key          = local.ecs_service_env_file_chat
+  content_type = "text/plain; charset=utf-8"
+  content      = <<EOT
 TZ=Asia/Tokyo
 KNOWLEDGE_TABLE_NAME=${local.prefix}_knowledge
 KNOWLEDGE_BUCKET_NAME=${local.prefix}-knowledge-${local.account_id}
 FRONTEND_CLOUDFRONT_DOMAIN=${try(aws_cloudfront_distribution.frontend.domain_name, "")}
 EOT
-
-  lifecycle {
-    ignore_changes = [
-      content,
-    ]
-  }
 }
 
 # ----------------------------------------------------------------------------------------------

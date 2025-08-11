@@ -20,7 +20,10 @@ FROM node:22-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production \
   NO_COLOR=1 \
-  FORCE_COLOR=0
+  FORCE_COLOR=0 \
+  PYTHONIOENCODING=UTF-8 \
+  LANG=C.UTF-8 \
+  LC_ALL=C.UTF-8
 
 # Copy only runtime artifacts
 COPY --from=builder /app/package.json ./
