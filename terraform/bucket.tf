@@ -38,6 +38,26 @@ EOT
 }
 
 # ----------------------------------------------------------------------------------------------
+# S3 Bucket for Frontend SPA hosting (private, accessed via CloudFront OAC)
+# ----------------------------------------------------------------------------------------------
+resource "aws_s3_bucket" "frontend" {
+  bucket = "${local.prefix}-frontend-${local.account_id}"
+}
+
+resource "aws_s3_bucket_versioning" "frontend" {
+  bucket = aws_s3_bucket.frontend.id
+  versioning_configuration { status = "Enabled" }
+}
+
+resource "aws_s3_bucket_public_access_block" "frontend" {
+  bucket                  = aws_s3_bucket.frontend.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# ----------------------------------------------------------------------------------------------
 # Chat Service Environment file
 # ----------------------------------------------------------------------------------------------
 resource "aws_s3_object" "chat" {
@@ -47,6 +67,7 @@ resource "aws_s3_object" "chat" {
 TZ=Asia/Tokyo
 KNOWLEDGE_TABLE_NAME=${local.prefix}_knowledge
 KNOWLEDGE_BUCKET_NAME=${local.prefix}-knowledge-${local.account_id}
+FRONTEND_CLOUDFRONT_DOMAIN=${try(aws_cloudfront_distribution.frontend.domain_name, "")}
 EOT
 
   lifecycle {

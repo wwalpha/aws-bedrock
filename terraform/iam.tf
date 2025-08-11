@@ -93,7 +93,10 @@ resource "aws_iam_role_policy" "ecs_task_exec_s3_objects" {
         Action = [
           "s3:GetObject"
         ]
-        Resource = "arn:aws:s3:::${aws_s3_bucket.materials.bucket}/*"
+        Resource = [
+          "arn:aws:s3:::${aws_s3_bucket.materials.bucket}/*",
+          "arn:aws:s3:::${aws_s3_bucket.frontend.bucket}/*"
+        ]
       }
     ]
   })

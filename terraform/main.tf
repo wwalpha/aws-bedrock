@@ -7,8 +7,11 @@ provider "aws" {}
 # Terraform Settings
 # ----------------------------------------------------------------------------------------------
 terraform {
-  backend "local" {
-    path = "./terraform.tfstate"
+  backend "s3" {
+    bucket  = "arms-terraform-0606"
+    key     = "bedrock/terraform.tfstate"
+    region  = "us-east-1"
+    encrypt = true
   }
 
   required_providers {

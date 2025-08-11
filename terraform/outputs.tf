@@ -57,3 +57,21 @@ output "ecr_chat_repository_name" {
   value       = "${var.project_name}/chat"
   description = "ECR repository name for chat"
 }
+
+# ----------------------------------------------------------------------------------------------
+# Frontend CloudFront / S3 outputs
+# ----------------------------------------------------------------------------------------------
+output "frontend_bucket_name" {
+  description = "Frontend S3 bucket name"
+  value       = aws_s3_bucket.frontend.bucket
+}
+
+output "frontend_cloudfront_domain" {
+  description = "CloudFront domain name"
+  value       = aws_cloudfront_distribution.frontend.domain_name
+}
+
+output "frontend_cloudfront_id" {
+  description = "CloudFront distribution ID"
+  value       = aws_cloudfront_distribution.frontend.id
+}
