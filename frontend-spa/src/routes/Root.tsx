@@ -25,9 +25,9 @@ export default function Root() {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Header />
-      <div className="container grid flex-1 gap-4 p-4 md:grid-cols-[240px_1fr]">
+      <div className="flex-1 grid grid-cols-[350px_1fr] gap-0">
         <Sidebar />
-        <main className="rounded-lg border p-4">
+        <main className="min-w-0 min-h-0 flex flex-col overflow-hidden">
           <Outlet />
         </main>
       </div>

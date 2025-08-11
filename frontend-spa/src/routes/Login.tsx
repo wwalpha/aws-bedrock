@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ROUTES } from '@/lib/routes';
-import { useChatStore } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,19 +9,13 @@ import { ChatbotUISVG } from '@/components/icons/chatbotui-svg';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const login = useChatStore((s) => s.login);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    const result = await login(email, password);
-    if ('error' in result) {
-      setError(result.error || 'Login failed');
-      return;
-    }
-    navigate(ROUTES.HOME);
+    // TEMP: bypass auth checks and go to post-login screen
+    // TODO: restore real login flow
+    navigate(ROUTES.WORKSPACE);
   };
 
   return (
@@ -30,6 +23,7 @@ export default function Login() {
       <form
         className="animate-in text-foreground flex w-full flex-1 flex-col justify-center gap-2"
         onSubmit={handleSubmit}
+        noValidate
       >
         <div className="mx-auto">
           <ChatbotUISVG scale={0.25} />
@@ -43,7 +37,6 @@ export default function Login() {
           className="mb-3 rounded-md border bg-inherit px-4 py-2"
           name="email"
           placeholder="you@example.com"
-          required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -57,7 +50,6 @@ export default function Login() {
           type="password"
           name="password"
           placeholder="••••••••"
-          required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -66,7 +58,7 @@ export default function Login() {
           Login
         </Button>
 
-        {error && <p className="bg-foreground/10 text-foreground mt-2 p-2 text-center">{error}</p>}
+        {/* TEMP: suppress error display while bypassing auth */}
       </form>
 
       <div className="text-muted-foreground mt-3 flex justify-center text-sm">

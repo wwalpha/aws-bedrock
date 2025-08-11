@@ -1,10 +1,12 @@
 import { StrictMode } from 'react';
+import '@fontsource-variable/inter';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
 import Login from './routes/Login';
 import Signup from './routes/Signup';
 import Verify from './routes/Verify';
+import Workspace from './routes/Workspace';
 import Home from './routes/Home';
 import Root from './routes/Root';
 import Demo from './routes/Demo';
@@ -29,6 +31,7 @@ const router = createBrowserRouter([
       { path: ROUTES.SIGNUP, element: <Signup /> },
       { path: ROUTES.VERIFY, element: <Verify /> },
       { path: ROUTES.DEMO, element: <Demo /> },
+      { path: ROUTES.WORKSPACE, element: <Workspace /> },
     ],
   },
 ]);
