@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "echo 'Skipping lint (no ESLint configured)'",
+    "type-check": "tsc --noEmit",
+    "test": "echo 'No tests configured'"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.1",

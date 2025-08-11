@@ -75,7 +75,15 @@ jobs:
         run: |
           if [ -z "$FRONTEND_BUCKET" ]; then echo 'FRONTEND_BUCKET not set, skipping deploy.'; exit 0; fi
           set -euo pipefail
-          if [ -d artifact/frontend/out ]; then SRC=artifact/frontend/out; else SRC=artifact/frontend/.next/static; fi
+          if [ -d artifact/frontend-spa/dist ]; then
+            SRC=artifact/frontend-spa/dist
+          elif [ -d artifact/dist ]; then
+            SRC=artifact/dist
+          else
+            echo 'Build artifact not found under artifact/frontend-spa/dist or artifact/dist';
+            ls -la artifact || true
+            exit 1
+          fi
           aws s3 sync "$SRC" "s3://$FRONTEND_BUCKET" --delete
       - name: Invalidate CloudFront (optional)
         if: env.CF_DISTRIBUTION_ID != ''
