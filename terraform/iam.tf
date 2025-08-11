@@ -29,6 +29,33 @@ resource "aws_iam_role_policy_attachment" "ecs_task_cloudwatch" {
 }
 
 # ----------------------------------------------------------------------------------------------
+# ECS Task Role Inline Policy - DynamoDB access for Knowledge table
+# ----------------------------------------------------------------------------------------------
+resource "aws_iam_role_policy" "ecs_task_ddb_knowledge" {
+  name = "DynamoDBKnowledgeAccess"
+  role = aws_iam_role.ecs_task.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:GetItem",
+          "dynamodb:BatchWriteItem",
+          "dynamodb:BatchGetItem",
+          "dynamodb:Query",
+          "dynamodb:DescribeTable"
+        ]
+        Resource = aws_dynamodb_table.knowledge.arn
+      }
+    ]
+  })
+}
+
+# ----------------------------------------------------------------------------------------------
 # AWS ECS Task Execution Role
 # ----------------------------------------------------------------------------------------------
 resource "aws_iam_role" "ecs_task_exec" {
@@ -67,6 +94,27 @@ resource "aws_iam_role_policy" "ecs_task_exec_s3_objects" {
           "s3:GetObject"
         ]
         Resource = "arn:aws:s3:::${aws_s3_bucket.materials.bucket}/*"
+      }
+    ]
+  })
+}
+
+# ----------------------------------------------------------------------------------------------
+# ECS Task Role Inline Policy - S3 PutObject for Knowledge uploads (for presigned URL signer)
+# ----------------------------------------------------------------------------------------------
+resource "aws_iam_role_policy" "ecs_task_s3_knowledge_put" {
+  name = "S3KnowledgePutObject"
+  role = aws_iam_role.ecs_task.id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:PutObject",
+          "s3:PutObjectAcl"
+        ],
+        Resource = "arn:aws:s3:::${aws_s3_bucket.knowledge.bucket}/*"
       }
     ]
   })

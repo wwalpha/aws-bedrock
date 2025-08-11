@@ -28,20 +28,16 @@ GET    /users/{id}/sessions                過去セッション一覧取得
 GET    /models                             利用可能モデル一覧
 GET    /models/{id}                        モデル詳細取得
 POST   /models/select                      使用モデル切替
-POST   /models/train                       カスタム学習ジョブ開始
-GET    /models/train/{jobId}/status        学習ジョブの進捗確認
-DELETE /models/{id}                        モデル削除
 POST   /models/parameters                  モデルパラメータ更新
 
 [知識ベース]
-GET    /knowledge-base                     登録KB一覧取得
-POST   /knowledge-base                     新規KB作成
-PATCH  /knowledge-base/{id}                 KB更新
-DELETE /knowledge-base/{id}                 KB削除
-POST   /knowledge-base/upload               文書アップロード
-POST   /knowledge-base/index                インデックス再構築
-POST   /knowledge-base/query                KB検索
-GET    /knowledge-base/{id}/stats           KB利用統計
+GET    /knowledge                     登録KB一覧取得
+POST   /knowledge                     新規KB作成
+PATCH  /knowledge/{id}                 KB更新
+DELETE /knowledge/{id}                 KB削除
+POST   /knowledge/upload               文書アップロード
+POST   /knowledge/query                KB検索
+GET    /knowledge/{id}/stats           KB利用統計
 
 [外部連携]
 POST   /integrations/webhook                外部イベント受信
@@ -70,73 +66,3 @@ POST   /security/block-user                  アカウント凍結
 POST   /security/ip-whitelist                IPホワイトリスト登録
 POST   /security/ip-blacklist                IPブラックリスト登録
 
-
-チャットボット バックエンドAPI 一覧（概要設計書）
-
-[会話管理]
-POST   /chat/message                     ユーザー入力を受け取り応答を生成
-GET    /chat/history/{sessionId}         特定セッションの会話履歴取得
-POST   /chat/session                     新しい会話セッション作成
-PATCH  /chat/session/{sessionId}         会話状態更新（コンテキスト変更など）
-DELETE /chat/session/{sessionId}         セッション削除
-POST   /chat/interrupt                   会話の割り込み（中断処理）
-POST   /chat/resume                      中断会話の再開
-POST   /chat/context/set                  会話コンテキスト設定
-POST   /chat/context/clear                コンテキスト削除
-GET    /chat/suggestions                  質問候補や選択肢の取得
-
-[ユーザー管理]
-POST   /auth/refresh                アクセストークン更新
-POST   /auth/reset               パスワードリセット
-GET    /users/{id}                         ユーザープロフィール取得
-PATCH  /users/{id}                         プロフィール更新
-DELETE /users/{id}                         ユーザー削除
-GET    /users/{id}/sessions                過去セッション一覧取得
-GET    /users/{id}/permissions             権限一覧取得
-PATCH  /users/{id}/roles                   権限・ロール変更
-
-[モデル管理]
-GET    /models                             利用可能モデル一覧
-GET    /models/{id}                        モデル詳細取得
-POST   /models/select                      使用モデル切替
-POST   /models/train                       カスタム学習ジョブ開始
-GET    /models/train/{jobId}/status        学習ジョブの進捗確認
-DELETE /models/{id}                        モデル削除
-POST   /models/parameters                  モデルパラメータ更新
-
-[知識ベース]
-GET    /knowledge-base                     登録KB一覧取得
-POST   /knowledge-base                     新規KB作成
-PATCH  /knowledge-base/{id}                 KB更新
-DELETE /knowledge-base/{id}                 KB削除
-POST   /knowledge-base/upload               文書アップロード
-POST   /knowledge-base/index                インデックス再構築
-POST   /knowledge-base/query                KB検索
-GET    /knowledge-base/{id}/stats           KB利用統計
-
-[外部連携]
-POST   /integrations/webhook                外部イベント受信
-POST   /integrations/api-call               外部API呼び出し
-GET    /integrations/list                   連携済みサービス一覧
-POST   /integrations/connect                新規接続設定
-DELETE /integrations/{id}                   接続削除
-POST   /integrations/channel/{type}/send    LINE / Slack / Teams送信
-
-[運用管理]
-GET    /admin/analytics/conversations       会話数集計
-GET    /admin/analytics/users               ユーザー数集計
-GET    /admin/analytics/errors              エラー統計取得
-GET    /admin/logs                           システムログ取得
-GET    /admin/config                         システム設定取得
-PATCH  /admin/config                         システム設定更新
-POST   /admin/cache/clear                    キャッシュクリア
-GET    /admin/alerts                         アラート一覧
-POST   /admin/alerts/ack                     アラート確認
-
-[セキュリティ]
-GET    /security/audit-logs                  操作履歴取得
-GET    /security/sessions                    アクティブセッション一覧
-DELETE /security/sessions/{id}               強制ログアウト
-POST   /security/block-user                  アカウント凍結
-POST   /security/ip-whitelist                IPホワイトリスト登録
-POST   /security/ip-blacklist                IPブラックリスト登録

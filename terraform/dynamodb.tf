@@ -45,3 +45,23 @@ resource "aws_dynamodb_table" "user_table" {
     type = "S"
   }
 }
+
+# ----------------------------------------------------------------------------------------------
+# DynamoDB Table - Knowledge (per-user partition)
+# ----------------------------------------------------------------------------------------------
+resource "aws_dynamodb_table" "knowledge" {
+  name         = "${local.prefix}_knowledge"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "user_id"
+  range_key    = "knowledge_id"
+
+  attribute {
+    name = "user_id"
+    type = "S"
+  }
+
+  attribute {
+    name = "knowledge_id"
+    type = "S"
+  }
+}
