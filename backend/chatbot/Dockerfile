@@ -1,5 +1,5 @@
 # ベースイメージとして Python 3.10 を使用
-FROM python:3.11-slim-buster
+FROM python:3.12-slim-bookworm
 
 # 作業ディレクトリを設定
 WORKDIR /app
