@@ -88,10 +88,28 @@ resource "aws_apigatewayv2_integration" "auth" {
 }
 
 # ---------------------------------------------------------------------------------------------
-# API Gateway Route - Auth
+# API Gateway Routes - Auth (method-specific; exclude OPTIONS to let CORS be handled by API GW)
 # ---------------------------------------------------------------------------------------------
-resource "aws_apigatewayv2_route" "auth" {
+resource "aws_apigatewayv2_route" "auth_post" {
   api_id    = aws_apigatewayv2_api.this.id
-  route_key = "ANY /auth/{proxy+}"
+  route_key = "POST /auth/{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.auth.id}"
+}
+
+resource "aws_apigatewayv2_route" "auth_get" {
+  api_id    = aws_apigatewayv2_api.this.id
+  route_key = "GET /auth/{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.auth.id}"
+}
+
+resource "aws_apigatewayv2_route" "auth_put" {
+  api_id    = aws_apigatewayv2_api.this.id
+  route_key = "PUT /auth/{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.auth.id}"
+}
+
+resource "aws_apigatewayv2_route" "auth_delete" {
+  api_id    = aws_apigatewayv2_api.this.id
+  route_key = "DELETE /auth/{proxy+}"
   target    = "integrations/${aws_apigatewayv2_integration.auth.id}"
 }
