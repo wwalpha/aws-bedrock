@@ -4,7 +4,7 @@ import { Sidebar } from '@/components/layout/Sidebar';
 
 export default function Root() {
   const location = useLocation();
-  const simpleLayout = location.pathname === '/' || location.pathname === '/login';
+  const simpleLayout = location.pathname === '/' || location.pathname === '/login' || location.pathname === '/signup';
 
   if (simpleLayout) {
     // Match Next.js landing/login layout: centered content, no header/sidebar
