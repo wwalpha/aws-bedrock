@@ -7,9 +7,19 @@ export interface LoginResponse {
   [key: string]: any;
 }
 
+export interface Profile {
+  id?: string;
+  username?: string;
+  display_name?: string;
+  workspaceTitle?: string;
+  compactMode?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface ProfileSlice {
-  profile: any | null;
-  setProfile: (v: any | null | ((prev: any | null) => any | null)) => void;
+  profile: Profile | null;
+  setProfile: (v: Profile | null | ((prev: Profile | null) => Profile | null)) => void;
 }
 
 export interface Chat {
@@ -35,26 +45,67 @@ export interface Workspace {
 }
 
 export interface ItemsSlice {
-  assistants: any[]; // TODO: type later
-  setAssistants: (v: any[] | ((prev: any[]) => any[])) => void;
-  collections: any[];
-  setCollections: (v: any[] | ((prev: any[]) => any[])) => void;
+  assistants: Assistant[];
+  setAssistants: (v: Assistant[] | ((prev: Assistant[]) => Assistant[])) => void;
+  collections: Collection[];
+  setCollections: (v: Collection[] | ((prev: Collection[]) => Collection[])) => void;
   chats: Chat[];
   setChats: (v: Chat[] | ((prev: Chat[]) => Chat[])) => void;
-  files: any[];
-  setFiles: (v: any[] | ((prev: any[]) => any[])) => void;
-  folders: any[];
-  setFolders: (v: any[] | ((prev: any[]) => any[])) => void;
-  models: any[];
-  setModels: (v: any[] | ((prev: any[]) => any[])) => void;
+  files: FileAsset[];
+  setFiles: (v: FileAsset[] | ((prev: FileAsset[]) => FileAsset[])) => void;
+  folders: Folder[];
+  setFolders: (v: Folder[] | ((prev: Folder[]) => Folder[])) => void;
+  models: ModelRef[];
+  setModels: (v: ModelRef[] | ((prev: ModelRef[]) => ModelRef[])) => void;
   presets: Preset[];
   setPresets: (v: Preset[] | ((prev: Preset[]) => Preset[])) => void;
-  prompts: any[];
-  setPrompts: (v: any[] | ((prev: any[]) => any[])) => void;
-  tools: any[];
-  setTools: (v: any[] | ((prev: any[]) => any[])) => void;
+  prompts: Prompt[];
+  setPrompts: (v: Prompt[] | ((prev: Prompt[]) => Prompt[])) => void;
+  tools: Tool[];
+  setTools: (v: Tool[] | ((prev: Tool[]) => Tool[])) => void;
   workspaces: Workspace[];
   setWorkspaces: (v: Workspace[] | ((prev: Workspace[]) => Workspace[])) => void;
+}
+
+export interface Collection {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface FileAsset {
+  id: string;
+  name: string;
+  size?: number;
+  mimeType?: string;
+  createdAt: string;
+  folderId?: string | null;
+  url?: string;
+}
+
+export interface Folder {
+  id: string;
+  name: string;
+  parentId?: string | null;
+  createdAt: string;
+}
+
+export interface ModelRef {
+  id: string;
+  provider?: string;
+  label?: string;
+  contextLength?: number;
+  supportsStreaming?: boolean;
+}
+
+export interface Prompt {
+  id: string;
+  name: string;
+  content: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface ModelsSlice {
@@ -76,30 +127,60 @@ export interface WorkspaceSlice {
 }
 
 export interface PresetSlice {
-  selectedPreset: any | null;
-  setSelectedPreset: (v: any | null | ((prev: any | null) => any | null)) => void;
+  selectedPreset: Preset | null;
+  setSelectedPreset: (v: Preset | null | ((prev: Preset | null) => Preset | null)) => void;
+}
+
+export interface Assistant {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface AssistantSlice {
-  selectedAssistant: any | null;
-  setSelectedAssistant: (v: any | null | ((prev: any | null) => any | null)) => void;
-  assistantImages: any[];
-  setAssistantImages: (v: any[] | ((prev: any[]) => any[])) => void;
-  openaiAssistants: any[];
-  setOpenaiAssistants: (v: any[] | ((prev: any[]) => any[])) => void;
+  selectedAssistant: Assistant | null;
+  setSelectedAssistant: (v: Assistant | null | ((prev: Assistant | null) => Assistant | null)) => void;
+  assistantImages: string[]; // urls/base64
+  setAssistantImages: (v: string[] | ((prev: string[]) => string[])) => void;
+  openaiAssistants: Assistant[];
+  setOpenaiAssistants: (v: Assistant[] | ((prev: Assistant[]) => Assistant[])) => void;
+}
+
+export interface ChatMessage {
+  id: string;
+  chatId: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  createdAt: string;
+}
+
+export interface ChatSettings {
+  model?: string;
+  temperature?: number;
+  top_p?: number;
+  [key: string]: unknown;
+}
+
+export interface ChatFileItem {
+  id: string;
+  chatId: string;
+  fileId: string;
+  addedAt: string;
 }
 
 export interface PassiveChatSlice {
   userInput: string;
   setUserInput: (v: string | ((prev: string) => string)) => void;
-  chatMessages: any[];
-  setChatMessages: (v: any[] | ((prev: any[]) => any[])) => void;
-  chatSettings: any;
-  setChatSettings: (v: any | ((prev: any) => any)) => void;
+  chatMessages: ChatMessage[];
+  setChatMessages: (v: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => void;
+  chatSettings: ChatSettings;
+  setChatSettings: (v: ChatSettings | ((prev: ChatSettings) => ChatSettings)) => void;
   selectedChat: Chat | null;
   setSelectedChat: (v: Chat | null | ((prev: Chat | null) => Chat | null)) => void;
-  chatFileItems: any[];
-  setChatFileItems: (v: any[] | ((prev: any[]) => any[])) => void;
+  chatFileItems: ChatFileItem[];
+  setChatFileItems: (v: ChatFileItem[] | ((prev: ChatFileItem[]) => ChatFileItem[])) => void;
 }
 
 export interface ActiveChatSlice {
@@ -138,15 +219,30 @@ export interface ChatInputSlice {
   setIsAssistantPickerOpen: (v: boolean | ((prev: boolean) => boolean)) => void;
 }
 
+export interface ChatFile {
+  id: string;
+  name: string;
+  size?: number;
+  mimeType?: string;
+  createdAt: string;
+  url?: string;
+}
+
+export interface ChatImage extends ChatFile {
+  width?: number;
+  height?: number;
+  thumbnailUrl?: string;
+}
+
 export interface AttachmentsSlice {
-  chatFiles: any[];
-  setChatFiles: (v: any[] | ((prev: any[]) => any[])) => void;
-  chatImages: any[];
-  setChatImages: (v: any[] | ((prev: any[]) => any[])) => void;
-  newMessageFiles: any[];
-  setNewMessageFiles: (v: any[] | ((prev: any[]) => any[])) => void;
-  newMessageImages: any[];
-  setNewMessageImages: (v: any[] | ((prev: any[]) => any[])) => void;
+  chatFiles: ChatFile[];
+  setChatFiles: (v: ChatFile[] | ((prev: ChatFile[]) => ChatFile[])) => void;
+  chatImages: ChatImage[];
+  setChatImages: (v: ChatImage[] | ((prev: ChatImage[]) => ChatImage[])) => void;
+  newMessageFiles: ChatFile[];
+  setNewMessageFiles: (v: ChatFile[] | ((prev: ChatFile[]) => ChatFile[])) => void;
+  newMessageImages: ChatImage[];
+  setNewMessageImages: (v: ChatImage[] | ((prev: ChatImage[]) => ChatImage[])) => void;
   showFilesDisplay: boolean;
   setShowFilesDisplay: (v: boolean | ((prev: boolean) => boolean)) => void;
 }
@@ -158,9 +254,16 @@ export interface RetrievalSlice {
   setSourceCount: (v: number | ((prev: number) => number)) => void;
 }
 
+export interface Tool {
+  id: string;
+  name: string;
+  kind?: string;
+  createdAt?: string;
+}
+
 export interface ToolsSlice {
-  selectedTools: any[];
-  setSelectedTools: (v: any[] | ((prev: any[]) => any[])) => void;
+  selectedTools: Tool[];
+  setSelectedTools: (v: Tool[] | ((prev: Tool[]) => Tool[])) => void;
   toolInUse: string;
   setToolInUse: (v: string | ((prev: string) => string)) => void;
 }
