@@ -29,7 +29,7 @@ AWS_NODEJS_CONNECTION_REUSE_ENABLED=1
 COGNITO_CLIENT_ID=${aws_cognito_user_pool_client.this.id}
 KNOWLEDGE_TABLE_NAME=${local.prefix}_knowledge
 KNOWLEDGE_BUCKET_NAME=${local.prefix}-knowledge-${local.account_id}
-KNOWLEDGE_BASE_ID=${try(aws_bedrockagent_knowledge_base.kb.id, "")}
+
 EOT
 }
 
@@ -71,7 +71,7 @@ TZ=Asia/Tokyo
 KNOWLEDGE_TABLE_NAME=${local.prefix}_knowledge
 KNOWLEDGE_BUCKET_NAME=${local.prefix}-knowledge-${local.account_id}
 FRONTEND_CLOUDFRONT_DOMAIN=${try(aws_cloudfront_distribution.frontend.domain_name, "")}
-KNOWLEDGE_BASE_ID=${try(aws_bedrockagent_knowledge_base.kb.id, "")}
+
 EOT
 }
 

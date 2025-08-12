@@ -37,19 +37,8 @@ resource "aws_iam_role_policy" "bedrock_kb_aoss_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
-        Action = [
-          "aoss:CreateCollectionItems",
-          "aoss:DeleteCollectionItems",
-          "aoss:UpdateCollectionItems",
-          "aoss:DescribeCollectionItems",
-          "aoss:CreateIndex",
-          "aoss:DeleteIndex",
-          "aoss:UpdateIndex",
-          "aoss:DescribeIndex",
-          "aoss:ReadDocument",
-          "aoss:WriteDocument"
-        ]
+        Effect   = "Allow"
+        Action   = ["aoss:*"]
         Resource = "*"
       }
     ]
@@ -112,93 +101,15 @@ resource "aws_opensearchserverless_access_policy" "kb_access" {
         {
           ResourceType = "collection"
           Resource     = ["collection/${aws_opensearchserverless_collection.kb.name}"]
-          Permission = [
-            "aoss:DescribeCollectionItems",
-            "aoss:CreateCollectionItems",
-            "aoss:UpdateCollectionItems",
-            "aoss:DeleteCollectionItems"
-          ]
+          Permission   = ["aoss:*"]
         },
         {
           ResourceType = "index"
           Resource     = ["index/${aws_opensearchserverless_collection.kb.name}/*"]
-          Permission = [
-            "aoss:CreateIndex",
-            "aoss:DeleteIndex",
-            "aoss:UpdateIndex",
-            "aoss:DescribeIndex",
-            "aoss:ReadDocument",
-            "aoss:WriteDocument"
-          ]
+          Permission   = ["aoss:*"]
         }
       ]
       Principal = [aws_iam_role.bedrock_kb_role.arn]
     }
   ])
 }
-
-# ----------------------------------------------------------------------------------------------
-# Wait for OpenSearch collection stabilization (simple sleep) before KB creation
-# ----------------------------------------------------------------------------------------------
-resource "null_resource" "wait_opensearch_ready" {
-  depends_on = [
-    aws_opensearchserverless_collection.kb,
-    aws_opensearchserverless_access_policy.kb_access
-  ]
-
-  provisioner "local-exec" {
-    command = "sleep 60"
-  }
-}
-
-# ----------------------------------------------------------------------------------------------
-# Amazon Bedrock Knowledge Base
-# ----------------------------------------------------------------------------------------------
-resource "aws_bedrockagent_knowledge_base" "kb" {
-  name     = local.bedrock_kb_name
-  role_arn = aws_iam_role.bedrock_kb_role.arn
-
-  knowledge_base_configuration {
-    type = "VECTOR"
-    vector_knowledge_base_configuration {
-      # Region hard-coded fallback ap-northeast-1; ensure provider region
-      embedding_model_arn = "arn:aws:bedrock:ap-northeast-1::foundation-model/${var.bedrock_kb_embedding_model_id}"
-    }
-  }
-
-  storage_configuration {
-    type = "OPENSEARCH_SERVERLESS"
-    opensearch_serverless_configuration {
-      collection_arn    = aws_opensearchserverless_collection.kb.arn
-      vector_index_name = local.bedrock_kb_vector_index
-      field_mapping {
-        metadata_field = "metadata"
-        text_field     = "text"
-        vector_field   = "vector"
-      }
-    }
-  }
-
-  depends_on = [
-    null_resource.wait_opensearch_ready,
-    aws_opensearchserverless_security_policy.kb_encryption,
-    aws_opensearchserverless_security_policy.kb_network
-  ]
-}
-
-# ----------------------------------------------------------------------------------------------
-# Amazon Bedrock Knowledge Base Data Source - S3
-# ----------------------------------------------------------------------------------------------
-resource "aws_bedrockagent_data_source" "kb_s3" {
-  knowledge_base_id = aws_bedrockagent_knowledge_base.kb.id
-  name              = "kb-s3"
-
-  data_source_configuration {
-    type = "S3"
-    s3_configuration {
-      bucket_arn         = aws_s3_bucket.knowledge.arn
-      inclusion_prefixes = [local.bedrock_kb_s3_prefix_raw]
-    }
-  }
-}
-
