@@ -1,7 +1,9 @@
 import { create } from 'zustand';
+import { useStore } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { ChatbotState } from 'typings';
 import { createAppSlice } from './slices/app';
+import { attachStoreAccessor } from '@/lib/api/client';
 import { createProfileSlice } from './slices/profile';
 import { createItemsSlice } from './slices/items';
 import { createModelsSlice } from './slices/models';
@@ -51,3 +53,16 @@ export const store = create<ChatbotState>()(
     }
   )
 );
+
+// Register lightweight accessor for api client (avoid direct import of store inside client file)
+attachStoreAccessor(() => {
+  try {
+    const { idToken, accessToken, logout } = store.getState();
+    return { idToken, accessToken, logout };
+  } catch {
+    return undefined;
+  }
+});
+
+// Convenience hook (型補完用): component から store を使う
+export const useChatStore = <T>(selector: (s: ChatbotState) => T): T => useStore(store, selector);

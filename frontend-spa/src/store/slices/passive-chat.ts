@@ -1,6 +1,5 @@
 import type { PassiveChatSlice, Chat, ChatMessage, ChatSettings, ChatFileItem } from 'typings';
 import type { SliceSet } from 'typings/slice';
-import { apply, type SetStateAction } from '../utils';
 import type { StateCreator } from 'zustand';
 
 // 受動的（非生成中）チャットのベース状態
@@ -9,19 +8,26 @@ import type { StateCreator } from 'zustand';
 // - chatSettings: チャット単位の設定（モデル・温度など）
 // - selectedChat: 現在選択中チャット
 // - chatFileItems: メッセージごとの添付関連メタ情報
-export const createPassiveChatSlice: StateCreator<PassiveChatSlice, [], [], PassiveChatSlice> = (set: SliceSet<PassiveChatSlice>) => ({
+export const createPassiveChatSlice: StateCreator<PassiveChatSlice, [], [], PassiveChatSlice> = (
+  set: SliceSet<PassiveChatSlice>
+) => ({
   userInput: '',
-  setUserInput: (v: SetStateAction<string>) => set((s) => ({ userInput: apply(s.userInput, v) })),
+  setUserInput: (v: string | ((prev: string) => string)) =>
+    set((s) => ({ userInput: typeof v === 'function' ? (v as any)(s.userInput) : v })),
 
   chatMessages: [] as ChatMessage[],
-  setChatMessages: (v: SetStateAction<ChatMessage[]>) => set((s) => ({ chatMessages: apply(s.chatMessages, v) })),
+  setChatMessages: (v: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) =>
+    set((s) => ({ chatMessages: typeof v === 'function' ? (v as any)(s.chatMessages) : v })),
 
   chatSettings: {} as ChatSettings,
-  setChatSettings: (v: SetStateAction<ChatSettings>) => set((s) => ({ chatSettings: apply(s.chatSettings, v) })),
+  setChatSettings: (v: ChatSettings | ((prev: ChatSettings) => ChatSettings)) =>
+    set((s) => ({ chatSettings: typeof v === 'function' ? (v as any)(s.chatSettings) : v })),
 
   selectedChat: null as Chat | null,
-  setSelectedChat: (v: SetStateAction<Chat | null>) => set((s) => ({ selectedChat: apply(s.selectedChat, v) })),
+  setSelectedChat: (v: Chat | null | ((prev: Chat | null) => Chat | null)) =>
+    set((s) => ({ selectedChat: typeof v === 'function' ? (v as any)(s.selectedChat) : v })),
 
   chatFileItems: [] as ChatFileItem[],
-  setChatFileItems: (v: SetStateAction<ChatFileItem[]>) => set((s) => ({ chatFileItems: apply(s.chatFileItems, v) })),
+  setChatFileItems: (v: ChatFileItem[] | ((prev: ChatFileItem[]) => ChatFileItem[])) =>
+    set((s) => ({ chatFileItems: typeof v === 'function' ? (v as any)(s.chatFileItems) : v })),
 });

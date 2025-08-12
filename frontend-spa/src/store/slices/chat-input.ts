@@ -1,51 +1,62 @@
 import type { ChatInputSlice } from 'typings';
 import type { SliceSet } from 'typings/slice';
-import { apply, type SetStateAction } from '../utils';
 import type { StateCreator } from 'zustand';
 
 // チャット入力欄の補助 UI 状態や入力中コマンド解析用の値を保持
-export const createChatInputSlice: StateCreator<ChatInputSlice, [], [], ChatInputSlice> = (set: SliceSet<ChatInputSlice>) => ({
+export const createChatInputSlice: StateCreator<ChatInputSlice, [], [], ChatInputSlice> = (
+  set: SliceSet<ChatInputSlice>
+) => ({
   // プロンプトテンプレートピッカー表示フラグ
   isPromptPickerOpen: false,
-  setIsPromptPickerOpen: (v: SetStateAction<boolean>) =>
-    set((s) => ({ isPromptPickerOpen: apply(s.isPromptPickerOpen, v) })),
+  setIsPromptPickerOpen: (v: boolean | ((prev: boolean) => boolean)) =>
+    set((s) => ({ isPromptPickerOpen: typeof v === 'function' ? (v as any)(s.isPromptPickerOpen) : v })),
 
   // 直近で入力されたスラッシュコマンド文字列 (/imagine など)
   slashCommand: '',
-  setSlashCommand: (v: SetStateAction<string>) => set((s) => ({ slashCommand: apply(s.slashCommand, v) })),
+  setSlashCommand: (v: string | ((prev: string) => string)) =>
+    set((s) => ({ slashCommand: typeof v === 'function' ? (v as any)(s.slashCommand) : v })),
 
   // ファイルピッカー表示フラグ
   isFilePickerOpen: false,
-  setIsFilePickerOpen: (v: SetStateAction<boolean>) => set((s) => ({ isFilePickerOpen: apply(s.isFilePickerOpen, v) })),
+  setIsFilePickerOpen: (v: boolean | ((prev: boolean) => boolean)) =>
+    set((s) => ({ isFilePickerOpen: typeof v === 'function' ? (v as any)(s.isFilePickerOpen) : v })),
 
   // ハッシュタグ ( #datasource など ) 入力検出用
   hashtagCommand: '',
-  setHashtagCommand: (v: SetStateAction<string>) => set((s) => ({ hashtagCommand: apply(s.hashtagCommand, v) })),
+  setHashtagCommand: (v: string | ((prev: string) => string)) =>
+    set((s) => ({ hashtagCommand: typeof v === 'function' ? (v as any)(s.hashtagCommand) : v })),
 
   // ツールピッカー表示フラグ
   isToolPickerOpen: false,
-  setIsToolPickerOpen: (v: SetStateAction<boolean>) => set((s) => ({ isToolPickerOpen: apply(s.isToolPickerOpen, v) })),
+  setIsToolPickerOpen: (v: boolean | ((prev: boolean) => boolean)) =>
+    set((s) => ({ isToolPickerOpen: typeof v === 'function' ? (v as any)(s.isToolPickerOpen) : v })),
 
   // 現在入力中のツールコマンド文字列
   toolCommand: '',
-  setToolCommand: (v: SetStateAction<string>) => set((s) => ({ toolCommand: apply(s.toolCommand, v) })),
+  setToolCommand: (v: string | ((prev: string) => string)) =>
+    set((s) => ({ toolCommand: typeof v === 'function' ? (v as any)(s.toolCommand) : v })),
 
   // 以下 focus* 系は UI の自動フォーカス制御トリガー
   focusPrompt: false,
-  setFocusPrompt: (v: SetStateAction<boolean>) => set((s) => ({ focusPrompt: apply(s.focusPrompt, v) })),
+  setFocusPrompt: (v: boolean | ((prev: boolean) => boolean)) =>
+    set((s) => ({ focusPrompt: typeof v === 'function' ? (v as any)(s.focusPrompt) : v })),
   focusFile: false,
-  setFocusFile: (v: SetStateAction<boolean>) => set((s) => ({ focusFile: apply(s.focusFile, v) })),
+  setFocusFile: (v: boolean | ((prev: boolean) => boolean)) =>
+    set((s) => ({ focusFile: typeof v === 'function' ? (v as any)(s.focusFile) : v })),
   focusTool: false,
-  setFocusTool: (v: SetStateAction<boolean>) => set((s) => ({ focusTool: apply(s.focusTool, v) })),
+  setFocusTool: (v: boolean | ((prev: boolean) => boolean)) =>
+    set((s) => ({ focusTool: typeof v === 'function' ? (v as any)(s.focusTool) : v })),
   focusAssistant: false,
-  setFocusAssistant: (v: SetStateAction<boolean>) => set((s) => ({ focusAssistant: apply(s.focusAssistant, v) })),
+  setFocusAssistant: (v: boolean | ((prev: boolean) => boolean)) =>
+    set((s) => ({ focusAssistant: typeof v === 'function' ? (v as any)(s.focusAssistant) : v })),
 
   // メンション (@assistant など) 入力検出用
   atCommand: '',
-  setAtCommand: (v: SetStateAction<string>) => set((s) => ({ atCommand: apply(s.atCommand, v) })),
+  setAtCommand: (v: string | ((prev: string) => string)) =>
+    set((s) => ({ atCommand: typeof v === 'function' ? (v as any)(s.atCommand) : v })),
 
   // アシスタントピッカー表示フラグ
   isAssistantPickerOpen: false,
-  setIsAssistantPickerOpen: (v: SetStateAction<boolean>) =>
-    set((s) => ({ isAssistantPickerOpen: apply(s.isAssistantPickerOpen, v) })),
+  setIsAssistantPickerOpen: (v: boolean | ((prev: boolean) => boolean)) =>
+    set((s) => ({ isAssistantPickerOpen: typeof v === 'function' ? (v as any)(s.isAssistantPickerOpen) : v })),
 });

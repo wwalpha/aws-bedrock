@@ -1,16 +1,18 @@
 import type { WorkspaceSlice, Workspace } from 'typings';
 import type { SliceSet } from 'typings/slice';
-import { apply, type SetStateAction } from '../utils';
 import type { StateCreator } from 'zustand';
 
 // ワークスペース（組織 / プロジェクト）選択と関連アセット
-export const createWorkspaceSlice: StateCreator<WorkspaceSlice, [], [], WorkspaceSlice> = (set: SliceSet<WorkspaceSlice>) => ({
+export const createWorkspaceSlice: StateCreator<WorkspaceSlice, [], [], WorkspaceSlice> = (
+  set: SliceSet<WorkspaceSlice>
+) => ({
   // 現在選択中ワークスペース
   selectedWorkspace: null as Workspace | null,
-  setSelectedWorkspace: (v: SetStateAction<Workspace | null>) =>
-    set((s) => ({ selectedWorkspace: apply(s.selectedWorkspace, v) })),
+  setSelectedWorkspace: (v: Workspace | null | ((prev: Workspace | null) => Workspace | null)) =>
+    set((s) => ({ selectedWorkspace: typeof v === 'function' ? (v as any)(s.selectedWorkspace) : v })),
 
   // ワークスペースに紐づく画像 (ロゴなど)
   workspaceImages: [],
-  setWorkspaceImages: (v: SetStateAction<any[]>) => set((s) => ({ workspaceImages: apply(s.workspaceImages, v) })),
+  setWorkspaceImages: (v: any[] | ((prev: any[]) => any[])) =>
+    set((s) => ({ workspaceImages: typeof v === 'function' ? (v as any)(s.workspaceImages) : v })),
 });
