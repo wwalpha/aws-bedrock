@@ -85,6 +85,11 @@ resource "aws_apigatewayv2_integration" "auth" {
   integration_method = "ANY"
   integration_type   = "HTTP_PROXY"
   integration_uri    = data.aws_service_discovery_service.auth.arn
+
+  # Forward the full '/auth/{proxy+}' path to the backend
+  request_parameters = {
+    "overwrite:path" = "/auth/$request.path.proxy"
+  }
 }
 
 # ---------------------------------------------------------------------------------------------
