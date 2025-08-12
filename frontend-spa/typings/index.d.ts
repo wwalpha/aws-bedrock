@@ -12,21 +12,36 @@ export interface ProfileSlice {
   setProfile: (v: any | null | ((prev: any | null) => any | null)) => void;
 }
 
+export interface Chat {
+  id: string;
+  name: string;
+  createdAt: string; // ISO date
+  updatedAt?: string;
+}
+
+export interface Preset {
+  id: string;
+  name: string;
+  model?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 export interface ItemsSlice {
-  assistants: any[];
+  assistants: any[]; // TODO: type later
   setAssistants: (v: any[] | ((prev: any[]) => any[])) => void;
   collections: any[];
   setCollections: (v: any[] | ((prev: any[]) => any[])) => void;
-  chats: any[];
-  setChats: (v: any[] | ((prev: any[]) => any[])) => void;
+  chats: Chat[];
+  setChats: (v: Chat[] | ((prev: Chat[]) => Chat[])) => void;
   files: any[];
   setFiles: (v: any[] | ((prev: any[]) => any[])) => void;
   folders: any[];
   setFolders: (v: any[] | ((prev: any[]) => any[])) => void;
   models: any[];
   setModels: (v: any[] | ((prev: any[]) => any[])) => void;
-  presets: any[];
-  setPresets: (v: any[] | ((prev: any[]) => any[])) => void;
+  presets: Preset[];
+  setPresets: (v: Preset[] | ((prev: Preset[]) => Preset[])) => void;
   prompts: any[];
   setPrompts: (v: any[] | ((prev: any[]) => any[])) => void;
   tools: any[];
@@ -74,8 +89,8 @@ export interface PassiveChatSlice {
   setChatMessages: (v: any[] | ((prev: any[]) => any[])) => void;
   chatSettings: any;
   setChatSettings: (v: any | ((prev: any) => any)) => void;
-  selectedChat: any | null;
-  setSelectedChat: (v: any | null | ((prev: any | null) => any | null)) => void;
+  selectedChat: Chat | null;
+  setSelectedChat: (v: Chat | null | ((prev: Chat | null) => Chat | null)) => void;
   chatFileItems: any[];
   setChatFileItems: (v: any[] | ((prev: any[]) => any[])) => void;
 }

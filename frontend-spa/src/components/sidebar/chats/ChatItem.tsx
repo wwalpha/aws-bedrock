@@ -5,27 +5,54 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Pencil, Trash2 } from 'lucide-react';
+import type { Chat } from 'typings';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/lib/routes';
 
 interface ChatItemProps {
-  chat: any;
+  chat: Chat;
   active?: boolean;
 }
 
 export const ChatItem: FC<ChatItemProps> = ({ chat, active }) => {
   const setSelectedChat = useChatStore((s: any) => s.setSelectedChat);
   const setChats = useChatStore((s: any) => s.setChats);
+  const navigate = useNavigate();
 
   const [renameOpen, setRenameOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [name, setName] = useState(chat.name || '');
 
-  const handleOpen = () => setSelectedChat(chat);
+  const handleOpen = () => {
+    setSelectedChat(chat);
+    navigate(`${ROUTES.WORKSPACE}/${chat.id}`);
+  };
   const handleRename = () => {
-    setChats((prev: any[]) => prev.map((c) => (c.id === chat.id ? { ...c, name } : c)));
+    setChats((prev: Chat[]) =>
+      prev.map((c: Chat) => (c.id === chat.id ? { ...c, name, updatedAt: new Date().toISOString() } : c))
+    );
     setRenameOpen(false);
   };
   const handleDelete = () => {
-    setChats((prev: any[]) => prev.filter((c) => c.id !== chat.id));
+    setChats((prev: Chat[]) => {
+      const next = prev.filter((c: Chat) => c.id !== chat.id);
+      return next;
+    });
+    // If this was the selected chat, clear selection and navigate to fallback
+    setSelectedChat((prev: Chat | null) => {
+      if (prev?.id === chat.id) {
+        const remaining = (useChatStore.getState().chats as Chat[]).filter((c) => c.id !== chat.id);
+        if (remaining.length) {
+          const first = remaining[0];
+          navigate(`${ROUTES.WORKSPACE}/${first.id}`, { replace: true });
+          return first;
+        } else {
+          navigate(ROUTES.WORKSPACE, { replace: true });
+          return null;
+        }
+      }
+      return prev;
+    });
     setDeleteOpen(false);
   };
 

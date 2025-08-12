@@ -5,6 +5,7 @@ export const ROUTES = {
   VERIFY: '/verify',
   DEMO: '/demo',
   WORKSPACE: '/workspace',
+  WORKSPACE_CHAT: '/workspace/:chatId',
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;

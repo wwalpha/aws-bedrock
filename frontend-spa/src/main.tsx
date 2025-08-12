@@ -32,6 +32,7 @@ const router = createBrowserRouter([
       { path: ROUTES.VERIFY, element: <Verify /> },
       { path: ROUTES.DEMO, element: <Demo /> },
       { path: ROUTES.WORKSPACE, element: <Workspace /> },
+      { path: ROUTES.WORKSPACE_CHAT, element: <Workspace /> },
     ],
   },
 ]);

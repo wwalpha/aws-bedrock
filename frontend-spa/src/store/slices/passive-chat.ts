@@ -1,4 +1,4 @@
-import type { PassiveChatSlice } from 'typings';
+import type { PassiveChatSlice, Chat } from 'typings';
 import { apply } from '../utils';
 
 export const createPassiveChatSlice = (set: any) =>
@@ -9,7 +9,7 @@ export const createPassiveChatSlice = (set: any) =>
     setChatMessages: (v: any) => set((s: PassiveChatSlice) => ({ chatMessages: apply(s.chatMessages, v) })),
     chatSettings: {},
     setChatSettings: (v: any) => set((s: PassiveChatSlice) => ({ chatSettings: apply(s.chatSettings, v) })),
-    selectedChat: null,
+    selectedChat: null as Chat | null,
     setSelectedChat: (v: any) => set((s: PassiveChatSlice) => ({ selectedChat: apply(s.selectedChat, v) })),
     chatFileItems: [],
     setChatFileItems: (v: any) => set((s: PassiveChatSlice) => ({ chatFileItems: apply(s.chatFileItems, v) })),
