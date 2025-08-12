@@ -1,25 +1,27 @@
 import type { ModelsSlice } from 'typings';
-import { apply } from '../utils';
+import { apply, type SetStateAction } from '../utils';
+import type { StateCreator } from 'zustand';
 
 // モデル可用性 / 分類ごとの一覧を保持
-export const createModelsSlice = (set: any) =>
-  ({
-    // 環境変数キーとユーザ入力キーのマッピングなどに利用
-    envKeyMap: {},
-    setEnvKeyMap: (v: any) => set((s: ModelsSlice) => ({ envKeyMap: apply(s.envKeyMap, v) })),
+type SliceSet = (fn: (state: ModelsSlice) => Partial<ModelsSlice>) => void;
 
-    // ホスティングされている（サーバー側提供）モデル一覧
-    availableHostedModels: [],
-    setAvailableHostedModels: (v: any) =>
-      set((s: ModelsSlice) => ({ availableHostedModels: apply(s.availableHostedModels, v) })),
+export const createModelsSlice: StateCreator<ModelsSlice, [], [], ModelsSlice> = (set: SliceSet) => ({
+  // 環境変数キーとユーザ入力キーのマッピングなどに利用
+  envKeyMap: {},
+  setEnvKeyMap: (v: SetStateAction<Record<string, string>>) => set((s) => ({ envKeyMap: apply(s.envKeyMap, v) })),
 
-    // ローカル (WebGPU / wasm 等) 実行用モデル一覧
-    availableLocalModels: [],
-    setAvailableLocalModels: (v: any) =>
-      set((s: ModelsSlice) => ({ availableLocalModels: apply(s.availableLocalModels, v) })),
+  // ホスティングされている（サーバー側提供）モデル一覧
+  availableHostedModels: [],
+  setAvailableHostedModels: (v: SetStateAction<any[]>) =>
+    set((s) => ({ availableHostedModels: apply(s.availableHostedModels, v) })),
 
-    // OpenRouter 等外部ルーター経由モデル一覧
-    availableOpenRouterModels: [],
-    setAvailableOpenRouterModels: (v: any) =>
-      set((s: ModelsSlice) => ({ availableOpenRouterModels: apply(s.availableOpenRouterModels, v) })),
-  }) as ModelsSlice;
+  // ローカル (WebGPU / wasm 等) 実行用モデル一覧
+  availableLocalModels: [],
+  setAvailableLocalModels: (v: SetStateAction<any[]>) =>
+    set((s) => ({ availableLocalModels: apply(s.availableLocalModels, v) })),
+
+  // OpenRouter 等外部ルーター経由モデル一覧
+  availableOpenRouterModels: [],
+  setAvailableOpenRouterModels: (v: SetStateAction<any[]>) =>
+    set((s) => ({ availableOpenRouterModels: apply(s.availableOpenRouterModels, v) })),
+});

@@ -11,39 +11,41 @@ import type {
   Tool,
   Workspace,
 } from 'typings';
-import { apply } from '../utils';
+import { apply, type SetStateAction } from '../utils';
+import type { StateCreator } from 'zustand';
 
 // 各種エンティティ（一覧データ）を集約管理する Slice
 // 取得後のキャッシュや UI 再描画トリガー用
-export const createItemsSlice = (set: any) =>
-  ({
-    assistants: [] as Assistant[],
-    setAssistants: (v: any) => set((s: ItemsSlice) => ({ assistants: apply(s.assistants, v) })),
+type SliceSet = (fn: (state: ItemsSlice) => Partial<ItemsSlice>) => void;
 
-    collections: [] as Collection[],
-    setCollections: (v: any) => set((s: ItemsSlice) => ({ collections: apply(s.collections, v) })),
+export const createItemsSlice: StateCreator<ItemsSlice, [], [], ItemsSlice> = (set: SliceSet) => ({
+  assistants: [] as Assistant[],
+  setAssistants: (v: SetStateAction<Assistant[]>) => set((s) => ({ assistants: apply(s.assistants, v) })),
 
-    chats: [] as Chat[],
-    setChats: (v: any) => set((s: ItemsSlice) => ({ chats: apply(s.chats, v) })),
+  collections: [] as Collection[],
+  setCollections: (v: SetStateAction<Collection[]>) => set((s) => ({ collections: apply(s.collections, v) })),
 
-    files: [] as FileAsset[],
-    setFiles: (v: any) => set((s: ItemsSlice) => ({ files: apply(s.files, v) })),
+  chats: [] as Chat[],
+  setChats: (v: SetStateAction<Chat[]>) => set((s) => ({ chats: apply(s.chats, v) })),
 
-    folders: [] as Folder[],
-    setFolders: (v: any) => set((s: ItemsSlice) => ({ folders: apply(s.folders, v) })),
+  files: [] as FileAsset[],
+  setFiles: (v: SetStateAction<FileAsset[]>) => set((s) => ({ files: apply(s.files, v) })),
 
-    models: [] as ModelRef[],
-    setModels: (v: any) => set((s: ItemsSlice) => ({ models: apply(s.models, v) })),
+  folders: [] as Folder[],
+  setFolders: (v: SetStateAction<Folder[]>) => set((s) => ({ folders: apply(s.folders, v) })),
 
-    presets: [] as Preset[],
-    setPresets: (v: any) => set((s: ItemsSlice) => ({ presets: apply(s.presets, v) })),
+  models: [] as ModelRef[],
+  setModels: (v: SetStateAction<ModelRef[]>) => set((s) => ({ models: apply(s.models, v) })),
 
-    prompts: [] as Prompt[],
-    setPrompts: (v: any) => set((s: ItemsSlice) => ({ prompts: apply(s.prompts, v) })),
+  presets: [] as Preset[],
+  setPresets: (v: SetStateAction<Preset[]>) => set((s) => ({ presets: apply(s.presets, v) })),
 
-    tools: [] as Tool[],
-    setTools: (v: any) => set((s: ItemsSlice) => ({ tools: apply(s.tools, v) })),
+  prompts: [] as Prompt[],
+  setPrompts: (v: SetStateAction<Prompt[]>) => set((s) => ({ prompts: apply(s.prompts, v) })),
 
-    workspaces: [] as Workspace[],
-    setWorkspaces: (v: any) => set((s: ItemsSlice) => ({ workspaces: apply(s.workspaces, v) })),
-  }) as ItemsSlice;
+  tools: [] as Tool[],
+  setTools: (v: SetStateAction<Tool[]>) => set((s) => ({ tools: apply(s.tools, v) })),
+
+  workspaces: [] as Workspace[],
+  setWorkspaces: (v: SetStateAction<Workspace[]>) => set((s) => ({ workspaces: apply(s.workspaces, v) })),
+});
