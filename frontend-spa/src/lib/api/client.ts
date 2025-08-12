@@ -1,17 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { store } from '@/store';
-import type {
-  Chat,
-  Preset,
-  Workspace,
-  Assistant,
-  Prompt,
-  Collection,
-  Tool,
-  ModelRef,
-  ChatMessage,
-  LoginResponse,
-} from 'typings';
+import type { Chat, Preset, Workspace, Assistant, Prompt, Collection, Tool, ModelRef, ChatMessage } from 'typings';
 import type {
   ApiResult,
   ApiRequestConfig,
@@ -23,7 +11,6 @@ import type {
   UpdateWorkspacePayload,
   CreatePromptPayload,
   UpdatePromptPayload,
-  LoginPayload,
 } from 'typings/api-client';
 
 // Utility to run a request and normalize error handling
@@ -36,6 +23,16 @@ async function run<T>(op: () => Promise<AxiosResponse<T>>): ApiResult<T> {
     const msg = e?.response?.data?.error || e?.message || 'Request failed';
     return { error: msg, status };
   }
+}
+
+// We avoid importing the Zustand store here to prevent a circular import with slices
+// (app slice imports api client -> store -> app slice). Instead we allow the store
+// to register an accessor after creation.
+type StoreAccessor = () => { idToken: string | null; accessToken: string | null; logout: () => void } | undefined;
+let storeAccessor: StoreAccessor | null = null;
+
+export function attachStoreAccessor(accessor: StoreAccessor) {
+  storeAccessor = accessor;
 }
 
 export class ApiClient {
@@ -52,16 +49,20 @@ export class ApiClient {
 
     // Inject Authorization header if token exists
     this.axios.interceptors.request.use((config) => {
-      const { idToken, accessToken } = store.getState();
-      const token = idToken || accessToken;
-      if (token) {
-        // Ensure headers exists and set Authorization via set() to satisfy types
-        if ((config.headers as any)?.set) {
-          (config.headers as any).set('Authorization', `Bearer ${token}`);
-        } else {
-          config.headers = { ...(config.headers as any), Authorization: `Bearer ${token}` } as any;
+      try {
+        const state = storeAccessor?.();
+        if (state) {
+          const { idToken, accessToken } = state;
+          const token = idToken || accessToken;
+          if (token) {
+            if ((config.headers as any)?.set) {
+              (config.headers as any).set('Authorization', `Bearer ${token}`);
+            } else {
+              config.headers = { ...(config.headers as any), Authorization: `Bearer ${token}` } as any;
+            }
+          }
         }
-      }
+      } catch {}
       return config;
     });
 
@@ -71,7 +72,8 @@ export class ApiClient {
       async (error) => {
         if (error?.response?.status === 401) {
           try {
-            store.getState().logout();
+            const state = storeAccessor?.();
+            state?.logout();
           } catch {}
         }
         return Promise.reject(error);
@@ -184,14 +186,7 @@ export class ApiClient {
     return run(() => this.get<ModelRef[]>('/models'));
   }
 
-  // Auth
-  login(payload: LoginPayload): ApiResult<LoginResponse> {
-    return run(() => this.post<LoginResponse, LoginPayload>('/auth/login', payload));
-  }
-
-  logout(): ApiResult<{ success?: boolean }> {
-    return run(() => this.post<{ success?: boolean }, Record<string, never>>('/auth/logout', {} as any));
-  }
+  // (Auth related convenience helpers removed: implement in zustand slice via post())
 }
 
 // Export a default singleton instance

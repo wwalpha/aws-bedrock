@@ -1,11 +1,6 @@
 // Simplified local typings for SPA (no external deps)
 
-export interface LoginResponse {
-  idToken?: string;
-  accessToken?: string;
-  refreshToken?: string;
-  [key: string]: any;
-}
+// LoginRequest / LoginResponse moved to auth.d.ts
 
 export interface Profile {
   id?: string;
@@ -273,10 +268,8 @@ export interface ToolsSlice {
 export interface AppSlice {
   idToken: string | null;
   accessToken: string | null;
-  setIdToken: (v: string | null | ((prev: string | null) => string | null)) => void;
-  setAccessToken: (v: string | null | ((prev: string | null) => string | null)) => void;
-  loginWithTokens: (params: { idToken?: string; accessToken?: string }) => void;
-  login: (email: string, password: string) => Promise<{ ok: true; data: LoginResponse } | { ok: false; error: string }>;
+  refreshToken: string | null;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   logoutApi: () => Promise<void>;
 }

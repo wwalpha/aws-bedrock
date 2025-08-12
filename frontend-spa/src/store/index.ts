@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { ChatbotState } from 'typings';
 import { createAppSlice } from './slices/app';
+import { attachStoreAccessor } from '@/lib/api/client';
 import { createProfileSlice } from './slices/profile';
 import { createItemsSlice } from './slices/items';
 import { createModelsSlice } from './slices/models';
@@ -51,3 +52,13 @@ export const store = create<ChatbotState>()(
     }
   )
 );
+
+// Register lightweight accessor for api client (avoid direct import of store inside client file)
+attachStoreAccessor(() => {
+  try {
+    const { idToken, accessToken, logout } = store.getState();
+    return { idToken, accessToken, logout };
+  } catch {
+    return undefined;
+  }
+});

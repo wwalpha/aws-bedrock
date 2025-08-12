@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { store } from '@/store';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatMessages from '@/components/chat/ChatMessages';
@@ -8,7 +8,9 @@ import { ROUTES } from '@/lib/routes';
 
 export default function Workspace() {
   const { chatId } = useParams();
-  const { idToken, accessToken } = store((s) => ({ idToken: s.idToken, accessToken: s.accessToken }));
+  // 個別 selector で不要な再レンダーを抑止
+  const idToken = store((s: any) => s.idToken);
+  const accessToken = store((s: any) => s.accessToken);
   if (!idToken && !accessToken) {
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
@@ -18,18 +20,33 @@ export default function Workspace() {
   const setSelectedChat = store((s: any) => s.setSelectedChat);
 
   // On mount / param change: align store with URL
+  // ループ防止用の最終適用状態記録
+  const lastAppliedRef = useRef<{ chatIdParam: string | undefined; selectedId: string | null } | null>(null);
+
   useEffect(() => {
+    const current = {
+      chatIdParam: chatId,
+      selectedId: selectedChat?.id || null,
+    };
+    // 同一状態なら何もしない
+    if (
+      lastAppliedRef.current &&
+      lastAppliedRef.current.chatIdParam === current.chatIdParam &&
+      lastAppliedRef.current.selectedId === current.selectedId
+    ) {
+      return;
+    }
+
     if (chatId) {
       if (!selectedChat || selectedChat.id !== chatId) {
         const found = (chats || []).find((c: any) => c.id === chatId);
-        if (found) setSelectedChat(found);
-        else if (chats?.length) {
-          // Invalid id -> redirect to first chat
+        if (found) {
+          setSelectedChat(found);
+        } else if (chats?.length) {
           navigate(`${ROUTES.WORKSPACE}/${chats[0].id}`, { replace: true });
         }
       }
     } else {
-      // No chatId in URL: if we have a selected chat ensure URL reflects it
       if (selectedChat) {
         navigate(`${ROUTES.WORKSPACE}/${selectedChat.id}`, { replace: true });
       } else if (chats?.length) {
@@ -37,6 +54,7 @@ export default function Workspace() {
         navigate(`${ROUTES.WORKSPACE}/${chats[0].id}`, { replace: true });
       }
     }
+    lastAppliedRef.current = current;
   }, [chatId, chats, selectedChat, setSelectedChat, navigate]);
 
   return (

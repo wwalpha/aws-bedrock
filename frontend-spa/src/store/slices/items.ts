@@ -12,39 +12,48 @@ import type {
   Workspace,
 } from 'typings';
 import type { SliceSet } from 'typings/slice';
-import { apply, type SetStateAction } from '../utils';
 import type { StateCreator } from 'zustand';
 
 // 各種エンティティ（一覧データ）を集約管理する Slice
 // 取得後のキャッシュや UI 再描画トリガー用
 export const createItemsSlice: StateCreator<ItemsSlice, [], [], ItemsSlice> = (set: SliceSet<ItemsSlice>) => ({
   assistants: [] as Assistant[],
-  setAssistants: (v: SetStateAction<Assistant[]>) => set((s) => ({ assistants: apply(s.assistants, v) })),
+  setAssistants: (v: Assistant[] | ((prev: Assistant[]) => Assistant[])) =>
+    set((s) => ({ assistants: typeof v === 'function' ? (v as any)(s.assistants) : v })),
 
   collections: [] as Collection[],
-  setCollections: (v: SetStateAction<Collection[]>) => set((s) => ({ collections: apply(s.collections, v) })),
+  setCollections: (v: Collection[] | ((prev: Collection[]) => Collection[])) =>
+    set((s) => ({ collections: typeof v === 'function' ? (v as any)(s.collections) : v })),
 
   chats: [] as Chat[],
-  setChats: (v: SetStateAction<Chat[]>) => set((s) => ({ chats: apply(s.chats, v) })),
+  setChats: (v: Chat[] | ((prev: Chat[]) => Chat[])) =>
+    set((s) => ({ chats: typeof v === 'function' ? (v as any)(s.chats) : v })),
 
   files: [] as FileAsset[],
-  setFiles: (v: SetStateAction<FileAsset[]>) => set((s) => ({ files: apply(s.files, v) })),
+  setFiles: (v: FileAsset[] | ((prev: FileAsset[]) => FileAsset[])) =>
+    set((s) => ({ files: typeof v === 'function' ? (v as any)(s.files) : v })),
 
   folders: [] as Folder[],
-  setFolders: (v: SetStateAction<Folder[]>) => set((s) => ({ folders: apply(s.folders, v) })),
+  setFolders: (v: Folder[] | ((prev: Folder[]) => Folder[])) =>
+    set((s) => ({ folders: typeof v === 'function' ? (v as any)(s.folders) : v })),
 
   models: [] as ModelRef[],
-  setModels: (v: SetStateAction<ModelRef[]>) => set((s) => ({ models: apply(s.models, v) })),
+  setModels: (v: ModelRef[] | ((prev: ModelRef[]) => ModelRef[])) =>
+    set((s) => ({ models: typeof v === 'function' ? (v as any)(s.models) : v })),
 
   presets: [] as Preset[],
-  setPresets: (v: SetStateAction<Preset[]>) => set((s) => ({ presets: apply(s.presets, v) })),
+  setPresets: (v: Preset[] | ((prev: Preset[]) => Preset[])) =>
+    set((s) => ({ presets: typeof v === 'function' ? (v as any)(s.presets) : v })),
 
   prompts: [] as Prompt[],
-  setPrompts: (v: SetStateAction<Prompt[]>) => set((s) => ({ prompts: apply(s.prompts, v) })),
+  setPrompts: (v: Prompt[] | ((prev: Prompt[]) => Prompt[])) =>
+    set((s) => ({ prompts: typeof v === 'function' ? (v as any)(s.prompts) : v })),
 
   tools: [] as Tool[],
-  setTools: (v: SetStateAction<Tool[]>) => set((s) => ({ tools: apply(s.tools, v) })),
+  setTools: (v: Tool[] | ((prev: Tool[]) => Tool[])) =>
+    set((s) => ({ tools: typeof v === 'function' ? (v as any)(s.tools) : v })),
 
   workspaces: [] as Workspace[],
-  setWorkspaces: (v: SetStateAction<Workspace[]>) => set((s) => ({ workspaces: apply(s.workspaces, v) })),
+  setWorkspaces: (v: Workspace[] | ((prev: Workspace[]) => Workspace[])) =>
+    set((s) => ({ workspaces: typeof v === 'function' ? (v as any)(s.workspaces) : v })),
 });
