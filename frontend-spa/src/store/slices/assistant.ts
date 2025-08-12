@@ -1,11 +1,10 @@
 import type { AssistantSlice, Assistant } from 'typings';
+import type { SliceSet } from 'typings/slice';
 import { apply, type SetStateAction } from '../utils';
 import type { StateCreator } from 'zustand';
 
 // アシスタント (キャラクター / プロファイル) 関連の選択・一覧状態を保持
-type SliceSet = (fn: (state: AssistantSlice) => Partial<AssistantSlice>) => void;
-
-export const createAssistantSlice: StateCreator<AssistantSlice, [], [], AssistantSlice> = (set: SliceSet) => ({
+export const createAssistantSlice: StateCreator<AssistantSlice, [], [], AssistantSlice> = (set: SliceSet<AssistantSlice>) => ({
   // 現在選択中のアシスタント
   selectedAssistant: null as Assistant | null,
   setSelectedAssistant: (v: SetStateAction<Assistant | null>) =>

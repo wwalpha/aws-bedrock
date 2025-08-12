@@ -11,14 +11,13 @@ import type {
   Tool,
   Workspace,
 } from 'typings';
+import type { SliceSet } from 'typings/slice';
 import { apply, type SetStateAction } from '../utils';
 import type { StateCreator } from 'zustand';
 
 // 各種エンティティ（一覧データ）を集約管理する Slice
 // 取得後のキャッシュや UI 再描画トリガー用
-type SliceSet = (fn: (state: ItemsSlice) => Partial<ItemsSlice>) => void;
-
-export const createItemsSlice: StateCreator<ItemsSlice, [], [], ItemsSlice> = (set: SliceSet) => ({
+export const createItemsSlice: StateCreator<ItemsSlice, [], [], ItemsSlice> = (set: SliceSet<ItemsSlice>) => ({
   assistants: [] as Assistant[],
   setAssistants: (v: SetStateAction<Assistant[]>) => set((s) => ({ assistants: apply(s.assistants, v) })),
 

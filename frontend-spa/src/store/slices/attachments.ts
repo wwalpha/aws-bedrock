@@ -1,4 +1,5 @@
 import type { AttachmentsSlice, ChatFile, ChatImage } from 'typings';
+import type { SliceSet } from 'typings/slice';
 import { apply, type SetStateAction } from '../utils';
 import type { StateCreator } from 'zustand';
 
@@ -6,9 +7,7 @@ import type { StateCreator } from 'zustand';
 // - 既存メッセージに紐づく添付一覧 (chatFiles / chatImages)
 // - 送信前の新規添付 (newMessageFiles / newMessageImages)
 // - ビュー表示切替フラグ (showFilesDisplay)
-type SliceSet = (fn: (state: AttachmentsSlice) => Partial<AttachmentsSlice>) => void;
-
-export const createAttachmentsSlice: StateCreator<AttachmentsSlice, [], [], AttachmentsSlice> = (set: SliceSet) => ({
+export const createAttachmentsSlice: StateCreator<AttachmentsSlice, [], [], AttachmentsSlice> = (set: SliceSet<AttachmentsSlice>) => ({
   // チャット全体に紐づくファイル（非画像）
   chatFiles: [] as ChatFile[],
   setChatFiles: (v: SetStateAction<ChatFile[]>) => set((s) => ({ chatFiles: apply(s.chatFiles, v) })),

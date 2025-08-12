@@ -1,4 +1,5 @@
 import type { PassiveChatSlice, Chat, ChatMessage, ChatSettings, ChatFileItem } from 'typings';
+import type { SliceSet } from 'typings/slice';
 import { apply, type SetStateAction } from '../utils';
 import type { StateCreator } from 'zustand';
 
@@ -8,9 +9,7 @@ import type { StateCreator } from 'zustand';
 // - chatSettings: チャット単位の設定（モデル・温度など）
 // - selectedChat: 現在選択中チャット
 // - chatFileItems: メッセージごとの添付関連メタ情報
-type SliceSet = (fn: (state: PassiveChatSlice) => Partial<PassiveChatSlice>) => void;
-
-export const createPassiveChatSlice: StateCreator<PassiveChatSlice, [], [], PassiveChatSlice> = (set: SliceSet) => ({
+export const createPassiveChatSlice: StateCreator<PassiveChatSlice, [], [], PassiveChatSlice> = (set: SliceSet<PassiveChatSlice>) => ({
   userInput: '',
   setUserInput: (v: SetStateAction<string>) => set((s) => ({ userInput: apply(s.userInput, v) })),
 

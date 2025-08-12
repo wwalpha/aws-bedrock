@@ -1,4 +1,5 @@
 import type { AppSlice, LoginResponse } from 'typings';
+import type { SliceSet } from 'typings/slice';
 import { apply, type SetStateAction } from '../utils';
 import type { StateCreator } from 'zustand';
 import { apiClient } from '@/lib/api/client';
@@ -7,14 +8,7 @@ import { apiClient } from '@/lib/api/client';
 // - トークンの保持と更新
 // - ログイン / ログアウト API 呼び出し
 // - 既存トークンでの状態再構築
-/**
- * AppSlice 生成関数
- * Zustand の全体ステートにマージされる想定だが、ここでは AppSlice に必要なフィールドのみ型を意識。
- * any を排除し、引数 / 返り値を厳密化。
- */
-type SliceSet = (fn: (state: AppSlice) => Partial<AppSlice>) => void;
-
-export const createAppSlice: StateCreator<AppSlice, [], [], AppSlice> = (set: SliceSet) => ({
+export const createAppSlice: StateCreator<AppSlice, [], [], AppSlice> = (set: SliceSet<AppSlice>) => ({
   // Cognito など Id トークン (ユーザー属性検証用)
   idToken: null,
 
@@ -35,14 +29,18 @@ export const createAppSlice: StateCreator<AppSlice, [], [], AppSlice> = (set: Sl
   // 成功: { ok: true, data } / 失敗: { ok: false, error }
   async login(email: string, password: string) {
     const result = await apiClient.login({ username: email, password });
+
     if ('error' in result) {
       return { ok: false as const, error: result.error || 'Login failed' };
     }
+
     const data = result.data as LoginResponse;
+
     set((s) => ({
       idToken: data.idToken ?? s.idToken,
       accessToken: data.accessToken ?? s.accessToken,
     }));
+
     return { ok: true as const, data };
   },
 
@@ -55,7 +53,3 @@ export const createAppSlice: StateCreator<AppSlice, [], [], AppSlice> = (set: Sl
     set(() => ({ idToken: null, accessToken: null }));
   },
 });
-
-// 型補完用エクスポート（実体は createAppSlice で生成）
-// default export は互換保持のため残す（将来的に削除可）
-export default undefined as unknown as AppSlice;
