@@ -1,8 +1,8 @@
 import { useCallback, useRef } from 'react';
 import { useChatStore } from '@/store';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Send, Square } from 'lucide-react';
+import TextareaAutosize from 'react-textarea-autosize';
 import type { Chat, ChatMessage } from 'typings';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/lib/routes';
@@ -81,35 +81,46 @@ export default function ChatInput() {
     setIsGenerating(false);
   };
 
+  const lineHeightEmpty = 44; // px
+
   return (
     <div className="border-t pt-4 px-3">
       <div className="mx-auto w-full max-w-3xl">
-        <div className="relative rounded-xl border bg-background/60 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/50 focus-within:ring-2 focus-within:ring-primary transition">
-          <button
-            type="button"
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
-            title="Add (coming soon)"
-          >
-            <PlusCircle className="size-5" />
-          </button>
-          <Textarea
-            ref={inputRef}
+        <div className="relative flex items-stretch gap-2 rounded-xl border bg-background/60 px-3 py-0 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/50 focus-within:ring-2 focus-within:ring-primary transition min-h-[44px]">
+          <div className="flex items-center self-stretch">
+            <button
+              type="button"
+              className="text-muted-foreground hover:text-foreground transition"
+              title="Add (coming soon)"
+            >
+              <PlusCircle className="size-5" />
+            </button>
+          </div>
+          <TextareaAutosize
+            ref={inputRef as any}
             placeholder="Ask anything. Type '/' for prompts, '@' for files, and '#' for tools."
-            className="m-0 h-auto min-h-[60px] max-h-[320px] w-full resize-none border-none bg-transparent py-4 pl-12 pr-16 text-sm leading-relaxed focus-visible:ring-0 focus-visible:outline-none scrollbar-thin"
+            className="flex-1 w-full resize-none bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none focus:outline-none border-none m-0 scrollbar-thin leading-[1.25rem]"
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={isGenerating}
+            minRows={1}
+            maxRows={12}
+            style={{
+              lineHeight: userInput ? '1.25rem' : `${lineHeightEmpty}px`,
+              paddingTop: userInput ? '8px' : '0px',
+              paddingBottom: userInput ? '8px' : '0px',
+            }}
           />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2">
+          <div className="flex items-center self-stretch">
             {isGenerating ? (
-              <Button size="icon" variant="secondary" className="size-9" onClick={handleStop} title="Stop">
+              <Button size="icon" variant="secondary" className="size-8" onClick={handleStop} title="Stop">
                 <Square className="size-4" />
               </Button>
             ) : (
               <Button
                 size="icon"
-                className="size-9"
+                className="size-8"
                 onClick={() => userInput.trim() && sendMessage(userInput)}
                 disabled={!userInput.trim()}
                 title="Send"
