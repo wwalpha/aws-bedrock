@@ -1,50 +1,30 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { useChatStore } from '@/store';
-import type { Chat, Preset, Workspace, Assistant, Prompt, Collection, Tool, ModelRef, ChatMessage } from 'typings';
-
-export type ApiRequestConfig<T = unknown> = AxiosRequestConfig<T>;
-
-// Generic API result envelope (adjust if backend differs)
-export interface ApiSuccess<T> {
-  data: T;
-  error?: undefined;
-}
-export interface ApiFailure {
-  data?: undefined;
-  error: string;
-  status?: number;
-}
-export type ApiResult<T> = Promise<ApiSuccess<T> | ApiFailure>;
-
-// Domain-specific payload shapes
-export interface CreateChatPayload {
-  name: string;
-}
-export interface UpdateChatPayload {
-  name?: string;
-}
-export interface CreatePresetPayload {
-  name: string;
-  model?: string;
-}
-export interface UpdatePresetPayload {
-  name?: string;
-  model?: string;
-}
-export interface CreateWorkspacePayload {
-  name: string;
-}
-export interface UpdateWorkspacePayload {
-  name?: string;
-}
-export interface CreatePromptPayload {
-  name: string;
-  content: string;
-}
-export interface UpdatePromptPayload {
-  name?: string;
-  content?: string;
-}
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { store } from '@/store';
+import type {
+  Chat,
+  Preset,
+  Workspace,
+  Assistant,
+  Prompt,
+  Collection,
+  Tool,
+  ModelRef,
+  ChatMessage,
+  LoginResponse,
+} from 'typings';
+import type {
+  ApiResult,
+  ApiRequestConfig,
+  CreateChatPayload,
+  UpdateChatPayload,
+  CreatePresetPayload,
+  UpdatePresetPayload,
+  CreateWorkspacePayload,
+  UpdateWorkspacePayload,
+  CreatePromptPayload,
+  UpdatePromptPayload,
+  LoginPayload,
+} from 'typings/api-client';
 
 // Utility to run a request and normalize error handling
 async function run<T>(op: () => Promise<AxiosResponse<T>>): ApiResult<T> {
@@ -72,7 +52,7 @@ export class ApiClient {
 
     // Inject Authorization header if token exists
     this.axios.interceptors.request.use((config) => {
-      const { idToken, accessToken } = useChatStore.getState();
+      const { idToken, accessToken } = store.getState();
       const token = idToken || accessToken;
       if (token) {
         // Ensure headers exists and set Authorization via set() to satisfy types
@@ -91,7 +71,7 @@ export class ApiClient {
       async (error) => {
         if (error?.response?.status === 401) {
           try {
-            useChatStore.getState().logout();
+            store.getState().logout();
           } catch {}
         }
         return Promise.reject(error);
@@ -202,6 +182,15 @@ export class ApiClient {
   // Models
   listModels(): ApiResult<ModelRef[]> {
     return run(() => this.get<ModelRef[]>('/models'));
+  }
+
+  // Auth
+  login(payload: LoginPayload): ApiResult<LoginResponse> {
+    return run(() => this.post<LoginResponse, LoginPayload>('/auth/login', payload));
+  }
+
+  logout(): ApiResult<{ success?: boolean }> {
+    return run(() => this.post<{ success?: boolean }, Record<string, never>>('/auth/logout', {} as any));
   }
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useChatStore } from '@/store';
+import { store } from '@/store';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -21,10 +21,10 @@ interface Props {
 export function ModelSettings({ open, onOpenChange }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const models = useChatStore((s: any) => s.availableHostedModels as BackendModel[]);
-  const setModels = useChatStore((s: any) => s.setAvailableHostedModels);
-  const chatSettings = useChatStore((s: any) => s.chatSettings);
-  const setChatSettings = useChatStore((s: any) => s.setChatSettings);
+  const models = store((s: any) => s.availableHostedModels as BackendModel[]);
+  const setModels = store((s: any) => s.setAvailableHostedModels);
+  const chatSettings = store((s: any) => s.chatSettings);
+  const setChatSettings = store((s: any) => s.setChatSettings);
 
   const [modelId, setModelId] = useState<string | undefined>(chatSettings.model);
   const [temperature, setTemperature] = useState<number>(chatSettings.temperature ?? 0.5);

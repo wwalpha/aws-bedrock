@@ -1,11 +1,10 @@
 import type { ChatInputSlice } from 'typings';
+import type { SliceSet } from 'typings/slice';
 import { apply, type SetStateAction } from '../utils';
 import type { StateCreator } from 'zustand';
 
 // チャット入力欄の補助 UI 状態や入力中コマンド解析用の値を保持
-type SliceSet = (fn: (state: ChatInputSlice) => Partial<ChatInputSlice>) => void;
-
-export const createChatInputSlice: StateCreator<ChatInputSlice, [], [], ChatInputSlice> = (set: SliceSet) => ({
+export const createChatInputSlice: StateCreator<ChatInputSlice, [], [], ChatInputSlice> = (set: SliceSet<ChatInputSlice>) => ({
   // プロンプトテンプレートピッカー表示フラグ
   isPromptPickerOpen: false,
   setIsPromptPickerOpen: (v: SetStateAction<boolean>) =>

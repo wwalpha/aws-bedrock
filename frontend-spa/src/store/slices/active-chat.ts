@@ -1,4 +1,5 @@
 import type { ActiveChatSlice } from 'typings';
+import type { SliceSet } from 'typings/slice';
 import { apply, type SetStateAction } from '../utils';
 import type { StateCreator } from 'zustand';
 
@@ -6,9 +7,7 @@ import type { StateCreator } from 'zustand';
 // - abortController: 実行中リクエストを中断するための AbortController
 // - firstTokenReceived: 最初のトークンを受信したか (UI のローディング表示制御)
 // - isGenerating: モデル応答中フラグ
-type SliceSet = (fn: (state: ActiveChatSlice) => Partial<ActiveChatSlice>) => void;
-
-export const createActiveChatSlice: StateCreator<ActiveChatSlice, [], [], ActiveChatSlice> = (set: SliceSet) => ({
+export const createActiveChatSlice: StateCreator<ActiveChatSlice, [], [], ActiveChatSlice> = (set: SliceSet<ActiveChatSlice>) => ({
   // 現在進行中のフェッチを手動でキャンセルするためのコントローラ
   abortController: null,
   setAbortController: (v: SetStateAction<AbortController | null>) =>

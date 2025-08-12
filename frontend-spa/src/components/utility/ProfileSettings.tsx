@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { useChatStore } from '@/store';
+import { store } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -8,8 +8,8 @@ import { UserCog } from 'lucide-react';
 import { WithTooltip } from '@/components/ui/with-tooltip';
 
 export const ProfileSettings: FC = () => {
-  const profile = useChatStore((s: any) => s.profile);
-  const setProfile = useChatStore((s: any) => s.setProfile);
+  const profile = store((s: any) => s.profile);
+  const setProfile = store((s: any) => s.setProfile);
   const [open, setOpen] = useState(false);
   const [username, setUsername] = useState(profile?.username || '');
   const [displayName, setDisplayName] = useState(profile?.display_name || '');

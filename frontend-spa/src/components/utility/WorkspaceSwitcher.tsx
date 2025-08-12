@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useChatStore } from '@/store';
+import { store } from '@/store';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -15,10 +15,10 @@ import type { Workspace } from 'typings';
 import { ChevronDown, Plus, Pencil, Trash2 } from 'lucide-react';
 
 export function WorkspaceSwitcher() {
-  const workspaces = useChatStore((s: any) => s.workspaces as Workspace[]);
-  const setWorkspaces = useChatStore((s: any) => s.setWorkspaces);
-  const selectedWorkspace = useChatStore((s: any) => s.selectedWorkspace as Workspace | null);
-  const setSelectedWorkspace = useChatStore((s: any) => s.setSelectedWorkspace);
+  const workspaces = store((s: any) => s.workspaces as Workspace[]);
+  const setWorkspaces = store((s: any) => s.setWorkspaces);
+  const selectedWorkspace = store((s: any) => s.selectedWorkspace as Workspace | null);
+  const setSelectedWorkspace = store((s: any) => s.setSelectedWorkspace);
 
   const [renameOpen, setRenameOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -57,7 +57,7 @@ export function WorkspaceSwitcher() {
     const id = selectedWorkspace?.id;
     if (!id) return;
     setWorkspaces((prev: Workspace[]) => prev.filter((w) => w.id !== id));
-    const remaining = (useChatStore.getState().workspaces as Workspace[]).filter((w) => w.id !== id);
+    const remaining = (store.getState().workspaces as Workspace[]).filter((w) => w.id !== id);
     if (remaining.length) setSelectedWorkspace(remaining[0]);
     else setSelectedWorkspace(null);
     setDeleteOpen(false);

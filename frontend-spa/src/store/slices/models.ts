@@ -1,11 +1,10 @@
 import type { ModelsSlice } from 'typings';
+import type { SliceSet } from 'typings/slice';
 import { apply, type SetStateAction } from '../utils';
 import type { StateCreator } from 'zustand';
 
 // モデル可用性 / 分類ごとの一覧を保持
-type SliceSet = (fn: (state: ModelsSlice) => Partial<ModelsSlice>) => void;
-
-export const createModelsSlice: StateCreator<ModelsSlice, [], [], ModelsSlice> = (set: SliceSet) => ({
+export const createModelsSlice: StateCreator<ModelsSlice, [], [], ModelsSlice> = (set: SliceSet<ModelsSlice>) => ({
   // 環境変数キーとユーザ入力キーのマッピングなどに利用
   envKeyMap: {},
   setEnvKeyMap: (v: SetStateAction<Record<string, string>>) => set((s) => ({ envKeyMap: apply(s.envKeyMap, v) })),

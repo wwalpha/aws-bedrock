@@ -1,11 +1,11 @@
 import { useMemo, useRef, useEffect } from 'react';
-import { useChatStore } from '@/store';
+import { store } from '@/store';
 import type { ChatMessage } from 'typings';
 import { ChatMessageItem } from './ChatMessageItem';
 
 export default function ChatMessages() {
-  const selectedChat = useChatStore((s: any) => s.selectedChat);
-  const messages = useChatStore((s: any) => s.chatMessages as ChatMessage[]);
+  const selectedChat = store((s: any) => s.selectedChat);
+  const messages = store((s: any) => s.chatMessages as ChatMessage[]);
   const listRef = useRef<HTMLDivElement | null>(null);
 
   const chatMessages = useMemo(

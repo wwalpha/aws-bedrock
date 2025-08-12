@@ -1,4 +1,4 @@
-import { useChatStore } from '@/store';
+import { store } from '@/store';
 
 export type ContentType = 'chats' | 'presets' | 'prompts' | 'files' | 'collections' | 'assistants' | 'tools' | 'models';
 
@@ -11,7 +11,7 @@ function getDisplayName(item: any): string {
 }
 
 export function SidebarContent({ contentType }: Props) {
-  const { chats, presets, prompts, files, collections, assistants, tools, models } = useChatStore((s: any) => s);
+  const { chats, presets, prompts, files, collections, assistants, tools, models } = store((s: any) => s);
 
   const dataMap: Record<ContentType, any[]> = {
     chats: chats || [],

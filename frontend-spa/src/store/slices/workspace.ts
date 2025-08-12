@@ -1,11 +1,10 @@
 import type { WorkspaceSlice, Workspace } from 'typings';
+import type { SliceSet } from 'typings/slice';
 import { apply, type SetStateAction } from '../utils';
 import type { StateCreator } from 'zustand';
 
 // ワークスペース（組織 / プロジェクト）選択と関連アセット
-type SliceSet = (fn: (state: WorkspaceSlice) => Partial<WorkspaceSlice>) => void;
-
-export const createWorkspaceSlice: StateCreator<WorkspaceSlice, [], [], WorkspaceSlice> = (set: SliceSet) => ({
+export const createWorkspaceSlice: StateCreator<WorkspaceSlice, [], [], WorkspaceSlice> = (set: SliceSet<WorkspaceSlice>) => ({
   // 現在選択中ワークスペース
   selectedWorkspace: null as Workspace | null,
   setSelectedWorkspace: (v: SetStateAction<Workspace | null>) =>
