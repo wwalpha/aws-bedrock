@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ROUTES } from '@/lib/routes';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useChatStore } from '@/store';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ export default function Signup() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const signup = useChatStore((s) => s.signup);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,14 +23,9 @@ export default function Signup() {
         setMessage('Passwords do not match');
         return;
       }
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/auth/signup`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ username: email, password }),
-      });
-      if (!res.ok) {
-        const msg = (await res.text()) || 'Sign up failed';
-        setMessage(msg);
+      const ok = await signup(email, password);
+      if (!ok) {
+        setMessage('Sign up failed');
         return;
       }
       setMessage('Account created. Please check your email for the verification code.');

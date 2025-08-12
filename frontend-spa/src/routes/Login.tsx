@@ -5,25 +5,25 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ChatbotUISVG } from '@/components/icons/chatbotui-svg';
+import { useChatStore } from '@/store';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const login = (window as any).useChatStore?.() || undefined;
-  // Fallback: direct import hook (prefer direct import if available)
-  // We'll just use store via dynamic import pattern below for simplicity
+  const doLogin = useChatStore((s) => s.login);
+  const isLoggined = useChatStore((s) => s.isLoggined);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const store = (await import('@/store')).store;
-    const { login: doLogin } = store.getState() as any;
-    const res = await doLogin(email, password);
-    if (res.ok) {
-      navigate(ROUTES.WORKSPACE);
-    } else {
-      setError(res.error || 'Login failed');
+    setError(null);
+    try {
+      await doLogin(email, password);
+      // login 内でエラー throw しない想定: 成功で isLoggined true
+      if (isLoggined) navigate(ROUTES.WORKSPACE);
+    } catch (err: any) {
+      setError(err?.message || 'Login failed');
     }
   };
 

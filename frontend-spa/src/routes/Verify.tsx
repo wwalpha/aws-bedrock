@@ -3,6 +3,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { ROUTES } from '@/lib/routes';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useChatStore } from '@/store';
 
 export default function Verify() {
   const location = useLocation() as any;
@@ -11,6 +12,7 @@ export default function Verify() {
   const [code, setCode] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const confirmSignup = useChatStore((s) => s.confirmSignup);
 
   useEffect(() => {
     if (location?.state?.username) {
@@ -23,14 +25,9 @@ export default function Verify() {
     setMessage('');
     setLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/auth/confirmSignup`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ username, confirmationCode: code }),
-      });
-      if (!res.ok) {
-        const msg = (await res.text()) || 'Verification failed';
-        setMessage(msg);
+      const ok = await confirmSignup(username, code);
+      if (!ok) {
+        setMessage('Verification failed');
         return;
       }
       setMessage('Verification successful. You can now log in.');

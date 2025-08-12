@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useStore } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { ChatbotState } from 'typings';
 import { createAppSlice } from './slices/app';
@@ -62,3 +63,6 @@ attachStoreAccessor(() => {
     return undefined;
   }
 });
+
+// Convenience hook (型補完用): component から store を使う
+export const useChatStore = <T>(selector: (s: ChatbotState) => T): T => useStore(store, selector);

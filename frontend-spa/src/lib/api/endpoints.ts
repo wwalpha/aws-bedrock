@@ -3,6 +3,8 @@
 export const API_ENDPOINTS = {
   AUTH_LOGIN: '/auth/login',
   AUTH_LOGOUT: '/auth/logout',
+  AUTH_SIGNUP: '/auth/signup',
+  AUTH_CONFIRM_SIGNUP: '/auth/confirmSignup',
   CHATS: '/chats',
   PRESETS: '/presets',
   WORKSPACES: '/workspaces',
