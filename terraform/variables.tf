@@ -32,5 +32,5 @@ variable "bedrock_kb_embedding_model_id" {
   description = "Foundation model ID for embeddings (Bedrock)"
   type        = string
   # Include minor version as required by Bedrock API (e.g., amazon.titan-embed-text-v2:0)
-  default     = "amazon.titan-embed-text-v2:0"
+  default = "amazon.titan-embed-text-v2:0"
 }
