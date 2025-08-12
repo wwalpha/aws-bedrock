@@ -1,7 +1,9 @@
 # ----------------------------------------------------------------------------------------------
 # CloudFront Distribution for Frontend SPA with OAC
 # ----------------------------------------------------------------------------------------------
-
+# ----------------------------------------------------------------------------------------------
+# CloudFront Origin Access Control - Frontend
+# ----------------------------------------------------------------------------------------------
 resource "aws_cloudfront_origin_access_control" "frontend" {
   name                              = "${local.prefix}-frontend-oac"
   description                       = "OAC for ${local.prefix} frontend bucket"
@@ -10,10 +12,16 @@ resource "aws_cloudfront_origin_access_control" "frontend" {
   signing_protocol                  = "sigv4"
 }
 
+# ----------------------------------------------------------------------------------------------
+# Data Source - S3 Bucket (Frontend)
+# ----------------------------------------------------------------------------------------------
 data "aws_s3_bucket" "frontend" {
   bucket = aws_s3_bucket.frontend.bucket
 }
 
+# ----------------------------------------------------------------------------------------------
+# CloudFront Distribution - Frontend SPA
+# ----------------------------------------------------------------------------------------------
 resource "aws_cloudfront_distribution" "frontend" {
   enabled             = true
   comment             = "${local.prefix} frontend distribution"
@@ -68,6 +76,9 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 }
 
+# ----------------------------------------------------------------------------------------------
+# IAM Policy Document - Frontend Bucket Access for CloudFront
+# ----------------------------------------------------------------------------------------------
 data "aws_iam_policy_document" "frontend_bucket_policy" {
   statement {
     sid    = "AllowCloudFrontServicePrincipalReadOnly"
@@ -92,6 +103,9 @@ data "aws_iam_policy_document" "frontend_bucket_policy" {
   }
 }
 
+# ----------------------------------------------------------------------------------------------
+# S3 Bucket Policy - Frontend OAC
+# ----------------------------------------------------------------------------------------------
 resource "aws_s3_bucket_policy" "frontend_oac" {
   bucket = aws_s3_bucket.frontend.id
   policy = data.aws_iam_policy_document.frontend_bucket_policy.json

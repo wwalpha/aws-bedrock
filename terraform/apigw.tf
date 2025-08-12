@@ -1,6 +1,6 @@
-# ---------------------------------------------------------------------------------------------
-# API Gateway
-# ---------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
+# Amazon API Gateway - HTTP API
+# ----------------------------------------------------------------------------------------------
 resource "aws_apigatewayv2_api" "this" {
   name          = "${local.prefix}-api"
   protocol_type = "HTTP"
@@ -12,9 +12,9 @@ resource "aws_apigatewayv2_api" "this" {
   }
 }
 
-# ---------------------------------------------------------------------------------------------
-# API Gateway Authorizer
-# ---------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
+# Amazon API Gateway Authorizer (JWT Cognito)
+# ----------------------------------------------------------------------------------------------
 resource "aws_apigatewayv2_authorizer" "this" {
   api_id           = aws_apigatewayv2_api.this.id
   authorizer_type  = "JWT"
@@ -29,18 +29,18 @@ resource "aws_apigatewayv2_authorizer" "this" {
   }
 }
 
-# ---------------------------------------------------------------------------------------------
-# API Gateway VPC Link
-# ---------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
+# Amazon API Gateway VPC Link
+# ----------------------------------------------------------------------------------------------
 resource "aws_apigatewayv2_vpc_link" "this" {
   name               = "${local.prefix}-vpclink"
   security_group_ids = [module.sg_vpc_link.security_group_id]
   subnet_ids         = var.vpc_subnets
 }
 
-# ---------------------------------------------------------------------------------------------
-# API Gateway Stage
-# ---------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
+# Amazon API Gateway Stage ($default)
+# ----------------------------------------------------------------------------------------------
 resource "aws_apigatewayv2_stage" "this" {
   api_id      = aws_apigatewayv2_api.this.id
   name        = "$default"
@@ -67,17 +67,17 @@ resource "aws_apigatewayv2_stage" "this" {
   }
 }
 
-# ---------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
 # AWS Service Discovery Service - Auth
-# ---------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
 data "aws_service_discovery_service" "auth" {
   name         = aws_ecs_service.auth.service_connect_configuration[0].service[0].discovery_name
   namespace_id = aws_service_discovery_http_namespace.auth.id
 }
 
-# ---------------------------------------------------------------------------------------------
-# API Gateway Integration - VPC_LINK
-# ---------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
+# Amazon API Gateway Integration - VPC_LINK (Auth)
+# ----------------------------------------------------------------------------------------------
 resource "aws_apigatewayv2_integration" "auth" {
   api_id             = aws_apigatewayv2_api.this.id
   connection_type    = "VPC_LINK"
@@ -92,27 +92,36 @@ resource "aws_apigatewayv2_integration" "auth" {
   }
 }
 
-# ---------------------------------------------------------------------------------------------
-# API Gateway Routes - Auth (method-specific; exclude OPTIONS to let CORS be handled by API GW)
-# ---------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
+# Amazon API Gateway Route - Auth POST
+# ----------------------------------------------------------------------------------------------
 resource "aws_apigatewayv2_route" "auth_post" {
   api_id    = aws_apigatewayv2_api.this.id
   route_key = "POST /auth/{proxy+}"
   target    = "integrations/${aws_apigatewayv2_integration.auth.id}"
 }
 
+# ----------------------------------------------------------------------------------------------
+# Amazon API Gateway Route - Auth GET
+# ----------------------------------------------------------------------------------------------
 resource "aws_apigatewayv2_route" "auth_get" {
   api_id    = aws_apigatewayv2_api.this.id
   route_key = "GET /auth/{proxy+}"
   target    = "integrations/${aws_apigatewayv2_integration.auth.id}"
 }
 
+# ----------------------------------------------------------------------------------------------
+# Amazon API Gateway Route - Auth PUT
+# ----------------------------------------------------------------------------------------------
 resource "aws_apigatewayv2_route" "auth_put" {
   api_id    = aws_apigatewayv2_api.this.id
   route_key = "PUT /auth/{proxy+}"
   target    = "integrations/${aws_apigatewayv2_integration.auth.id}"
 }
 
+# ----------------------------------------------------------------------------------------------
+# Amazon API Gateway Route - Auth DELETE
+# ----------------------------------------------------------------------------------------------
 resource "aws_apigatewayv2_route" "auth_delete" {
   api_id    = aws_apigatewayv2_api.this.id
   route_key = "DELETE /auth/{proxy+}"

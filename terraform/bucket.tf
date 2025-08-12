@@ -29,6 +29,7 @@ AWS_NODEJS_CONNECTION_REUSE_ENABLED=1
 COGNITO_CLIENT_ID=${aws_cognito_user_pool_client.this.id}
 KNOWLEDGE_TABLE_NAME=${local.prefix}_knowledge
 KNOWLEDGE_BUCKET_NAME=${local.prefix}-knowledge-${local.account_id}
+KNOWLEDGE_BASE_ID=${try(aws_bedrockagent_knowledge_base.kb.id, "")}
 EOT
 }
 
@@ -39,11 +40,17 @@ resource "aws_s3_bucket" "frontend" {
   bucket = "${local.prefix}-frontend-${local.account_id}"
 }
 
+# ----------------------------------------------------------------------------------------------
+# AWS S3 Bucket Versioning - Frontend
+# ----------------------------------------------------------------------------------------------
 resource "aws_s3_bucket_versioning" "frontend" {
   bucket = aws_s3_bucket.frontend.id
   versioning_configuration { status = "Enabled" }
 }
 
+# ----------------------------------------------------------------------------------------------
+# AWS S3 Bucket Public Access Block - Frontend
+# ----------------------------------------------------------------------------------------------
 resource "aws_s3_bucket_public_access_block" "frontend" {
   bucket                  = aws_s3_bucket.frontend.id
   block_public_acls       = true
@@ -64,6 +71,7 @@ TZ=Asia/Tokyo
 KNOWLEDGE_TABLE_NAME=${local.prefix}_knowledge
 KNOWLEDGE_BUCKET_NAME=${local.prefix}-knowledge-${local.account_id}
 FRONTEND_CLOUDFRONT_DOMAIN=${try(aws_cloudfront_distribution.frontend.domain_name, "")}
+KNOWLEDGE_BASE_ID=${try(aws_bedrockagent_knowledge_base.kb.id, "")}
 EOT
 }
 
@@ -74,7 +82,20 @@ resource "aws_s3_bucket" "knowledge" {
   bucket = "${local.prefix}-knowledge-${local.account_id}"
 }
 
+# ----------------------------------------------------------------------------------------------
+# AWS S3 Bucket Versioning - Knowledge
+# ----------------------------------------------------------------------------------------------
 resource "aws_s3_bucket_versioning" "knowledge" {
   bucket = aws_s3_bucket.knowledge.id
   versioning_configuration { status = "Enabled" }
+}
+
+# ----------------------------------------------------------------------------------------------
+# AWS S3 Object - Knowledge raw/ prefix placeholder (for Bedrock ingestion)
+# ----------------------------------------------------------------------------------------------
+resource "aws_s3_object" "knowledge_raw_prefix_placeholder" {
+  bucket       = aws_s3_bucket.knowledge.bucket
+  key          = "raw/.keep"
+  content      = "placeholder"
+  content_type = "text/plain"
 }

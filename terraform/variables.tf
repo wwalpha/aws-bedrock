@@ -24,3 +24,13 @@ variable "vpc_subnets" {
   type        = list(string)
   default     = ["subnet-003cfdcdbaf257d95", "subnet-0221940ce594a9f84"]
 }
+
+# ----------------------------------------------------------------------------------------------
+# Variable - Bedrock KB Embedding Model ID
+# ----------------------------------------------------------------------------------------------
+variable "bedrock_kb_embedding_model_id" {
+  description = "Foundation model ID for embeddings (Bedrock)"
+  type        = string
+  # Include minor version as required by Bedrock API (e.g., amazon.titan-embed-text-v2:0)
+  default     = "amazon.titan-embed-text-v2:0"
+}

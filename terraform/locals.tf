@@ -33,6 +33,14 @@ exports.handler = async (event) => {
   return response;
 };
 EOT
+
+  # ----------------------------------------------------------------------------------------------
+  # Bedrock KB Locals
+  # ----------------------------------------------------------------------------------------------
+  bedrock_kb_name          = "${var.project_name}-kb"
+  bedrock_kb_os_collection = "${var.project_name}-kb-collection"
+  bedrock_kb_vector_index  = "${var.project_name}_kb_index"
+  bedrock_kb_s3_prefix_raw = "raw/"
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -44,6 +52,19 @@ data "aws_region" "this" {}
 # AWS Account
 # ----------------------------------------------------------------------------------------------
 data "aws_caller_identity" "this" {}
+
+# ----------------------------------------------------------------------------------------------
+# IAM Policy Document - Bedrock KB Assume Role
+# ----------------------------------------------------------------------------------------------
+data "aws_iam_policy_document" "bedrock_kb_trust" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["bedrock.amazonaws.com"]
+    }
+  }
+}
 
 # ----------------------------------------------------------------------------------------------
 # Archive file 

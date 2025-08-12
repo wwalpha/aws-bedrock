@@ -1,3 +1,6 @@
+# ----------------------------------------------------------------------------------------------
+# Amazon Cognito User Pool
+# ----------------------------------------------------------------------------------------------
 resource "aws_cognito_user_pool" "this" {
   name                     = "${local.prefix}_UserPool"
   auto_verified_attributes = ["email"]
@@ -46,6 +49,9 @@ resource "aws_cognito_user_pool" "this" {
 # -------------------------------------------------------
 # Amazon Cognito User Pool Client
 # -------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
+# Amazon Cognito User Pool Client
+# ----------------------------------------------------------------------------------------------
 resource "aws_cognito_user_pool_client" "this" {
   name                                 = "SPAClient"
   user_pool_id                         = aws_cognito_user_pool.this.id
@@ -74,6 +80,9 @@ resource "aws_cognito_user_pool_client" "this" {
 # --------------------------------------------------------------------------------------------------------------
 # Amazon Cognito User Pool Client Domain
 # --------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
+# Amazon Cognito User Pool Client Domain
+# ----------------------------------------------------------------------------------------------
 resource "aws_cognito_user_pool_domain" "this" {
   domain                = "bedrock${aws_cognito_user_pool_client.this.id}"
   user_pool_id          = aws_cognito_user_pool.this.id
@@ -83,6 +92,9 @@ resource "aws_cognito_user_pool_domain" "this" {
 # --------------------------------------------------------------------------------------------------------------
 # Amazon Cognito Managed Login Branding
 # --------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
+# Amazon Cognito Managed Login Branding
+# ----------------------------------------------------------------------------------------------
 resource "awscc_cognito_managed_login_branding" "this" {
   user_pool_id = aws_cognito_user_pool.this.id
   client_id    = aws_cognito_user_pool_client.this.id
