@@ -27,6 +27,13 @@ export interface Preset {
   updatedAt?: string;
 }
 
+export interface Workspace {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 export interface ItemsSlice {
   assistants: any[]; // TODO: type later
   setAssistants: (v: any[] | ((prev: any[]) => any[])) => void;
@@ -46,8 +53,8 @@ export interface ItemsSlice {
   setPrompts: (v: any[] | ((prev: any[]) => any[])) => void;
   tools: any[];
   setTools: (v: any[] | ((prev: any[]) => any[])) => void;
-  workspaces: any[];
-  setWorkspaces: (v: any[] | ((prev: any[]) => any[])) => void;
+  workspaces: Workspace[];
+  setWorkspaces: (v: Workspace[] | ((prev: Workspace[]) => Workspace[])) => void;
 }
 
 export interface ModelsSlice {
@@ -62,8 +69,8 @@ export interface ModelsSlice {
 }
 
 export interface WorkspaceSlice {
-  selectedWorkspace: any | null;
-  setSelectedWorkspace: (v: any | null | ((prev: any | null) => any | null)) => void;
+  selectedWorkspace: Workspace | null;
+  setSelectedWorkspace: (v: Workspace | null | ((prev: Workspace | null) => Workspace | null)) => void;
   workspaceImages: any[];
   setWorkspaceImages: (v: any[] | ((prev: any[]) => any[])) => void;
 }

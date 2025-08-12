@@ -2,6 +2,7 @@ import { TabsContent } from '@/components/ui/tabs';
 import { WorkspaceSwitcher } from '@/components/utility/WorkspaceSwitcher';
 import { WorkspaceSettings } from '@/components/workspace/WorkspaceSettings';
 import { SidebarContent } from '@/components/sidebar/SidebarContent';
+import { NonChatCrudPanel } from '@/components/sidebar/NonChatCrudPanel.tsx';
 import { SIDEBAR_CATEGORIES } from '@/components/sidebar/constants';
 import { ChatsPanel } from '@/components/sidebar/chats/ChatsPanel';
 
@@ -16,7 +17,7 @@ export function Sidebar() {
         {SIDEBAR_CATEGORIES.map((c) => (
           <TabsContent key={c} value={c}>
             <div className="text-xs text-muted-foreground capitalize">{c}</div>
-            {c === 'chats' ? <ChatsPanel /> : <SidebarContent contentType={c as any} />}
+            {c === 'chats' ? <ChatsPanel /> : <NonChatCrudPanel kind={c as any} />}
           </TabsContent>
         ))}
       </div>

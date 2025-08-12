@@ -1,9 +1,9 @@
-import type { WorkspaceSlice } from 'typings';
+import type { WorkspaceSlice, Workspace } from 'typings';
 import { apply } from '../utils';
 
 export const createWorkspaceSlice = (set: any) =>
   ({
-    selectedWorkspace: null,
+    selectedWorkspace: null as Workspace | null,
     setSelectedWorkspace: (v: any) =>
       set((s: WorkspaceSlice) => ({ selectedWorkspace: apply(s.selectedWorkspace, v) })),
     workspaceImages: [],

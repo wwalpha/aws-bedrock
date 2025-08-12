@@ -42,6 +42,8 @@ export const useChatStore = create<ChatbotState>()(
         presets: state.presets,
         selectedPreset: state.selectedPreset,
         profile: state.profile,
+        workspaces: state.workspaces,
+        selectedWorkspace: state.selectedWorkspace,
       }),
       migrate: (persisted, version) => {
         return persisted as ChatbotState;
