@@ -3,11 +3,15 @@ import { useChatStore } from '@/store';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatMessages from '@/components/chat/ChatMessages';
 import ChatInput from '@/components/chat/ChatInput';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, Navigate, useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/lib/routes';
 
 export default function Workspace() {
   const { chatId } = useParams();
+  const { idToken, accessToken } = useChatStore((s) => ({ idToken: s.idToken, accessToken: s.accessToken }));
+  if (!idToken && !accessToken) {
+    return <Navigate to={ROUTES.LOGIN} replace />;
+  }
   const navigate = useNavigate();
   const chats = useChatStore((s: any) => s.chats);
   const selectedChat = useChatStore((s: any) => s.selectedChat);

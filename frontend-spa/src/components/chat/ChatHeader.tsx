@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useChatStore } from '@/store';
 import { Button } from '@/components/ui/button';
-import { Settings2 } from 'lucide-react';
+import { Settings2, LogOut } from 'lucide-react';
 import { ModelSettings } from './ModelSettings';
 
 export default function ChatHeader() {
@@ -14,6 +14,7 @@ export default function ChatHeader() {
     const found = (models || []).find((m) => m.id === chatSettings.model);
     return found?.label || found?.id || chatSettings.model;
   }, [chatSettings?.model, models]);
+  const logout = useChatStore((s: any) => s.logout);
   return (
     <div className="flex items-center justify-between border-b pb-2 gap-4">
       <div className="min-w-0 flex-1 truncate">
@@ -39,6 +40,9 @@ export default function ChatHeader() {
         >
           <Settings2 className="size-4 mr-1 shrink-0" />
           <span className="truncate">{currentModelLabel || 'Select Model'}</span>
+        </Button>
+        <Button variant="ghost" size="icon" className="h-8 w-8" title="Logout" onClick={logout}>
+          <LogOut className="size-4" />
         </Button>
       </div>
       <ModelSettings open={open} onOpenChange={setOpen} />

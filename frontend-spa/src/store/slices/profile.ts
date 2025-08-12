@@ -1,6 +1,7 @@
 import type { ProfileSlice, Profile } from 'typings';
 import { apply } from '../utils';
 
+// ログインユーザーの基本プロフィール情報
 export const createProfileSlice = (set: any) =>
   ({
     profile: null as Profile | null,

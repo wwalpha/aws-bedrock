@@ -11,12 +11,23 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const login = (window as any).useChatStore?.() || undefined;
+  // Fallback: direct import hook (prefer direct import if available)
+  // We'll just use store via dynamic import pattern below for simplicity
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TEMP: bypass auth checks and go to post-login screen
-    // TODO: restore real login flow
-    navigate(ROUTES.WORKSPACE);
+    const store = (await import('@/store')).useChatStore;
+    const { login: doLogin } = store.getState() as any;
+    const res = await doLogin(email, password);
+    if (res.ok) {
+      navigate(ROUTES.WORKSPACE);
+    } else {
+      setError(res.error || 'Login failed');
+    }
   };
+
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <div className="flex w-full flex-1 flex-col justify-center gap-2 px-8 sm:max-w-md">
@@ -58,7 +69,7 @@ export default function Login() {
           Login
         </Button>
 
-        {/* TEMP: suppress error display while bypassing auth */}
+        {error && <div className="text-xs text-destructive mt-1">{error}</div>}
       </form>
 
       <div className="text-muted-foreground mt-3 flex justify-center text-sm">
