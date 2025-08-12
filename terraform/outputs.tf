@@ -91,18 +91,3 @@ output "frontend_cloudfront_id" {
   value       = aws_cloudfront_distribution.frontend.id
 }
 
-# ----------------------------------------------------------------------------------------------
-# Output - Bedrock Knowledge Base ID
-# ----------------------------------------------------------------------------------------------
-output "knowledge_base_id" {
-  value       = aws_bedrockagent_knowledge_base.kb.id
-  description = "Bedrock Knowledge Base ID"
-}
-
-# ----------------------------------------------------------------------------------------------
-# Output - Bedrock Knowledge Base Data Source ID (S3)
-# ----------------------------------------------------------------------------------------------
-output "knowledge_base_data_source_id" {
-  value       = aws_bedrockagent_data_source.kb_s3.data_source_id
-  description = "Bedrock Knowledge Base S3 Data Source ID"
-}
