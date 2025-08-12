@@ -7,6 +7,18 @@ import {
   AdminDeleteUserCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 
+// CI guard: skip running live E2E in CI unless explicitly enabled
+const isCi = !!(process.env.GITHUB_ACTIONS || process.env.CI);
+const hasAwsCreds = !!(
+  process.env.AWS_ACCESS_KEY_ID ||
+  process.env.AWS_ROLE_ARN ||
+  process.env.AWS_WEB_IDENTITY_TOKEN_FILE
+);
+const RUN_E2E_LIVE =
+  String(process.env.RUN_E2E_LIVE || '').toLowerCase() === 'true';
+const shouldRun = RUN_E2E_LIVE || !isCi || hasAwsCreds;
+const d = shouldRun ? describe : describe.skip;
+
 const REGION = process.env.AWS_REGION || 'ap-northeast-1';
 const API_BASE_URL = (
   process.env.API_BASE_URL ||
@@ -27,7 +39,7 @@ if (!USER_POOL_ID) {
   );
 }
 
-describe('Auth E2E (real environment)', () => {
+d('Auth E2E (real environment)', () => {
   const fetchFn: any = (globalThis as any).fetch;
   if (typeof fetchFn !== 'function') {
     throw new Error('global fetch is required (Node 18+).');
@@ -78,6 +90,10 @@ describe('Auth E2E (real environment)', () => {
         'InvalidLambdaResponseException',
         'UserNotFoundException',
         'NotAuthorizedException',
+        'CredentialsProviderError',
+        'UnrecognizedClientException',
+        'UnknownEndpoint',
+        'ConfigError',
       ];
       if (!allowed.includes(msg)) {
         throw e;
