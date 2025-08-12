@@ -154,6 +154,8 @@ export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
   createdAt: string;
+  imagePaths?: string[]; // simple attachment preview
+  fileNames?: string[]; // placeholder for file attachment names
 }
 
 export interface ChatSettings {
