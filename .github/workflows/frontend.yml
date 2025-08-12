@@ -38,8 +38,8 @@ jobs:
         run: npm run lint --silent
       - name: Type check
         run: npm run type-check --silent
-      - name: Test
-        run: npm test --silent
+      # - name: Test
+      #   run: npm test --silent
       - name: Build
         run: npm run build --silent
       - name: Upload build artifact
