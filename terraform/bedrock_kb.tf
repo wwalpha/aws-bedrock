@@ -28,6 +28,35 @@ resource "aws_iam_role_policy" "bedrock_kb_s3_policy" {
 }
 
 # ----------------------------------------------------------------------------------------------
+# AWS IAM Role Policy - OpenSearch Serverless access for Knowledge Base Role
+# ----------------------------------------------------------------------------------------------
+resource "aws_iam_role_policy" "bedrock_kb_aoss_policy" {
+  name = "BedrockKBAOSSPermissions"
+  role = aws_iam_role.bedrock_kb_role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "aoss:CreateCollectionItems",
+          "aoss:DeleteCollectionItems",
+          "aoss:UpdateCollectionItems",
+          "aoss:DescribeCollectionItems",
+          "aoss:CreateIndex",
+          "aoss:DeleteIndex",
+          "aoss:UpdateIndex",
+          "aoss:DescribeIndex",
+          "aoss:ReadDocument",
+          "aoss:WriteDocument"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# ----------------------------------------------------------------------------------------------
 # OpenSearch Serverless Security Policy - Encryption
 # ----------------------------------------------------------------------------------------------
 resource "aws_opensearchserverless_security_policy" "kb_encryption" {
@@ -83,7 +112,7 @@ resource "aws_opensearchserverless_access_policy" "kb_access" {
         {
           ResourceType = "collection"
           Resource     = ["collection/${aws_opensearchserverless_collection.kb.name}"]
-          Permission   = [
+          Permission = [
             "aoss:DescribeCollectionItems",
             "aoss:CreateCollectionItems",
             "aoss:UpdateCollectionItems",
@@ -93,7 +122,7 @@ resource "aws_opensearchserverless_access_policy" "kb_access" {
         {
           ResourceType = "index"
           Resource     = ["index/${aws_opensearchserverless_collection.kb.name}/*"]
-          Permission   = [
+          Permission = [
             "aoss:CreateIndex",
             "aoss:DeleteIndex",
             "aoss:UpdateIndex",
@@ -106,6 +135,20 @@ resource "aws_opensearchserverless_access_policy" "kb_access" {
       Principal = [aws_iam_role.bedrock_kb_role.arn]
     }
   ])
+}
+
+# ----------------------------------------------------------------------------------------------
+# Wait for OpenSearch collection stabilization (simple sleep) before KB creation
+# ----------------------------------------------------------------------------------------------
+resource "null_resource" "wait_opensearch_ready" {
+  depends_on = [
+    aws_opensearchserverless_collection.kb,
+    aws_opensearchserverless_access_policy.kb_access
+  ]
+
+  provisioner "local-exec" {
+    command = "sleep 60"
+  }
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -136,7 +179,11 @@ resource "aws_bedrockagent_knowledge_base" "kb" {
     }
   }
 
-  depends_on = [aws_opensearchserverless_access_policy.kb_access]
+  depends_on = [
+    null_resource.wait_opensearch_ready,
+    aws_opensearchserverless_security_policy.kb_encryption,
+    aws_opensearchserverless_security_policy.kb_network
+  ]
 }
 
 # ----------------------------------------------------------------------------------------------

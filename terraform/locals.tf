@@ -39,7 +39,7 @@ EOT
   # ----------------------------------------------------------------------------------------------
   bedrock_kb_name          = "${var.project_name}-kb"
   bedrock_kb_os_collection = "${var.project_name}-kb-collection"
-  bedrock_kb_vector_index  = "${var.project_name}_kb_index"
+  bedrock_kb_vector_index  = "${var.project_name}-kb-index"
   bedrock_kb_s3_prefix_raw = "raw/"
 }
 
