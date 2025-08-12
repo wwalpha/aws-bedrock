@@ -17,7 +17,7 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const store = (await import('@/store')).useChatStore;
+    const store = (await import('@/store')).store;
     const { login: doLogin } = store.getState() as any;
     const res = await doLogin(email, password);
     if (res.ok) {

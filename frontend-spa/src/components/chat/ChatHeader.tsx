@@ -1,20 +1,20 @@
 import { useState, useMemo } from 'react';
-import { useChatStore } from '@/store';
+import { store } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Settings2, LogOut } from 'lucide-react';
 import { ModelSettings } from './ModelSettings';
 
 export default function ChatHeader() {
-  const selectedChat = useChatStore((s: any) => s.selectedChat);
+  const selectedChat = store((s: any) => s.selectedChat);
   const [open, setOpen] = useState(false);
-  const chatSettings = useChatStore((s: any) => s.chatSettings);
-  const models = useChatStore((s: any) => s.availableHostedModels as any[]);
+  const chatSettings = store((s: any) => s.chatSettings);
+  const models = store((s: any) => s.availableHostedModels as any[]);
   const currentModelLabel = useMemo(() => {
     if (!chatSettings?.model) return null;
     const found = (models || []).find((m) => m.id === chatSettings.model);
     return found?.label || found?.id || chatSettings.model;
   }, [chatSettings?.model, models]);
-  const logout = useChatStore((s: any) => s.logout);
+  const logout = store((s: any) => s.logout);
   return (
     <div className="flex items-center justify-between border-b pb-2 gap-4">
       <div className="min-w-0 flex-1 truncate">

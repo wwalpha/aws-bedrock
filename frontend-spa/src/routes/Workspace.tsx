@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useChatStore } from '@/store';
+import { store } from '@/store';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatMessages from '@/components/chat/ChatMessages';
 import ChatInput from '@/components/chat/ChatInput';
@@ -8,14 +8,14 @@ import { ROUTES } from '@/lib/routes';
 
 export default function Workspace() {
   const { chatId } = useParams();
-  const { idToken, accessToken } = useChatStore((s) => ({ idToken: s.idToken, accessToken: s.accessToken }));
+  const { idToken, accessToken } = store((s) => ({ idToken: s.idToken, accessToken: s.accessToken }));
   if (!idToken && !accessToken) {
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
   const navigate = useNavigate();
-  const chats = useChatStore((s: any) => s.chats);
-  const selectedChat = useChatStore((s: any) => s.selectedChat);
-  const setSelectedChat = useChatStore((s: any) => s.setSelectedChat);
+  const chats = store((s: any) => s.chats);
+  const selectedChat = store((s: any) => s.selectedChat);
+  const setSelectedChat = store((s: any) => s.setSelectedChat);
 
   // On mount / param change: align store with URL
   useEffect(() => {

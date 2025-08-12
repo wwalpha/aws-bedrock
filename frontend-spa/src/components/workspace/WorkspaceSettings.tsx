@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useChatStore } from '@/store';
+import { store } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
@@ -8,8 +8,8 @@ import { Switch } from '@/components/ui/switch';
 
 export function WorkspaceSettings() {
   const [open, setOpen] = useState(false);
-  const profile = useChatStore((s: any) => s.profile);
-  const setProfile = useChatStore((s: any) => s.setProfile);
+  const profile = store((s: any) => s.profile);
+  const setProfile = store((s: any) => s.setProfile);
 
   const [workspaceTitle, setWorkspaceTitle] = useState(profile?.workspaceTitle || '');
   const [compactMode, setCompactMode] = useState(!!profile?.compactMode);

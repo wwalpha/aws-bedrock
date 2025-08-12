@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { useChatStore } from '@/store';
+import { store } from '@/store';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Send, Square, X } from 'lucide-react';
 import TextareaAutosize from 'react-textarea-autosize';
@@ -13,24 +13,24 @@ function genId() {
 
 export default function ChatInput() {
   const navigate = useNavigate();
-  const chats = useChatStore((s: any) => s.chats as Chat[]);
-  const setChats = useChatStore((s: any) => s.setChats);
-  const selectedChat = useChatStore((s: any) => s.selectedChat as Chat | null);
-  const setSelectedChat = useChatStore((s: any) => s.setSelectedChat);
-  const userInput = useChatStore((s: any) => s.userInput as string);
-  const setUserInput = useChatStore((s: any) => s.setUserInput);
-  const chatMessages = useChatStore((s: any) => s.chatMessages as ChatMessage[]);
-  const setChatMessages = useChatStore((s: any) => s.setChatMessages);
-  const isGenerating = useChatStore((s: any) => s.isGenerating as boolean);
-  const setIsGenerating = useChatStore((s: any) => s.setIsGenerating);
+  const chats = store((s: any) => s.chats as Chat[]);
+  const setChats = store((s: any) => s.setChats);
+  const selectedChat = store((s: any) => s.selectedChat as Chat | null);
+  const setSelectedChat = store((s: any) => s.setSelectedChat);
+  const userInput = store((s: any) => s.userInput as string);
+  const setUserInput = store((s: any) => s.setUserInput);
+  const chatMessages = store((s: any) => s.chatMessages as ChatMessage[]);
+  const setChatMessages = store((s: any) => s.setChatMessages);
+  const isGenerating = store((s: any) => s.isGenerating as boolean);
+  const setIsGenerating = store((s: any) => s.setIsGenerating);
 
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const timeoutRef = useRef<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const newMessageImages = useChatStore((s: any) => s.newMessageImages as any[]);
-  const setNewMessageImages = useChatStore((s: any) => s.setNewMessageImages);
-  const newMessageFiles = useChatStore((s: any) => s.newMessageFiles as any[]);
-  const setNewMessageFiles = useChatStore((s: any) => s.setNewMessageFiles);
+  const newMessageImages = store((s: any) => s.newMessageImages as any[]);
+  const setNewMessageImages = store((s: any) => s.setNewMessageImages);
+  const newMessageFiles = store((s: any) => s.newMessageFiles as any[]);
+  const setNewMessageFiles = store((s: any) => s.setNewMessageFiles);
 
   const ensureChat = useCallback(() => {
     if (selectedChat) return selectedChat;

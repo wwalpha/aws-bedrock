@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import type { ChatMessage } from 'typings';
-import { useChatStore } from '@/store';
+import { store } from '@/store';
 import { cn } from '@/lib/utils';
 import { Copy, Edit2, RefreshCcw, Save, X, Image as ImgIcon, FileText } from 'lucide-react';
 import { Markdown } from './Markdown';
@@ -11,9 +11,9 @@ interface Props {
 }
 
 export function ChatMessageItem({ message, isLast }: Props) {
-  const setChatMessages = useChatStore((s: any) => s.setChatMessages);
-  const isGenerating = useChatStore((s: any) => s.isGenerating as boolean);
-  const setIsGenerating = useChatStore((s: any) => s.setIsGenerating);
+  const setChatMessages = store((s: any) => s.setChatMessages);
+  const isGenerating = store((s: any) => s.isGenerating as boolean);
+  const setIsGenerating = store((s: any) => s.setIsGenerating);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(message.content);
   const isUser = message.role === 'user';

@@ -1,6 +1,7 @@
 import type { AppSlice, LoginResponse } from 'typings';
 import { apply, type SetStateAction } from '../utils';
 import type { StateCreator } from 'zustand';
+import { apiClient } from '@/lib/api/client';
 
 // 認証 / アプリ共通状態用 Slice
 // - トークンの保持と更新
@@ -33,33 +34,16 @@ export const createAppSlice: StateCreator<AppSlice, [], [], AppSlice> = (set: Sl
   // ログイン処理
   // 成功: { ok: true, data } / 失敗: { ok: false, error }
   async login(email: string, password: string) {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/auth/login`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ username: email, password }),
-      });
-
-      if (!res.ok) {
-        // サーバー側がメッセージを返さない場合は汎用メッセージ
-        const msg = (await res.text()) || 'Login failed';
-        return { ok: false as const, error: msg };
-      }
-
-      // サーバー期待レスポンス: { idToken?: string; accessToken?: string; ... }
-      const data = (await res.json()) as LoginResponse;
-
-      // 既存値を保持しつつ新規取得分だけ上書き
-      set((s) => ({
-        idToken: data.idToken ?? s.idToken,
-        accessToken: data.accessToken ?? s.accessToken,
-      }));
-
-      return { ok: true as const, data };
-    } catch (e: any) {
-      // ネットワーク / 予期せぬ例外
-      return { ok: false as const, error: e?.message || 'Login failed' };
+    const result = await apiClient.login({ username: email, password });
+    if ('error' in result) {
+      return { ok: false as const, error: result.error || 'Login failed' };
     }
+    const data = result.data as LoginResponse;
+    set((s) => ({
+      idToken: data.idToken ?? s.idToken,
+      accessToken: data.accessToken ?? s.accessToken,
+    }));
+    return { ok: true as const, data };
   },
 
   // ローカル状態だけをクリア（サーバー側セッションは触らない）
@@ -67,11 +51,7 @@ export const createAppSlice: StateCreator<AppSlice, [], [], AppSlice> = (set: Sl
 
   // サーバーも含めログアウト（失敗してもローカルはクリア）
   async logoutApi() {
-    try {
-      await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/auth/logout`, { method: 'POST' });
-    } catch {
-      // ネットワークエラー等は握りつぶし（ユーザー操作は完了させる）
-    }
+    await apiClient.logout();
     set(() => ({ idToken: null, accessToken: null }));
   },
 });

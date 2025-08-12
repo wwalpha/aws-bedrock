@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { useChatStore } from '@/store';
+import { store } from '@/store';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -15,8 +15,8 @@ interface ChatItemProps {
 }
 
 export const ChatItem: FC<ChatItemProps> = ({ chat, active }) => {
-  const setSelectedChat = useChatStore((s: any) => s.setSelectedChat);
-  const setChats = useChatStore((s: any) => s.setChats);
+  const setSelectedChat = store((s: any) => s.setSelectedChat);
+  const setChats = store((s: any) => s.setChats);
   const navigate = useNavigate();
 
   const [renameOpen, setRenameOpen] = useState(false);
@@ -41,7 +41,7 @@ export const ChatItem: FC<ChatItemProps> = ({ chat, active }) => {
     // If this was the selected chat, clear selection and navigate to fallback
     setSelectedChat((prev: Chat | null) => {
       if (prev?.id === chat.id) {
-        const remaining = (useChatStore.getState().chats as Chat[]).filter((c) => c.id !== chat.id);
+        const remaining = (store.getState().chats as Chat[]).filter((c) => c.id !== chat.id);
         if (remaining.length) {
           const first = remaining[0];
           navigate(`${ROUTES.WORKSPACE}/${first.id}`, { replace: true });

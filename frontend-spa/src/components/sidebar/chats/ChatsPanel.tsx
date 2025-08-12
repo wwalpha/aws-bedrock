@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useChatStore } from '@/store';
+import { store } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Search } from 'lucide-react';
@@ -13,10 +13,10 @@ function genId() {
 }
 
 export function ChatsPanel() {
-  const chats = useChatStore((s: any) => s.chats as Chat[]);
-  const setChats = useChatStore((s: any) => s.setChats);
-  const selectedChat = useChatStore((s: any) => s.selectedChat as Chat | null);
-  const setSelectedChat = useChatStore((s: any) => s.setSelectedChat);
+  const chats = store((s: any) => s.chats as Chat[]);
+  const setChats = store((s: any) => s.setChats);
+  const selectedChat = store((s: any) => s.selectedChat as Chat | null);
+  const setSelectedChat = store((s: any) => s.setSelectedChat);
   const navigate = useNavigate();
 
   const [query, setQuery] = useState('');

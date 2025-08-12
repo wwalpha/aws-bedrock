@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useChatStore } from '@/store';
+import { store } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Pencil, Plus, Search, Trash2 } from 'lucide-react';
@@ -22,7 +22,7 @@ function genId() {
 }
 
 export function NonChatCrudPanel({ kind }: { kind: PanelKey }) {
-  const state = useChatStore((s: any) => s);
+  const state = store((s: any) => s);
   const items: any[] = state[kind] || [];
   const setItems = state[`set${kind.charAt(0).toUpperCase()}${kind.slice(1)}`] as (v: any) => void;
 

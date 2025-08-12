@@ -15,22 +15,22 @@ import { createAttachmentsSlice } from './slices/attachments';
 import { createRetrievalSlice } from './slices/retrieval';
 import { createToolsSlice } from './slices/tools';
 
-export const useChatStore = create<ChatbotState>()(
+export const store = create<ChatbotState>()(
   persist(
-    (set, get) => ({
-      ...createProfileSlice(set),
-      ...createItemsSlice(set),
-      ...createModelsSlice(set),
-      ...createWorkspaceSlice(set),
-      ...createPresetSlice(set),
-      ...createAssistantSlice(set),
-      ...createPassiveChatSlice(set),
-      ...createActiveChatSlice(set),
-      ...createChatInputSlice(set),
-      ...createAttachmentsSlice(set),
-      ...createRetrievalSlice(set),
-      ...createToolsSlice(set),
-      ...createAppSlice(set),
+    (set, get, api) => ({
+      ...createProfileSlice(set, get, api),
+      ...createItemsSlice(set, get, api),
+      ...createModelsSlice(set, get, api),
+      ...createWorkspaceSlice(set, get, api),
+      ...createPresetSlice(set, get, api),
+      ...createAssistantSlice(set, get, api),
+      ...createPassiveChatSlice(set, get, api),
+      ...createActiveChatSlice(set, get, api),
+      ...createChatInputSlice(set, get, api),
+      ...createAttachmentsSlice(set, get, api),
+      ...createRetrievalSlice(set, get, api),
+      ...createToolsSlice(set, get, api),
+      ...createAppSlice(set, get, api),
     }),
     {
       name: 'chatbot-store',
