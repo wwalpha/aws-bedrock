@@ -62,34 +62,42 @@
 	}
 
 	.dark {
-		--background: 0 0% 3.9%;
-		--foreground: 0 0% 98%;
+		/* Adjusted to approximate VS Code Dark+ palette (less pure black) */
+		/* Base editor background ~ #1e1e1e => l≈12% */
+		--background: 0 0% 12%;
+		--foreground: 0 0% 85%; /* #d9d9d9 close to VSCode foreground */
 
-		--muted: 0 0% 14.9%;
-		--muted-foreground: 0 0% 63.9%;
+		/* Muted surfaces (#252526 / #2d2d2d) */
+		--muted: 0 0% 18%; /* ~#2e2e2e */
+		--muted-foreground: 0 0% 60%; /* softer text on muted */
 
-		--popover: 0 0% 3.9%;
-		--popover-foreground: 0 0% 98%;
+		/* Popover / card slightly above base (#1f1f1f / #222) */
+		--popover: 0 0% 13%;
+		--popover-foreground: 0 0% 88%;
 
-		--card: 0 0% 3.9%;
-		--card-foreground: 0 0% 98%;
+		--card: 0 0% 13%;
+		--card-foreground: 0 0% 88%;
 
-		--border: 0 0% 14.9%;
-		--input: 0 0% 14.9%;
+		/* Border lines (#3c3c3c) */
+		--border: 0 0% 25%;
+		--input: 0 0% 20%;
 
-		--primary: 0 0% 98%;
-		--primary-foreground: 0 0% 9%;
+		/* Primary stays light for contrast */
+		--primary: 0 0% 96%;
+		--primary-foreground: 0 0% 10%;
 
-		--secondary: 0 0% 14.9%;
-		--secondary-foreground: 0 0% 98%;
+		/* Secondary / accent mid contrast blocks (#333) */
+		--secondary: 0 0% 20%;
+		--secondary-foreground: 0 0% 90%;
 
-		--accent: 0 0% 14.9%;
-		--accent-foreground: 0 0% 98%;
+		--accent: 0 0% 22%;
+		--accent-foreground: 0 0% 92%;
 
-		--destructive: 0 62.8% 30.6%;
-		--destructive-foreground: 0 85.7% 97.3%;
+		--destructive: 0 63% 40%;
+		--destructive-foreground: 0 0% 98%;
 
-		--ring: 0 0% 14.9%;
+		/* Ring a bit brighter than border for focus */
+		--ring: 0 0% 35%;
 	}
 }
 
