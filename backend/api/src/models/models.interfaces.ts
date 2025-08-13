@@ -11,7 +11,7 @@ export interface ModelListItem {
   name: string;
   provider?: string;
   description?: string;
-  selected: boolean;
+  selected?: boolean; // optional: resolved per user
 }
 
 export interface ModelDetail extends ModelInfo {
@@ -20,7 +20,9 @@ export interface ModelDetail extends ModelInfo {
 }
 
 export interface SelectModelRequest {
-  id: string;
+  id: string; // model id
+  userId: string; // target user id
+  apiKey?: string; // required when selecting external gpt-5
 }
 
 export interface UpdateModelParamsRequest {

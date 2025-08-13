@@ -34,6 +34,7 @@ export interface UserItem {
   name?: string;
   avatarUrl?: string;
   createdAt?: number;
+  modelId?: string;
 }
 
 export interface KnowledgeItem {

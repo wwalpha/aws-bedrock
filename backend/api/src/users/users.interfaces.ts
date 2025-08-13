@@ -3,6 +3,7 @@ export interface UserProfile {
   email?: string;
   name?: string;
   avatarUrl?: string;
+  modelId?: string; // selected model id
 }
 
 export interface UserSessionSummary {
@@ -11,5 +12,10 @@ export interface UserSessionSummary {
 }
 
 export type UpdateUserRequest = Partial<
-  Pick<UserProfile, 'email' | 'name' | 'avatarUrl'>
+  Pick<UserProfile, 'email' | 'name' | 'avatarUrl' | 'modelId'>
 >;
+
+export interface UpdateUserModelRequest {
+  userId: string;
+  modelId: string;
+}

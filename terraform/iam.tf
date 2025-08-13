@@ -56,6 +56,32 @@ resource "aws_iam_role_policy" "ecs_task_ddb_knowledge" {
 }
 
 # ----------------------------------------------------------------------------------------------
+# ECS Task Role Inline Policy - Secrets Manager access for model API keys
+# ----------------------------------------------------------------------------------------------
+resource "aws_iam_role_policy" "ecs_task_secrets_model_api" {
+  name = "SecretsManagerModelApiKeys"
+  role = aws_iam_role.ecs_task.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:CreateSecret",
+          "secretsmanager:PutSecretValue",
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:GetSecretValue"
+        ]
+        Resource = [
+          aws_secretsmanager_secret.model_api_keys.arn,
+          "${aws_secretsmanager_secret.model_api_keys.arn}*"
+        ]
+      }
+    ]
+  })
+}
+
+# ----------------------------------------------------------------------------------------------
 # AWS ECS Task Execution Role
 # ----------------------------------------------------------------------------------------------
 resource "aws_iam_role" "ecs_task_exec" {
