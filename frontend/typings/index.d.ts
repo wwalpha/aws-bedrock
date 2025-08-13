@@ -1,170 +1,303 @@
-import type { Dispatch, SetStateAction } from "react"
-import type { Tables } from "@/types/db"
-import type {
-  ChatFile,
-  ChatMessage,
-  ChatSettings,
-  LLM,
-  OpenRouterLLM,
-  WorkspaceImage
-} from "@/types"
-import type { AssistantImage } from "@/types/images/assistant-image"
-import type { MessageImage } from "@/types/images/message-image"
-import type { VALID_ENV_KEYS } from "@/types/valid-keys"
-import type { LoginResponse } from "@/types/api"
+// Simplified local typings for SPA (no external deps)
+import type { ApiResult } from './api-client';
+
+// LoginRequest / LoginResponse moved to auth.d.ts
+
+export interface Profile {
+  id?: string;
+  username?: string;
+  display_name?: string;
+  workspaceTitle?: string;
+  compactMode?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 export interface ProfileSlice {
-  profile: Tables<"profiles"> | null
-  setProfile: Dispatch<SetStateAction<Tables<"profiles"> | null>>
+  profile: Profile | null;
+  setProfile: (v: Profile | null | ((prev: Profile | null) => Profile | null)) => void;
+}
+
+export interface Chat {
+  id: string;
+  name: string;
+  createdAt: string; // ISO date
+  updatedAt?: string;
+}
+
+export interface Preset {
+  id: string;
+  name: string;
+  model?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface Workspace {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface ItemsSlice {
-  assistants: Tables<"assistants">[]
-  setAssistants: Dispatch<SetStateAction<Tables<"assistants">[]>>
-  collections: Tables<"collections">[]
-  setCollections: Dispatch<SetStateAction<Tables<"collections">[]>>
-  chats: Tables<"chats">[]
-  setChats: Dispatch<SetStateAction<Tables<"chats">[]>>
-  files: Tables<"files">[]
-  setFiles: Dispatch<SetStateAction<Tables<"files">[]>>
-  folders: Tables<"folders">[]
-  setFolders: Dispatch<SetStateAction<Tables<"folders">[]>>
-  models: Tables<"models">[]
-  setModels: Dispatch<SetStateAction<Tables<"models">[]>>
-  presets: Tables<"presets">[]
-  setPresets: Dispatch<SetStateAction<Tables<"presets">[]>>
-  prompts: Tables<"prompts">[]
-  setPrompts: Dispatch<SetStateAction<Tables<"prompts">[]>>
-  tools: Tables<"tools">[]
-  setTools: Dispatch<SetStateAction<Tables<"tools">[]>>
-  workspaces: Tables<"workspaces">[]
-  setWorkspaces: Dispatch<SetStateAction<Tables<"workspaces">[]>>
+  assistants: Assistant[];
+  setAssistants: (v: Assistant[] | ((prev: Assistant[]) => Assistant[])) => void;
+  collections: Collection[];
+  setCollections: (v: Collection[] | ((prev: Collection[]) => Collection[])) => void;
+  chats: Chat[];
+  setChats: (v: Chat[] | ((prev: Chat[]) => Chat[])) => void;
+  files: FileAsset[];
+  setFiles: (v: FileAsset[] | ((prev: FileAsset[]) => FileAsset[])) => void;
+  folders: Folder[];
+  setFolders: (v: Folder[] | ((prev: Folder[]) => Folder[])) => void;
+  models: ModelRef[];
+  setModels: (v: ModelRef[] | ((prev: ModelRef[]) => ModelRef[])) => void;
+  presets: Preset[];
+  setPresets: (v: Preset[] | ((prev: Preset[]) => Preset[])) => void;
+  prompts: Prompt[];
+  setPrompts: (v: Prompt[] | ((prev: Prompt[]) => Prompt[])) => void;
+  tools: Tool[];
+  setTools: (v: Tool[] | ((prev: Tool[]) => Tool[])) => void;
+  workspaces: Workspace[];
+  setWorkspaces: (v: Workspace[] | ((prev: Workspace[]) => Workspace[])) => void;
+}
+
+export interface ChatOpsSlice {
+  fetchChats: () => ApiResult<Chat[]>;
+  createChat: (name: string) => ApiResult<Chat>;
+  updateChat: (id: string, patch: { name?: string }) => ApiResult<Chat>;
+  deleteChat: (id: string) => ApiResult<{ id: string }>;
+  chatsLoading: boolean;
+  chatsError: string | null;
+}
+
+export interface Collection {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface FileAsset {
+  id: string;
+  name: string;
+  size?: number;
+  mimeType?: string;
+  createdAt: string;
+  folderId?: string | null;
+  url?: string;
+}
+
+export interface Folder {
+  id: string;
+  name: string;
+  parentId?: string | null;
+  createdAt: string;
+}
+
+export interface ModelRef {
+  id: string;
+  provider?: string;
+  label?: string;
+  contextLength?: number;
+  supportsStreaming?: boolean;
+}
+
+export interface Prompt {
+  id: string;
+  name: string;
+  content: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface ModelsSlice {
-  envKeyMap: Record<string, VALID_ENV_KEYS>
-  setEnvKeyMap: Dispatch<SetStateAction<Record<string, VALID_ENV_KEYS>>>
-  availableHostedModels: LLM[]
-  setAvailableHostedModels: Dispatch<SetStateAction<LLM[]>>
-  availableLocalModels: LLM[]
-  setAvailableLocalModels: Dispatch<SetStateAction<LLM[]>>
-  availableOpenRouterModels: OpenRouterLLM[]
-  setAvailableOpenRouterModels: Dispatch<SetStateAction<OpenRouterLLM[]>>
+  envKeyMap: Record<string, string>;
+  setEnvKeyMap: (v: Record<string, string> | ((prev: Record<string, string>) => Record<string, string>)) => void;
+  availableHostedModels: any[];
+  setAvailableHostedModels: (v: any[] | ((prev: any[]) => any[])) => void;
+  availableLocalModels: any[];
+  setAvailableLocalModels: (v: any[] | ((prev: any[]) => any[])) => void;
+  availableOpenRouterModels: any[];
+  setAvailableOpenRouterModels: (v: any[] | ((prev: any[]) => any[])) => void;
 }
 
 export interface WorkspaceSlice {
-  selectedWorkspace: Tables<"workspaces"> | null
-  setSelectedWorkspace: Dispatch<SetStateAction<Tables<"workspaces"> | null>>
-  workspaceImages: WorkspaceImage[]
-  setWorkspaceImages: Dispatch<SetStateAction<WorkspaceImage[]>>
+  selectedWorkspace: Workspace | null;
+  setSelectedWorkspace: (v: Workspace | null | ((prev: Workspace | null) => Workspace | null)) => void;
+  workspaceImages: any[];
+  setWorkspaceImages: (v: any[] | ((prev: any[]) => any[])) => void;
 }
 
 export interface PresetSlice {
-  selectedPreset: Tables<"presets"> | null
-  setSelectedPreset: Dispatch<SetStateAction<Tables<"presets"> | null>>
+  selectedPreset: Preset | null;
+  setSelectedPreset: (v: Preset | null | ((prev: Preset | null) => Preset | null)) => void;
+}
+
+export interface Assistant {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface AssistantSlice {
-  selectedAssistant: Tables<"assistants"> | null
-  setSelectedAssistant: Dispatch<SetStateAction<Tables<"assistants"> | null>>
-  assistantImages: AssistantImage[]
-  setAssistantImages: Dispatch<SetStateAction<AssistantImage[]>>
-  openaiAssistants: any[]
-  setOpenaiAssistants: Dispatch<SetStateAction<any[]>>
+  selectedAssistant: Assistant | null;
+  setSelectedAssistant: (v: Assistant | null | ((prev: Assistant | null) => Assistant | null)) => void;
+  assistantImages: string[]; // urls/base64
+  setAssistantImages: (v: string[] | ((prev: string[]) => string[])) => void;
+  openaiAssistants: Assistant[];
+  setOpenaiAssistants: (v: Assistant[] | ((prev: Assistant[]) => Assistant[])) => void;
+}
+
+export interface ChatMessage {
+  id: string;
+  chatId: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  createdAt: string;
+  imagePaths?: string[]; // simple attachment preview
+  fileNames?: string[]; // placeholder for file attachment names
+}
+
+export interface ChatSettings {
+  model?: string;
+  temperature?: number;
+  top_p?: number;
+  [key: string]: unknown;
+}
+
+export interface ChatFileItem {
+  id: string;
+  chatId: string;
+  fileId: string;
+  addedAt: string;
 }
 
 export interface PassiveChatSlice {
-  userInput: string
-  setUserInput: Dispatch<SetStateAction<string>>
-  chatMessages: ChatMessage[]
-  setChatMessages: Dispatch<SetStateAction<ChatMessage[]>>
-  chatSettings: ChatSettings
-  setChatSettings: Dispatch<SetStateAction<ChatSettings>>
-  selectedChat: Tables<"chats"> | null
-  setSelectedChat: Dispatch<SetStateAction<Tables<"chats"> | null>>
-  chatFileItems: Tables<"file_items">[]
-  setChatFileItems: Dispatch<SetStateAction<Tables<"file_items">[]>>
+  userInput: string;
+  setUserInput: (v: string | ((prev: string) => string)) => void;
+  chatMessages: ChatMessage[];
+  setChatMessages: (v: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => void;
+  chatSettings: ChatSettings;
+  setChatSettings: (v: ChatSettings | ((prev: ChatSettings) => ChatSettings)) => void;
+  selectedChat: Chat | null;
+  setSelectedChat: (v: Chat | null | ((prev: Chat | null) => Chat | null)) => void;
+  chatFileItems: ChatFileItem[];
+  setChatFileItems: (v: ChatFileItem[] | ((prev: ChatFileItem[]) => ChatFileItem[])) => void;
 }
 
 export interface ActiveChatSlice {
-  abortController: AbortController | null
-  setAbortController: Dispatch<SetStateAction<AbortController | null>>
-  firstTokenReceived: boolean
-  setFirstTokenReceived: Dispatch<SetStateAction<boolean>>
-  isGenerating: boolean
-  setIsGenerating: Dispatch<SetStateAction<boolean>>
+  abortController: AbortController | null;
+  setAbortController: (v: AbortController | null | ((prev: AbortController | null) => AbortController | null)) => void;
+  firstTokenReceived: boolean;
+  setFirstTokenReceived: (v: boolean | ((prev: boolean) => boolean)) => void;
+  isGenerating: boolean;
+  setIsGenerating: (v: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 export interface ChatInputSlice {
-  isPromptPickerOpen: boolean
-  setIsPromptPickerOpen: Dispatch<SetStateAction<boolean>>
-  slashCommand: string
-  setSlashCommand: Dispatch<SetStateAction<string>>
-  isFilePickerOpen: boolean
-  setIsFilePickerOpen: Dispatch<SetStateAction<boolean>>
-  hashtagCommand: string
-  setHashtagCommand: Dispatch<SetStateAction<string>>
-  isToolPickerOpen: boolean
-  setIsToolPickerOpen: Dispatch<SetStateAction<boolean>>
-  toolCommand: string
-  setToolCommand: Dispatch<SetStateAction<string>>
-  focusPrompt: boolean
-  setFocusPrompt: Dispatch<SetStateAction<boolean>>
-  focusFile: boolean
-  setFocusFile: Dispatch<SetStateAction<boolean>>
-  focusTool: boolean
-  setFocusTool: Dispatch<SetStateAction<boolean>>
-  focusAssistant: boolean
-  setFocusAssistant: Dispatch<SetStateAction<boolean>>
-  atCommand: string
-  setAtCommand: Dispatch<SetStateAction<string>>
-  isAssistantPickerOpen: boolean
-  setIsAssistantPickerOpen: Dispatch<SetStateAction<boolean>>
+  isPromptPickerOpen: boolean;
+  setIsPromptPickerOpen: (v: boolean | ((prev: boolean) => boolean)) => void;
+  slashCommand: string;
+  setSlashCommand: (v: string | ((prev: string) => string)) => void;
+  isFilePickerOpen: boolean;
+  setIsFilePickerOpen: (v: boolean | ((prev: boolean) => boolean)) => void;
+  hashtagCommand: string;
+  setHashtagCommand: (v: string | ((prev: string) => string)) => void;
+  isToolPickerOpen: boolean;
+  setIsToolPickerOpen: (v: boolean | ((prev: boolean) => boolean)) => void;
+  toolCommand: string;
+  setToolCommand: (v: string | ((prev: string) => string)) => void;
+  focusPrompt: boolean;
+  setFocusPrompt: (v: boolean | ((prev: boolean) => boolean)) => void;
+  focusFile: boolean;
+  setFocusFile: (v: boolean | ((prev: boolean) => boolean)) => void;
+  focusTool: boolean;
+  setFocusTool: (v: boolean | ((prev: boolean) => boolean)) => void;
+  focusAssistant: boolean;
+  setFocusAssistant: (v: boolean | ((prev: boolean) => boolean)) => void;
+  atCommand: string;
+  setAtCommand: (v: string | ((prev: string) => string)) => void;
+  isAssistantPickerOpen: boolean;
+  setIsAssistantPickerOpen: (v: boolean | ((prev: boolean) => boolean)) => void;
+}
+
+export interface ChatFile {
+  id: string;
+  name: string;
+  size?: number;
+  mimeType?: string;
+  createdAt: string;
+  url?: string;
+}
+
+export interface ChatImage extends ChatFile {
+  width?: number;
+  height?: number;
+  thumbnailUrl?: string;
 }
 
 export interface AttachmentsSlice {
-  chatFiles: ChatFile[]
-  setChatFiles: Dispatch<SetStateAction<ChatFile[]>>
-  chatImages: MessageImage[]
-  setChatImages: Dispatch<SetStateAction<MessageImage[]>>
-  newMessageFiles: ChatFile[]
-  setNewMessageFiles: Dispatch<SetStateAction<ChatFile[]>>
-  newMessageImages: MessageImage[]
-  setNewMessageImages: Dispatch<SetStateAction<MessageImage[]>>
-  showFilesDisplay: boolean
-  setShowFilesDisplay: Dispatch<SetStateAction<boolean>>
+  chatFiles: ChatFile[];
+  setChatFiles: (v: ChatFile[] | ((prev: ChatFile[]) => ChatFile[])) => void;
+  chatImages: ChatImage[];
+  setChatImages: (v: ChatImage[] | ((prev: ChatImage[]) => ChatImage[])) => void;
+  newMessageFiles: ChatFile[];
+  setNewMessageFiles: (v: ChatFile[] | ((prev: ChatFile[]) => ChatFile[])) => void;
+  newMessageImages: ChatImage[];
+  setNewMessageImages: (v: ChatImage[] | ((prev: ChatImage[]) => ChatImage[])) => void;
+  showFilesDisplay: boolean;
+  setShowFilesDisplay: (v: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 export interface RetrievalSlice {
-  useRetrieval: boolean
-  setUseRetrieval: Dispatch<SetStateAction<boolean>>
-  sourceCount: number
-  setSourceCount: Dispatch<SetStateAction<number>>
+  useRetrieval: boolean;
+  setUseRetrieval: (v: boolean | ((prev: boolean) => boolean)) => void;
+  sourceCount: number;
+  setSourceCount: (v: number | ((prev: number) => number)) => void;
+}
+
+export interface Tool {
+  id: string;
+  name: string;
+  kind?: string;
+  createdAt?: string;
 }
 
 export interface ToolsSlice {
-  selectedTools: Tables<"tools">[]
-  setSelectedTools: Dispatch<SetStateAction<Tables<"tools">[]>>
-  toolInUse: string
-  setToolInUse: Dispatch<SetStateAction<string>>
+  selectedTools: Tool[];
+  setSelectedTools: (v: Tool[] | ((prev: Tool[]) => Tool[])) => void;
+  toolInUse: string;
+  setToolInUse: (v: string | ((prev: string) => string)) => void;
 }
 
 export interface AppSlice {
-  idToken: string | null
-  accessToken: string | null
-  setIdToken: Dispatch<SetStateAction<string | null>>
-  setAccessToken: Dispatch<SetStateAction<string | null>>
-  loginWithTokens: (params: { idToken?: string; accessToken?: string }) => void
-  /**
-   * Perform login via internal API and store tokens.
-   * Returns { ok, data?, error? } but does not redirect.
-   */
-  login: (
-    email: string,
-    password: string
-  ) => Promise<{ ok: true; data: LoginResponse } | { ok: false; error: string }>
-  /** Clear tokens locally (no network). */
-  logout: () => void
-  /** Call internal API to logout and then clear tokens. */
-  logoutApi: () => Promise<void>
+  idToken: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  isLoggined: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string) => Promise<boolean>;
+  confirmSignup: (email: string, code: string) => Promise<boolean>;
+  logout: () => void;
+  logoutApi: () => Promise<void>;
 }
+
+export type ChatbotState = ProfileSlice &
+  ItemsSlice &
+  ChatOpsSlice &
+  ModelsSlice &
+  WorkspaceSlice &
+  PresetSlice &
+  AssistantSlice &
+  PassiveChatSlice &
+  ActiveChatSlice &
+  ChatInputSlice &
+  AttachmentsSlice &
+  RetrievalSlice &
+  ToolsSlice &
+  AppSlice;
