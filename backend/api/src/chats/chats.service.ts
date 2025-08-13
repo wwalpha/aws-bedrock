@@ -45,7 +45,7 @@ export class ChatsService {
       new PutCommand({
         TableName: this.chatTable,
         Item: {
-          conversation_id: id,
+          chat_id: id,
           timestamp: now,
           type: 'meta',
           title: body.title,
@@ -53,7 +53,7 @@ export class ChatsService {
           user_id: body.userId,
         },
         ConditionExpression:
-          'attribute_not_exists(conversation_id) AND attribute_not_exists(timestamp)',
+          'attribute_not_exists(chat_id) AND attribute_not_exists(timestamp)',
       }),
     );
 
@@ -81,7 +81,7 @@ export class ChatsService {
     return items
       .filter((it: any) => it.type === 'meta')
       .map((it: any) => ({
-        id: it.conversation_id,
+        id: it.chat_id,
         title: it.title,
         createdAt: it.createdAt || it.timestamp,
       }));
@@ -92,7 +92,7 @@ export class ChatsService {
     const res = await this.ddb.send(
       new QueryCommand({
         TableName: this.chatTable,
-        KeyConditionExpression: 'conversation_id = :cid',
+        KeyConditionExpression: 'chat_id = :cid',
         ExpressionAttributeValues: { ':cid': chatId },
         FilterExpression: '#t = :meta',
         ExpressionAttributeNames: { '#t': 'type' },
@@ -114,7 +114,7 @@ export class ChatsService {
     const meta = await this.ddb.send(
       new QueryCommand({
         TableName: this.chatTable,
-        KeyConditionExpression: 'conversation_id = :cid',
+        KeyConditionExpression: 'chat_id = :cid',
         ExpressionAttributeValues: { ':cid': chatId },
         FilterExpression: '#t = :meta',
         ExpressionAttributeNames: { '#t': 'type' },
@@ -127,7 +127,7 @@ export class ChatsService {
     await this.ddb.send(
       new DeleteCommand({
         TableName: this.chatTable,
-        Key: { conversation_id: chatId, timestamp: item.timestamp },
+        Key: { chat_id: chatId, timestamp: item.timestamp },
       }),
     );
     return { message: 'Chat deleted' };
@@ -142,7 +142,7 @@ export class ChatsService {
     const meta = await this.ddb.send(
       new QueryCommand({
         TableName: this.chatTable,
-        KeyConditionExpression: 'conversation_id = :cid',
+        KeyConditionExpression: 'chat_id = :cid',
         ExpressionAttributeValues: { ':cid': chatId },
         FilterExpression: '#t = :meta',
         ExpressionAttributeNames: { '#t': 'type' },
@@ -155,7 +155,7 @@ export class ChatsService {
     await this.ddb.send(
       new UpdateCommand({
         TableName: this.chatTable,
-        Key: { conversation_id: chatId, timestamp: item.timestamp },
+        Key: { chat_id: chatId, timestamp: item.timestamp },
         UpdateExpression: 'SET #title = :title',
         ExpressionAttributeNames: { '#title': 'title' },
         ExpressionAttributeValues: { ':title': body.title },
@@ -168,7 +168,7 @@ export class ChatsService {
     const res = await this.ddb.send(
       new QueryCommand({
         TableName: this.chatTable,
-        KeyConditionExpression: 'conversation_id = :cid',
+        KeyConditionExpression: 'chat_id = :cid',
         ExpressionAttributeValues: { ':cid': chatId },
         ScanIndexForward: true,
         Limit: limit,
@@ -178,8 +178,8 @@ export class ChatsService {
     return items
       .filter((it: any) => it.type !== 'meta')
       .map((it: any) => ({
-        id: `${it.conversation_id}:${it.timestamp}`,
-        chatId: it.conversation_id,
+        id: `${it.chat_id}:${it.timestamp}`,
+        chatId: it.chat_id,
         timestamp: it.timestamp,
         role: (it.role || 'user') as any,
         content: it.content || '',
@@ -193,7 +193,7 @@ export class ChatsService {
     if (!body?.content) throw new BadRequestException('content is required');
     const now = Date.now();
     const item = {
-      conversation_id: chatId,
+      chat_id: chatId,
       timestamp: now,
       type: 'message',
       role: body.role || 'user',
@@ -204,7 +204,7 @@ export class ChatsService {
     const check = await this.ddb.send(
       new QueryCommand({
         TableName: this.chatTable,
-        KeyConditionExpression: 'conversation_id = :cid',
+        KeyConditionExpression: 'chat_id = :cid',
         ExpressionAttributeValues: { ':cid': chatId },
         Limit: 1,
       }),
