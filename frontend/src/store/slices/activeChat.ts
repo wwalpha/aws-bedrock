@@ -39,8 +39,9 @@ export const createActiveChatSlice: StateCreator<ChatbotState, [], [], ActiveCha
 
     appendChatMessage: (chatId: string, message: ChatMessage) => {
       const st = get();
-      if (st.activeChatId !== chatId) return;
-      st.setChatMessages?.((prev) => [...prev, message]);
+      if (st.activeChatId === chatId) {
+        st.setChatMessages?.((prev) => [...prev, message]);
+      }
     },
 
     // --- CRUD ---

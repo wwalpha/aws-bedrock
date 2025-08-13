@@ -48,7 +48,7 @@ const enhanced = devtools(
         profile: state.profile,
         workspaces: state.workspaces,
         selectedWorkspace: state.selectedWorkspace,
-  activeChatId: state.activeChatId,
+        activeChatId: state.activeChatId,
       }) as any,
     migrate: (persisted, _version) => persisted as ChatbotState,
   }) as any,
