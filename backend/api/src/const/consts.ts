@@ -4,7 +4,7 @@ export const Environment = {
   COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID as string,
   TABLE_NAME_USER: process.env.TABLE_NAME_USER as string,
   TABLE_NAME_CHAT_HISTORY: process.env.TABLE_NAME_CHAT_HISTORY as string,
-  TABLE_NAME_CONVERSATIONS: process.env.TABLE_NAME_CONVERSATIONS as string,
+  TABLE_NAME_CHATS: process.env.TABLE_NAME_CHATS as string, // new chats (metadata) table
   TABLE_NAME_KNOWLEDGE: process.env.TABLE_NAME_KNOWLEDGE as string,
   KNOWLEDGE_BUCKET_NAME: process.env.KNOWLEDGE_BUCKET_NAME as string,
   GLOBAL_GPT5_SECRET_NAME:

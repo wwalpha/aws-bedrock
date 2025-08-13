@@ -4,11 +4,11 @@
 resource "aws_dynamodb_table" "chat_history" {
   name         = "${local.prefix}_chat_history"
   billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "conversation_id"
+  hash_key     = "chat_id"
   range_key    = "timestamp"
 
   attribute {
-    name = "conversation_id"
+    name = "chat_id"
     type = "S"
   }
 
@@ -69,18 +69,18 @@ resource "aws_dynamodb_table" "knowledge" {
 # ----------------------------------------------------------------------------------------------
 # DynamoDB Table - Conversations (per user conversation metadata)
 # ----------------------------------------------------------------------------------------------
-resource "aws_dynamodb_table" "conversations" {
-  name         = "${local.prefix}_conversations"
+resource "aws_dynamodb_table" "chats" {
+  name         = "${local.prefix}_chats"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "user_id"
-  range_key    = "conversation_id"
+  range_key    = "chat_id"
 
   attribute {
     name = "user_id"
     type = "S"
   }
   attribute {
-    name = "conversation_id"
+    name = "chat_id"
     type = "S"
   }
 }

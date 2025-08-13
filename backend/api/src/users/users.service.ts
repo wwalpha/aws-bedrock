@@ -99,20 +99,20 @@ export class UsersService {
   }
 
   async listSessions(id: string): Promise<UserSessionSummary[]> {
-    // conversation_id is the partition key in chat_history; timestamp is sort key.
+    // chat_id is the partition key in chat_history; timestamp is sort key.
     const res = await this.ddbDoc.send(
       new QueryCommand({
         TableName: this.chatTable,
-        KeyConditionExpression: 'conversation_id = :cid',
+        KeyConditionExpression: 'chat_id = :cid',
         ExpressionAttributeValues: { ':cid': id },
-        ProjectionExpression: 'conversation_id, timestamp',
+        ProjectionExpression: 'chat_id, timestamp',
         ScanIndexForward: false,
         Limit: 50,
       }),
     );
     const items = res.Items || [];
     return items.map((it: any) => ({
-      id: it.conversation_id,
+      id: it.chat_id,
       startedAt: String(it.timestamp),
     }));
   }
