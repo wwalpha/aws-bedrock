@@ -15,8 +15,8 @@ function genId() {
 export function ChatsPanel() {
   const chats = store((s) => s.chats as Chat[]);
   const setChats = store((s) => s.setChats);
-  const selectedChat = store((s) => s.selectedChat as Chat | null);
-  const setSelectedChat = store((s) => s.setSelectedChat);
+  const activeChatId = store((s) => s.activeChatId as string | null);
+  const setActiveChatId = store((s) => s.setActiveChatId);
   const navigate = useNavigate();
 
   const [query, setQuery] = useState('');
@@ -33,7 +33,7 @@ export function ChatsPanel() {
       title: 'New Chat',
     };
     setChats((prev: Chat[]) => [newChat, ...(prev || [])]);
-    setSelectedChat(newChat);
+    setActiveChatId(newChat.id);
     navigate(`${ROUTES.WORKSPACE}/${newChat.id}`);
   };
 
@@ -55,7 +55,7 @@ export function ChatsPanel() {
         ) : (
           <ul className="space-y-1 px-1">
             {filtered.map((chat: Chat) => (
-              <ChatItem key={chat.id} chat={chat} active={selectedChat?.id === chat.id} />
+              <ChatItem key={chat.id} chat={chat} active={activeChatId === chat.id} />
             ))}
           </ul>
         )}

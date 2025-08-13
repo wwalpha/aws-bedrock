@@ -190,19 +190,31 @@ export interface PassiveChatSlice {
   setChatMessages: (v: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => void;
   chatSettings: ChatSettings;
   setChatSettings: (v: ChatSettings | ((prev: ChatSettings) => ChatSettings)) => void;
-  selectedChat: Chat | null;
-  setSelectedChat: (v: Chat | null | ((prev: Chat | null) => Chat | null)) => void;
   chatFileItems: ChatFileItem[];
   setChatFileItems: (v: ChatFileItem[] | ((prev: ChatFileItem[]) => ChatFileItem[])) => void;
 }
 
 export interface ActiveChatSlice {
-  abortController: AbortController | null;
-  setAbortController: (v: AbortController | null | ((prev: AbortController | null) => AbortController | null)) => void;
+  abortGenerate: AbortController | null;
   firstTokenReceived: boolean;
-  setFirstTokenReceived: (v: boolean | ((prev: boolean) => boolean)) => void;
   isGenerating: boolean;
+  chatsLoading: boolean;
+  chatsError: string | null;
+  chats: Chat[];
+  // 現在アクティブなチャットID (画面切替で更新)
+  activeChatId: string | null;
+
+  appendChatMessage: (chatId: string, message: ChatMessage) => void;
+  fetchChats: () => Promise<void>;
+  createChat: () => Promise<void>;
+  updateChat: (id: string, title: string) => Promise<void>;
+  deleteChat: (id: string) => Promise<void>;
+  setActiveChatId: (id: string | null) => void;
+  // activeChatId を内部利用
+  sendMessage: (content: string) => Promise<void>;
   setIsGenerating: (v: boolean | ((prev: boolean) => boolean)) => void;
+  setFirstTokenReceived: (v: boolean | ((prev: boolean) => boolean)) => void;
+  setAbortGenerate: (v: AbortController | null | ((prev: AbortController | null) => AbortController | null)) => void;
 }
 
 export interface ChatInputSlice {

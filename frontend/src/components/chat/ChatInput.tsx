@@ -15,8 +15,8 @@ export default function ChatInput() {
   const navigate = useNavigate();
   const chats = store((s: any) => s.chats as Chat[]);
   const setChats = store((s: any) => s.setChats);
-  const selectedChat = store((s: any) => s.selectedChat as Chat | null);
-  const setSelectedChat = store((s: any) => s.setSelectedChat);
+  const activeChatId = store((s: any) => s.activeChatId as string | null);
+  const setActiveChatId = store((s: any) => s.setActiveChatId);
   const userInput = store((s: any) => s.userInput as string);
   const setUserInput = store((s: any) => s.setUserInput);
   const chatMessages = store((s: any) => s.chatMessages as ChatMessage[]);
@@ -32,14 +32,26 @@ export default function ChatInput() {
   const newMessageFiles = store((s: any) => s.newMessageFiles as any[]);
   const setNewMessageFiles = store((s: any) => s.setNewMessageFiles);
 
-  const ensureChat = useCallback(() => {
-    if (selectedChat) return selectedChat;
-    const newChat: Chat = { id: genId(), title: 'New Chat' };
-    setChats((prev: Chat[]) => [newChat, ...(prev || [])]);
-    setSelectedChat(newChat);
-    navigate(`${ROUTES.WORKSPACE}/${newChat.id}`, { replace: true });
-    return newChat;
-  }, [selectedChat, setChats, setSelectedChat, navigate]);
+  const createChat = store((s: any) => s.createChat as () => Promise<void>);
+
+  const ensureChat = useCallback(async () => {
+    if (activeChatId) {
+      const found = (chats || []).find((c: Chat) => c.id === activeChatId);
+      if (found) return found;
+    }
+    // API 経由で新規チャット作成 (id は slice 内で生成)
+    await createChat();
+    // fetchChats が別途呼ばれている前提で即座に chats へ反映されない場合はローカル fallback を検討
+    // 現在は単純に最新 chats 先頭を選ぶ
+    const latest = store.getState().chats as Chat[];
+    const first = latest[0];
+    if (first) {
+      setActiveChatId(first.id);
+      navigate(`${ROUTES.WORKSPACE}/${first.id}`, { replace: true });
+      return first;
+    }
+    throw new Error('Chat creation failed');
+  }, [activeChatId, chats, createChat, setActiveChatId, navigate]);
 
   const revokeAllObjectUrls = () => {
     newMessageImages.forEach((img: any) => img.url && URL.revokeObjectURL(img.url));
@@ -61,9 +73,12 @@ export default function ChatInput() {
     if (otherFiles.length) setNewMessageFiles((prev: any[]) => [...prev, ...otherFiles]);
   };
 
+  const sliceSendMessage = store((s: any) => s.sendMessage as (content: string) => Promise<void>);
+  const setAbortGenerate = store((s: any) => s.setAbortGenerate as (v: AbortController | null) => void);
+
   const sendMessage = useCallback(
-    (text: string) => {
-      const chat = ensureChat();
+    async (text: string) => {
+      const chat = await ensureChat();
       const userMsg: ChatMessage = {
         id: genId(),
         chatId: chat.id,
@@ -79,34 +94,43 @@ export default function ChatInput() {
       revokeAllObjectUrls();
       setNewMessageImages([]);
       setNewMessageFiles([]);
-      // Simulate assistant response
+      // 実 API 呼び出し
       setIsGenerating(true);
-      timeoutRef.current = window.setTimeout(() => {
-        const assistant: ChatMessage = {
-          id: genId(),
-          chatId: chat.id,
-          role: 'assistant',
-          content: 'これはサンプル応答です。 (Placeholder response)',
-          createdAt: new Date().toISOString(),
-          imagePaths: [],
-          fileNames: [],
-        };
-        setChatMessages((prev: ChatMessage[]) => [...prev, assistant]);
+      const controller = new AbortController();
+      setAbortGenerate(controller);
+      try {
+        await sliceSendMessage(text);
+      } finally {
         setIsGenerating(false);
-      }, 800);
+        setAbortGenerate(null);
+      }
     },
-    [ensureChat, setChatMessages, setUserInput, setIsGenerating, newMessageImages, newMessageFiles]
+    [
+      ensureChat,
+      setChatMessages,
+      setUserInput,
+      setIsGenerating,
+      newMessageImages,
+      newMessageFiles,
+      sliceSendMessage,
+      setAbortGenerate,
+    ]
   );
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       if ((!userInput.trim() && newMessageImages.length === 0 && newMessageFiles.length === 0) || isGenerating) return;
-      sendMessage(userInput);
+      await sendMessage(userInput);
     }
   };
 
+  const abortGenerate = store((s: any) => s.abortGenerate as AbortController | null);
   const handleStop = () => {
+    if (abortGenerate) {
+      abortGenerate.abort();
+      setAbortGenerate(null);
+    }
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;

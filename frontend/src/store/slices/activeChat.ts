@@ -1,6 +1,7 @@
 import type { StateCreator } from 'zustand';
-import type { Chat, ChatSlice, ChatbotState, ChatMessage } from 'typings';
+import type { ChatbotState, ChatMessage, ActiveChatSlice } from 'typings';
 import type { SliceSet } from 'typings/slice';
+
 import { API_ENDPOINTS } from '@/lib/api/endpoints';
 import { apiClient } from '@/lib/api/client';
 import type {
@@ -13,65 +14,70 @@ import type {
   ChatMessageRequest,
   ChatMessageResponse,
 } from 'typings/api-client';
+
 import { withLoadingErrorCurried } from '@/store/utils';
 import { uuidv4 } from '@/lib/uuid';
 
-export const createChatSlice: StateCreator<ChatbotState, [], [], ChatSlice> = (
+// --- Active Chat Composite Slice ---
+// Chat 一覧/CRUD + 生成中状態 (abortController, firstTokenReceived, isGenerating) を統合
+export const createActiveChatSlice: StateCreator<ChatbotState, [], [], ActiveChatSlice> = (
   set: SliceSet<ChatbotState>,
   get: () => ChatbotState
 ) => {
   // --- Chat API 共通ラッパ ---
-  // withChatApi: chatsLoading/chatsErrorを自動制御
-  // 例: fetchChats: withChatApi(async () => {...})
   const withChatApi = withLoadingErrorCurried(set, 'chatsLoading', 'chatsError');
 
-  // --- Chat Slice: チャット一覧・作成・更新・削除 ---
   return {
+    // --- Chat Entity State ---
     chatsLoading: false,
     chatsError: null,
     chats: [],
-    // chatMessagesMap: (B 方針) 現状未使用。PassiveChatSlice.chatMessages を唯一のソースとするため保持のみ。
-    chatMessagesMap: {},
     activeChatId: null,
 
+    // --- Select / Append ---
     setActiveChatId: (id: string | null) => set(() => ({ activeChatId: id })),
 
-    // (B 方針) マルチチャットマップを使わず、選択中チャットのみ PassiveChatSlice.chatMessages に追加
     appendChatMessage: (chatId: string, message: ChatMessage) => {
       const st = get();
       if (st.activeChatId !== chatId) return;
       st.setChatMessages?.((prev) => [...prev, message]);
     },
 
-    // 一覧取得: chatsに必ず保管
+    // --- CRUD ---
     fetchChats: withChatApi(async () => {
       const res = await apiClient.get<ChatListResponse>(API_ENDPOINTS.CHATS);
       const items = res?.data?.items ?? [];
       set(() => ({ chats: items }));
     }),
 
-    // 作成: ChatSlice型 (引数なし) に合わせてラップ
     createChat: withChatApi(async () => {
-      // ChatCreateRequest: idのみ
       const chatReq: ChatCreateRequest = { id: uuidv4() };
       await apiClient.post<ChatCreateResponse, ChatCreateRequest>(API_ENDPOINTS.CHATS, chatReq);
     }),
 
-    // 更新: ChatSlice型 (id, title) に合わせてラップ
     updateChat: withChatApi(async (id: string, title: string) => {
       const req: ChatUpdateRequest = { id, title };
       await apiClient.put<ChatUpdateResponse, ChatUpdateRequest>(`${API_ENDPOINTS.CHATS}/${id}`, req);
     }),
 
-    // 削除: ChatDeleteResponse型、status 200のみslice更新
     deleteChat: withChatApi(async (id: string) => {
       await apiClient.delete<ChatDeleteResponse>(`${API_ENDPOINTS.CHATS}/${id}`);
+      // ローカル state から除去 & activeChatId の再計算
+      set((s: any) => {
+        const remaining = (s.chats || []).filter((c: any) => c.id !== id);
+        const wasActive = s.activeChatId === id;
+        return {
+          chats: remaining,
+          activeChatId: wasActive ? (remaining.length ? remaining[0].id : null) : s.activeChatId,
+        };
+      });
     }),
 
-    // メッセージ送信: 成功時のみ chatMessagesByChatId に追加
+    // --- Messaging ---
     sendMessage: withChatApi(async (content: string) => {
       const chatId = get().activeChatId;
-      if (!chatId) return; // アクティブなしなら何もしない
+      if (!chatId) return;
+
       const req: ChatMessageRequest = { chatId, content };
       const res = await apiClient.post<ChatMessageResponse, ChatMessageRequest>(
         `${API_ENDPOINTS.CHATS}/${chatId}/messages`,
@@ -92,5 +98,18 @@ export const createChatSlice: StateCreator<ChatbotState, [], [], ChatSlice> = (
         st.setChatMessages?.((prev) => [...prev, appended]);
       }
     }),
+
+    // --- Generation State ---
+    abortGenerate: null,
+    setAbortGenerate: (v: AbortController | null | ((prev: AbortController | null) => AbortController | null)) =>
+      set((s) => ({ abortGenerate: typeof v === 'function' ? (v as any)(s.abortGenerate) : v })),
+
+    firstTokenReceived: false,
+    setFirstTokenReceived: (v: boolean | ((prev: boolean) => boolean)) =>
+      set((s) => ({ firstTokenReceived: typeof v === 'function' ? (v as any)(s.firstTokenReceived) : v })),
+
+    isGenerating: false,
+    setIsGenerating: (v: boolean | ((prev: boolean) => boolean)) =>
+      set((s) => ({ isGenerating: typeof v === 'function' ? (v as any)(s.isGenerating) : v })),
   };
 };

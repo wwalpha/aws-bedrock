@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { useStore } from 'zustand';
 import { persist, createJSONStorage, devtools } from 'zustand/middleware';
 import type { ChatbotState } from 'typings';
-import { createChatSlice } from './slices/chat';
 import { attachStoreAccessor } from '@/lib/api/client';
 import { createAppSlice } from './slices/app';
 import { createProfileSlice } from './slices/profile';
@@ -11,8 +10,8 @@ import { createModelsSlice } from './slices/models';
 import { createWorkspaceSlice } from './slices/workspace';
 import { createPresetSlice } from './slices/preset';
 import { createAssistantSlice } from './slices/assistant';
-import { createPassiveChatSlice } from './slices/passive-chat';
-import { createActiveChatSlice } from './slices/active-chat';
+import { createPassiveChatSlice } from './slices/passiveChat';
+import { createActiveChatSlice } from './slices/activeChat';
 import { createChatInputSlice } from './slices/chat-input';
 import { createAttachmentsSlice } from './slices/attachments';
 import { createRetrievalSlice } from './slices/retrieval';
@@ -22,7 +21,6 @@ import { createToolsSlice } from './slices/tools';
 const createRootState = (set: any, get: any, api: any): ChatbotState => ({
   ...createProfileSlice(set, get, api),
   ...createItemsSlice(set, get, api),
-  ...createChatSlice(set, get, api),
   ...createModelsSlice(set, get, api),
   ...createWorkspaceSlice(set, get, api),
   ...createPresetSlice(set, get, api),
@@ -45,12 +43,12 @@ const enhanced = devtools(
     partialize: (state: ChatbotState) =>
       ({
         chats: state.chats,
-        selectedChat: state.selectedChat,
         presets: state.presets,
         selectedPreset: state.selectedPreset,
         profile: state.profile,
         workspaces: state.workspaces,
         selectedWorkspace: state.selectedWorkspace,
+  activeChatId: state.activeChatId,
       }) as any,
     migrate: (persisted, _version) => persisted as ChatbotState,
   }) as any,

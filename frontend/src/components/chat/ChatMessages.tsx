@@ -4,13 +4,13 @@ import type { ChatMessage } from 'typings';
 import { ChatMessageItem } from './ChatMessageItem';
 
 export default function ChatMessages() {
-  const selectedChat = store((s: any) => s.selectedChat);
+  const activeChatId = store((s: any) => s.activeChatId as string | null);
   const messages = store((s: any) => s.chatMessages as ChatMessage[]);
   const listRef = useRef<HTMLDivElement | null>(null);
 
   const chatMessages = useMemo(
-    () => (selectedChat ? messages.filter((m) => m.chatId === selectedChat.id) : []),
-    [messages, selectedChat]
+    () => (activeChatId ? messages.filter((m) => m.chatId === activeChatId) : []),
+    [messages, activeChatId]
   );
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function ChatMessages() {
     }
   }, [chatMessages.length]);
 
-  if (!selectedChat) {
+  if (!activeChatId) {
     return (
       <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
         Start a new chat to begin.

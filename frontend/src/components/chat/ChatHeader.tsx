@@ -5,7 +5,12 @@ import { Settings2, LogOut } from 'lucide-react';
 import { ModelSettings } from './ModelSettings';
 
 export default function ChatHeader() {
-  const selectedChat = store((s: any) => s.selectedChat);
+  const currentChat = store((s: any) => {
+    const id = s.activeChatId as string | null;
+    if (!id) return null;
+    // chats を直接配列ごと返さず単一要素に限定し再レンダー最小化
+    return (s.chats as { id: string; title?: string }[] | undefined)?.find((c) => c.id === id) || null;
+  });
   const [open, setOpen] = useState(false);
   const chatSettings = store((s: any) => s.chatSettings);
   const models = store((s: any) => s.availableHostedModels as any[]);
@@ -19,7 +24,7 @@ export default function ChatHeader() {
     <div className="flex items-center justify-between border-b pb-2 gap-4">
       <div className="min-w-0 flex-1 truncate">
         <div className="flex items-center gap-3 min-w-0">
-          <span className="truncate font-semibold text-sm md:text-base">{selectedChat?.name || 'New Chat'}</span>
+          <span className="truncate font-semibold text-sm md:text-base">{currentChat?.title || 'New Chat'}</span>
           {currentModelLabel && (
             <span
               className="hidden md:inline-flex items-center rounded border px-2 py-0.5 text-[11px] leading-4 text-muted-foreground bg-background/40 max-w-[180px] truncate"

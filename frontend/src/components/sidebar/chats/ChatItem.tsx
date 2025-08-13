@@ -15,7 +15,8 @@ interface ChatItemProps {
 }
 
 export const ChatItem: FC<ChatItemProps> = ({ chat, active }) => {
-  const setSelectedChat = store((s: any) => s.setSelectedChat);
+  const activeChatId = store((s: any) => s.activeChatId as string | null);
+  const setActiveChatId = store((s: any) => s.setActiveChatId);
   const setChats = store((s: any) => s.setChats);
   const navigate = useNavigate();
 
@@ -24,7 +25,7 @@ export const ChatItem: FC<ChatItemProps> = ({ chat, active }) => {
   const [title, setTitle] = useState(chat.title || '');
 
   const handleOpen = () => {
-    setSelectedChat(chat);
+    setActiveChatId(chat.id);
     navigate(`${ROUTES.WORKSPACE}/${chat.id}`);
   };
   const handleRename = () => {
@@ -32,25 +33,18 @@ export const ChatItem: FC<ChatItemProps> = ({ chat, active }) => {
     setRenameOpen(false);
   };
   const handleDelete = () => {
-    setChats((prev: Chat[]) => {
-      const next = prev.filter((c: Chat) => c.id !== chat.id);
-      return next;
-    });
-    // If this was the selected chat, clear selection and navigate to fallback
-    setSelectedChat((prev: Chat | null) => {
-      if (prev?.id === chat.id) {
-        const remaining = (store.getState().chats as Chat[]).filter((c) => c.id !== chat.id);
-        if (remaining.length) {
-          const first = remaining[0];
-          navigate(`${ROUTES.WORKSPACE}/${first.id}`, { replace: true });
-          return first;
-        } else {
-          navigate(ROUTES.WORKSPACE, { replace: true });
-          return null;
-        }
+    setChats((prev: Chat[]) => prev.filter((c: Chat) => c.id !== chat.id));
+    if (activeChatId === chat.id) {
+      const remaining = (store.getState().chats as Chat[]).filter((c) => c.id !== chat.id);
+      if (remaining.length) {
+        const first = remaining[0];
+        setActiveChatId(first.id);
+        navigate(`${ROUTES.WORKSPACE}/${first.id}`, { replace: true });
+      } else {
+        setActiveChatId(null);
+        navigate(ROUTES.WORKSPACE, { replace: true });
       }
-      return prev;
-    });
+    }
     setDeleteOpen(false);
   };
 
