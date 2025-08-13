@@ -1,10 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import type { Chat, Preset, Workspace, Assistant, Prompt, Collection, Tool, ModelRef, ChatMessage } from 'typings';
+import type { Preset, Workspace, Assistant, Prompt, Collection, Tool, ModelRef, ChatMessage } from 'typings';
 import type {
   ApiResult,
   ApiRequestConfig,
-  CreateChatPayload,
-  UpdateChatPayload,
   CreatePresetPayload,
   UpdatePresetPayload,
   CreateWorkspacePayload,

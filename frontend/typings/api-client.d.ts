@@ -1,5 +1,5 @@
 import type { AxiosRequestConfig } from 'axios';
-import type { Chat } from '.';
+import type { Conversation } from '.';
 
 // 共通 API 型定義
 export type ApiRequestConfig<T = unknown> = AxiosRequestConfig<T>;
@@ -15,19 +15,19 @@ export interface ApiFailure {
 }
 export type ApiResult<T> = Promise<ApiSuccess<T> | ApiFailure>;
 
-// チャット関連
-export interface CreateChatPayload {
+// 会話(Conversation)関連
+export interface CreateConversationPayload {
   name: string;
 }
-export interface UpdateChatPayload {
+export interface UpdateConversationPayload {
   name?: string;
 }
-export interface ChatListResponse {
-  items: Chat[]; // if backend returns plain array, adjust slice mapping
+export interface ConversationListResponse {
+  items: Conversation[]; // if backend returns plain array, adjust slice mapping
 }
-export interface ChatCreateResponse extends Chat {}
-export interface ChatUpdateResponse extends Chat {}
-export interface ChatDeleteResponse {
+export interface ConversationCreateResponse extends Conversation {}
+export interface ConversationUpdateResponse extends Conversation {}
+export interface ConversationDeleteResponse {
   id: string;
 }
 

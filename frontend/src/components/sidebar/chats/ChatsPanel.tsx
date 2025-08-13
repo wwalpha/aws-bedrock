@@ -6,16 +6,16 @@ import { Plus, Search } from 'lucide-react';
 import { ChatItem } from './ChatItem.tsx';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/lib/routes';
-import type { Chat } from 'typings';
+import type { Conversation } from 'typings';
 
 function genId() {
   return (Date.now().toString(36) + Math.random().toString(36).slice(2, 8)).toLowerCase();
 }
 
 export function ChatsPanel() {
-  const chats = store((s: any) => s.chats as Chat[]);
+  const chats = store((s: any) => s.chats as Conversation[]);
   const setChats = store((s: any) => s.setChats);
-  const selectedChat = store((s: any) => s.selectedChat as Chat | null);
+  const selectedChat = store((s: any) => s.selectedChat as Conversation | null);
   const setSelectedChat = store((s: any) => s.setSelectedChat);
   const navigate = useNavigate();
 
@@ -28,12 +28,12 @@ export function ChatsPanel() {
   }, [query, chats]);
 
   const handleCreate = () => {
-    const newChat: Chat = {
+    const newChat: Conversation = {
       id: genId(),
       name: 'New Chat',
       createdAt: new Date().toISOString(),
     };
-    setChats((prev: Chat[]) => [newChat, ...(prev || [])]);
+    setChats((prev: Conversation[]) => [newChat, ...(prev || [])]);
     setSelectedChat(newChat);
     navigate(`${ROUTES.WORKSPACE}/${newChat.id}`);
   };
@@ -55,7 +55,7 @@ export function ChatsPanel() {
           <div className="text-xs text-muted-foreground px-1 py-2">No chats yet</div>
         ) : (
           <ul className="space-y-1 px-1">
-            {filtered.map((chat: Chat) => (
+            {filtered.map((chat: Conversation) => (
               <ChatItem key={chat.id} chat={chat} active={selectedChat?.id === chat.id} />
             ))}
           </ul>

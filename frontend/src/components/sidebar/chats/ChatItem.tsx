@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Pencil, Trash2 } from 'lucide-react';
-import type { Chat } from 'typings';
+import type { Conversation } from 'typings';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/lib/routes';
 
 interface ChatItemProps {
-  chat: Chat;
+  chat: Conversation;
   active?: boolean;
 }
 
@@ -28,20 +28,20 @@ export const ChatItem: FC<ChatItemProps> = ({ chat, active }) => {
     navigate(`${ROUTES.WORKSPACE}/${chat.id}`);
   };
   const handleRename = () => {
-    setChats((prev: Chat[]) =>
-      prev.map((c: Chat) => (c.id === chat.id ? { ...c, name, updatedAt: new Date().toISOString() } : c))
+    setChats((prev: Conversation[]) =>
+      prev.map((c: Conversation) => (c.id === chat.id ? { ...c, name, updatedAt: new Date().toISOString() } : c))
     );
     setRenameOpen(false);
   };
   const handleDelete = () => {
-    setChats((prev: Chat[]) => {
-      const next = prev.filter((c: Chat) => c.id !== chat.id);
+    setChats((prev: Conversation[]) => {
+      const next = prev.filter((c: Conversation) => c.id !== chat.id);
       return next;
     });
     // If this was the selected chat, clear selection and navigate to fallback
-    setSelectedChat((prev: Chat | null) => {
+    setSelectedChat((prev: Conversation | null) => {
       if (prev?.id === chat.id) {
-        const remaining = (store.getState().chats as Chat[]).filter((c) => c.id !== chat.id);
+        const remaining = (store.getState().chats as Conversation[]).filter((c) => c.id !== chat.id);
         if (remaining.length) {
           const first = remaining[0];
           navigate(`${ROUTES.WORKSPACE}/${first.id}`, { replace: true });

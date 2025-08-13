@@ -2,8 +2,9 @@ import { create } from 'zustand';
 import { useStore } from 'zustand';
 import { persist, createJSONStorage, devtools } from 'zustand/middleware';
 import type { ChatbotState } from 'typings';
-import { createAppSlice } from './slices/app';
+import { createChatSlice } from './slices/chat';
 import { attachStoreAccessor } from '@/lib/api/client';
+import { createAppSlice } from './slices/app';
 import { createProfileSlice } from './slices/profile';
 import { createItemsSlice } from './slices/items';
 import { createModelsSlice } from './slices/models';
@@ -16,7 +17,6 @@ import { createChatInputSlice } from './slices/chat-input';
 import { createAttachmentsSlice } from './slices/attachments';
 import { createRetrievalSlice } from './slices/retrieval';
 import { createToolsSlice } from './slices/tools';
-import { createChatSlice } from './slices/chat';
 
 // State creator (全 slice 結合) — devtools/persist の middleware 連鎖前提
 const createRootState = (set: any, get: any, api: any): ChatbotState => ({

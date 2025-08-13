@@ -14,11 +14,6 @@
 - 文字列パスはハードコード禁止。`API_ENDPOINTS` 定数を必ず使用。
 - client 内で store を直接 import しない。循環参照回避のため `attachStoreAccessor` で遅延参照。
 
-## 3. Chat Slice (`chat.ts`)
-
-- 責務: チャットグループ CRUD とローディング/エラーフラグ (`chatsLoading`, `chatsError`)。
-- メソッド: `fetchChats`, `createChat`, `updateChat`, `deleteChat`。
-
 ## 4. Auth Slice (`app.ts`)
 
 - 保持するもの: `idToken`, `accessToken`, `refreshToken`, `isLoggined`。
