@@ -69,8 +69,8 @@ resource "aws_dynamodb_table" "knowledge" {
 # ----------------------------------------------------------------------------------------------
 # DynamoDB Table - Conversations (per user conversation metadata)
 # ----------------------------------------------------------------------------------------------
-resource "aws_dynamodb_table" "conversations" {
-  name         = "${local.prefix}_conversations"
+resource "aws_dynamodb_table" "chats" {
+  name         = "${local.prefix}_chats"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "user_id"
   range_key    = "chat_id"
