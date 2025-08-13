@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ROUTES } from '@/lib/routes';
 import { Button } from '@/components/ui/button';
@@ -15,13 +15,18 @@ export default function Login() {
   const doLogin = useChatStore((s) => s.login);
   const isLoggined = useChatStore((s) => s.isLoggined);
 
+  // ログイン成功を監視して画面遷移（最新 state を確実に拾う）
+  useEffect(() => {
+    if (isLoggined) {
+      navigate(ROUTES.WORKSPACE);
+    }
+  }, [isLoggined, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     try {
-      await doLogin(email, password);
-      // login 内でエラー throw しない想定: 成功で isLoggined true
-      if (isLoggined) navigate(ROUTES.WORKSPACE);
+      await doLogin(email, password); // 成功時は isLoggined -> true => 上記 useEffect で遷移
     } catch (err: any) {
       setError(err?.message || 'Login failed');
     }

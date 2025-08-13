@@ -1,4 +1,5 @@
 // Simplified local typings for SPA (no external deps)
+import type { ApiResult } from './api-client';
 
 // LoginRequest / LoginResponse moved to auth.d.ts
 
@@ -60,6 +61,15 @@ export interface ItemsSlice {
   setTools: (v: Tool[] | ((prev: Tool[]) => Tool[])) => void;
   workspaces: Workspace[];
   setWorkspaces: (v: Workspace[] | ((prev: Workspace[]) => Workspace[])) => void;
+}
+
+export interface ChatOpsSlice {
+  fetchChats: () => ApiResult<Chat[]>;
+  createChat: (name: string) => ApiResult<Chat>;
+  updateChat: (id: string, patch: { name?: string }) => ApiResult<Chat>;
+  deleteChat: (id: string) => ApiResult<{ id: string }>;
+  chatsLoading: boolean;
+  chatsError: string | null;
 }
 
 export interface Collection {
@@ -279,6 +289,7 @@ export interface AppSlice {
 
 export type ChatbotState = ProfileSlice &
   ItemsSlice &
+  ChatOpsSlice &
   ModelsSlice &
   WorkspaceSlice &
   PresetSlice &

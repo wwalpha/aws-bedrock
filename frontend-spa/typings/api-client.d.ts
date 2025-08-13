@@ -1,4 +1,5 @@
 import type { AxiosRequestConfig } from 'axios';
+import type { Chat } from '.';
 
 // 共通 API 型定義
 export type ApiRequestConfig<T = unknown> = AxiosRequestConfig<T>;
@@ -14,19 +15,20 @@ export interface ApiFailure {
 }
 export type ApiResult<T> = Promise<ApiSuccess<T> | ApiFailure>;
 
-// 認証
-export interface LoginPayload {
-  username: string;
-  password: string;
-}
-// LoginResponse は既存 (index.d.ts) で定義済み
-
 // チャット関連
 export interface CreateChatPayload {
   name: string;
 }
 export interface UpdateChatPayload {
   name?: string;
+}
+export interface ChatListResponse {
+  items: Chat[]; // if backend returns plain array, adjust slice mapping
+}
+export interface ChatCreateResponse extends Chat {}
+export interface ChatUpdateResponse extends Chat {}
+export interface ChatDeleteResponse {
+  id: string;
 }
 
 // プリセット

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { useStore } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist, createJSONStorage, devtools } from 'zustand/middleware';
 import type { ChatbotState } from 'typings';
 import { createAppSlice } from './slices/app';
 import { attachStoreAccessor } from '@/lib/api/client';
@@ -16,29 +16,34 @@ import { createChatInputSlice } from './slices/chat-input';
 import { createAttachmentsSlice } from './slices/attachments';
 import { createRetrievalSlice } from './slices/retrieval';
 import { createToolsSlice } from './slices/tools';
+import { createChatSlice } from './slices/chat';
 
-export const store = create<ChatbotState>()(
-  persist(
-    (set, get, api) => ({
-      ...createProfileSlice(set, get, api),
-      ...createItemsSlice(set, get, api),
-      ...createModelsSlice(set, get, api),
-      ...createWorkspaceSlice(set, get, api),
-      ...createPresetSlice(set, get, api),
-      ...createAssistantSlice(set, get, api),
-      ...createPassiveChatSlice(set, get, api),
-      ...createActiveChatSlice(set, get, api),
-      ...createChatInputSlice(set, get, api),
-      ...createAttachmentsSlice(set, get, api),
-      ...createRetrievalSlice(set, get, api),
-      ...createToolsSlice(set, get, api),
-      ...createAppSlice(set, get, api),
-    }),
-    {
-      name: 'chatbot-store',
-      version: 1,
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
+// State creator (全 slice 結合) — devtools/persist の middleware 連鎖前提
+const createRootState = (set: any, get: any, api: any): ChatbotState => ({
+  ...createProfileSlice(set, get, api),
+  ...createItemsSlice(set, get, api),
+  ...createChatSlice(set, get, api),
+  ...createModelsSlice(set, get, api),
+  ...createWorkspaceSlice(set, get, api),
+  ...createPresetSlice(set, get, api),
+  ...createAssistantSlice(set, get, api),
+  ...createPassiveChatSlice(set, get, api),
+  ...createActiveChatSlice(set, get, api),
+  ...createChatInputSlice(set, get, api),
+  ...createAttachmentsSlice(set, get, api),
+  ...createRetrievalSlice(set, get, api),
+  ...createToolsSlice(set, get, api),
+  ...createAppSlice(set, get, api),
+});
+
+// persist -> devtools の順で wrap (rehydrate も action として検知可能)
+const enhanced = devtools(
+  persist<ChatbotState>(createRootState as any, {
+    name: 'chatbot-store',
+    version: 1,
+    storage: createJSONStorage(() => localStorage),
+    partialize: (state: ChatbotState) =>
+      ({
         chats: state.chats,
         selectedChat: state.selectedChat,
         presets: state.presets,
@@ -46,13 +51,13 @@ export const store = create<ChatbotState>()(
         profile: state.profile,
         workspaces: state.workspaces,
         selectedWorkspace: state.selectedWorkspace,
-      }),
-      migrate: (persisted, version) => {
-        return persisted as ChatbotState;
-      },
-    }
-  )
+      }) as any,
+    migrate: (persisted, _version) => persisted as ChatbotState,
+  }) as any,
+  { name: 'chatbot-store', enabled: import.meta.env.DEV }
 );
+
+export const store = create<ChatbotState>()(enhanced as any);
 
 // Register lightweight accessor for api client (avoid direct import of store inside client file)
 attachStoreAccessor(() => {
