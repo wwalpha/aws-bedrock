@@ -26,7 +26,7 @@ export class ModelsController {
   // POST /models/select 使用モデル切替 { id }
   @Post('select')
   select(@Body() body: SelectModelRequest) {
-    return this.models.select(body?.id);
+    return this.models.select(body);
   }
 
   // POST /models/parameters モデルパラメータ更新 { id?, parameters }

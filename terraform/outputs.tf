@@ -91,3 +91,11 @@ output "frontend_cloudfront_id" {
   value       = aws_cloudfront_distribution.frontend.id
 }
 
+# ----------------------------------------------------------------------------------------------
+# Output - Model API Keys Secret Name
+# ----------------------------------------------------------------------------------------------
+output "model_api_keys_secret_name" {
+  description = "Secrets Manager base secret name for model API keys"
+  value       = aws_secretsmanager_secret.model_api_keys.name
+}
+

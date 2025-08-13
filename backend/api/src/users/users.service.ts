@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
   DynamoDBDocumentClient,
@@ -10,7 +15,10 @@ import {
   UserProfile,
   UserSessionSummary,
   UpdateUserRequest,
+  UpdateUserModelRequest,
 } from './users.interfaces';
+import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 
 // 簡易実装: 実データストア未連携のため、インメモリで擬似データを扱う
 @Injectable()
@@ -18,6 +26,7 @@ export class UsersService {
   private readonly ddbDoc: DynamoDBDocumentClient;
   private readonly userTable: string;
   private readonly chatTable: string;
+  private readonly secrets: SecretsManagerClient;
 
   constructor() {
     const ddb = new DynamoDBClient({ region: Environment.AWS_REGION });
@@ -27,6 +36,7 @@ export class UsersService {
     // Expect table names from env. Fallback to Terraform naming convention if present.
     this.userTable = Environment.TABLE_NAME_USER;
     this.chatTable = Environment.TABLE_NAME_CHAT_HISTORY;
+    this.secrets = new SecretsManagerClient({ region: Environment.AWS_REGION });
   }
 
   async getUser(id: string): Promise<UserProfile> {
@@ -43,6 +53,8 @@ export class UsersService {
       email: item.email,
       name: item.name,
       avatarUrl: item.avatarUrl,
+      modelId: item.modelId,
+      // no per-user key now
     };
   }
 
@@ -53,6 +65,31 @@ export class UsersService {
     const next = { ...current, ...dto };
     this.users.set(id, next);
     return next;
+  }
+
+  async updateSelectedModel(req: UpdateUserModelRequest) {
+    if (!req?.userId || !req?.modelId) {
+      throw new BadRequestException('userId and modelId are required');
+    }
+    // Persist modelId only (API keys are global now)
+    const updateExpressions: string[] = [];
+    const names: Record<string, string> = {};
+    const values: Record<string, any> = {};
+    updateExpressions.push('#m = :m');
+    names['#m'] = 'modelId';
+    values[':m'] = req.modelId;
+    // No per-user secret creation
+    const UpdateExpression = 'SET ' + updateExpressions.join(', ');
+    await this.ddbDoc.send(
+      new UpdateCommand({
+        TableName: this.userTable,
+        Key: { user_id: req.userId },
+        UpdateExpression,
+        ExpressionAttributeNames: names,
+        ExpressionAttributeValues: values,
+      }),
+    );
+    return { userId: req.userId, modelId: req.modelId };
   }
 
   deleteUser(id: string): { message: string } {
