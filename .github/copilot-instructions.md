@@ -101,6 +101,12 @@
 - 非同期処理は必ず async/await 構文で記述する。
 - 例外処理は try/catch で行い、catch 節の型は unknown で受ける。
 
+### any 型禁止 (New)
+
+- `any` の利用は禁止。既存 `any` は段階的に排除し、`unknown` もしくは適切な型/ジェネリクスを付与する。
+- 外部ライブラリ由来など即時型付けが困難な場合は最小限のラッパ型 (interface / type) を定義し置き換える。
+- やむを得ず一時的に `any` を残す場合は 1 行コメントで削除予定理由と期限 (例: `// TODO(any): <理由> - <日付>`) を明記し、PR マージ前に基本解消する。
+
 ## 6. 永続化戦略 (Persistence Strategy)
 
 - 永続化対象: `chats`, `selectedChat`, `presets`, `selectedPreset`, `profile`, `workspaces`, `selectedWorkspace`。
