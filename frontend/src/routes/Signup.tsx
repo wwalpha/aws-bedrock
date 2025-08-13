@@ -5,30 +5,34 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { useChatStore } from '@/store';
 
+// --- Signup Route: アカウント新規作成フォーム ---
+// 役割:
+// - ユーザー入力を受け取り signup アクションを呼び出す
+// - 成否メッセージは slice 側 (authMessage) に委譲し UI は参照のみ
+// - ローカルでは入力値と一時的なパスワード一致チェックのみ管理
 export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState('');
+  // ローカルメッセージは使用せず、slice管理の authMessage を表示する運用
   const navigate = useNavigate();
   const signup = useChatStore((s) => s.signup);
+  // フォーム送信: パスワード一致チェック後に signup を実行
+  // 成功/失敗メッセージは slice (authMessage) が設定するためここでは直接設定しない
   const authLoading = useChatStore((s) => s.authLoading);
   const authMessage = useChatStore((s) => s.authMessage);
 
+  // シンプルなクライアントサイド検証 (slice に載せるほどのビジネスロジックではない)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage('');
-    try {
-      if (password !== confirmPassword) {
-        setMessage('Passwords do not match');
-        return;
-      }
-      await signup(email, password);
-      setMessage('Account created. Please check your email for the verification code.');
-      navigate(ROUTES.VERIFY, { state: { username: email } });
-    } catch (e: any) {
-      setMessage(e?.message || 'Sign up failed');
+
+    if (password !== confirmPassword) {
+      return;
     }
+
+    await signup(email, password);
+
+    navigate(ROUTES.VERIFY, { state: { username: email } });
   };
 
   return (
@@ -64,12 +68,12 @@ export default function Signup() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
+
             <Button type="submit" className="w-full" disabled={authLoading}>
               {authLoading ? 'Creating…' : 'Create account'}
             </Button>
           </form>
-          {!!message && <p className="mt-3 text-sm">{message}</p>}
-          {!!authMessage && <p className="mt-2 text-xs text-blue-600">{authMessage}</p>}
+          {!!authMessage && <p className="mt-3 text-sm text-blue-600">{authMessage}</p>}
           <p className="mt-4 text-center text-sm">
             Already have an account?{' '}
             <Link className="underline" to={ROUTES.LOGIN}>

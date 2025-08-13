@@ -21,16 +21,14 @@ export const ChatItem: FC<ChatItemProps> = ({ chat, active }) => {
 
   const [renameOpen, setRenameOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [name, setName] = useState(chat.name || '');
+  const [title, setTitle] = useState(chat.title || '');
 
   const handleOpen = () => {
     setSelectedChat(chat);
     navigate(`${ROUTES.WORKSPACE}/${chat.id}`);
   };
   const handleRename = () => {
-    setChats((prev: Chat[]) =>
-      prev.map((c: Chat) => (c.id === chat.id ? { ...c, name, updatedAt: new Date().toISOString() } : c))
-    );
+    setChats((prev: Chat[]) => prev.map((c: Chat) => (c.id === chat.id ? { ...c, title } : c)));
     setRenameOpen(false);
   };
   const handleDelete = () => {
@@ -64,7 +62,7 @@ export const ChatItem: FC<ChatItemProps> = ({ chat, active }) => {
       )}
       onClick={handleOpen}
     >
-      <div className="truncate">{chat.name || 'Untitled'}</div>
+      <div className="truncate">{chat.title || 'Untitled'}</div>
       <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
         <Button
           size="icon"
@@ -95,7 +93,7 @@ export const ChatItem: FC<ChatItemProps> = ({ chat, active }) => {
           <DialogHeader>
             <DialogTitle>Rename chat</DialogTitle>
           </DialogHeader>
-          <Input value={name} onChange={(e) => setName(e.target.value)} autoFocus />
+          <Input value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
           <DialogFooter>
             <Button variant="ghost" onClick={() => setRenameOpen(false)}>
               Cancel
@@ -110,7 +108,7 @@ export const ChatItem: FC<ChatItemProps> = ({ chat, active }) => {
           <DialogHeader>
             <DialogTitle>Delete chat</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">Are you sure you want to delete “{chat.name}”?</p>
+          <p className="text-sm text-muted-foreground">Are you sure you want to delete “{chat.title}”?</p>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setDeleteOpen(false)}>
               Cancel

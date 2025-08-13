@@ -1,5 +1,5 @@
 import type { StateCreator } from 'zustand';
-import type { Chat, ChatSlice, ChatbotState } from 'typings';
+import type { Chat, ChatSlice, ChatbotState, ChatMessage } from 'typings';
 import type { SliceSet } from 'typings/slice';
 import { API_ENDPOINTS } from '@/lib/api/endpoints';
 import { apiClient } from '@/lib/api/client';
@@ -10,6 +10,8 @@ import type {
   ChatUpdateRequest,
   ChatUpdateResponse,
   ChatDeleteResponse,
+  ChatMessageRequest,
+  ChatMessageResponse,
 } from 'typings/api-client';
 import { withLoadingErrorCurried } from '@/store/utils';
 import { uuidv4 } from '@/lib/uuid';
@@ -28,13 +30,24 @@ export const createChatSlice: StateCreator<ChatbotState, [], [], ChatSlice> = (
     chatsLoading: false,
     chatsError: null,
     chats: [],
+    // chatMessagesMap: (B 方針) 現状未使用。PassiveChatSlice.chatMessages を唯一のソースとするため保持のみ。
+    chatMessagesMap: {},
+    activeChatId: null,
+
+    setActiveChatId: (id: string | null) => set(() => ({ activeChatId: id })),
+
+    // (B 方針) マルチチャットマップを使わず、選択中チャットのみ PassiveChatSlice.chatMessages に追加
+    appendChatMessage: (chatId: string, message: ChatMessage) => {
+      const st = get();
+      if (st.activeChatId !== chatId) return;
+      st.setChatMessages?.((prev) => [...prev, message]);
+    },
 
     // 一覧取得: chatsに必ず保管
     fetchChats: withChatApi(async () => {
       const res = await apiClient.get<ChatListResponse>(API_ENDPOINTS.CHATS);
       const items = res?.data?.items ?? [];
       set(() => ({ chats: items }));
-      return;
     }),
 
     // 作成: ChatSlice型 (引数なし) に合わせてラップ
@@ -53,6 +66,31 @@ export const createChatSlice: StateCreator<ChatbotState, [], [], ChatSlice> = (
     // 削除: ChatDeleteResponse型、status 200のみslice更新
     deleteChat: withChatApi(async (id: string) => {
       await apiClient.delete<ChatDeleteResponse>(`${API_ENDPOINTS.CHATS}/${id}`);
+    }),
+
+    // メッセージ送信: 成功時のみ chatMessagesByChatId に追加
+    sendMessage: withChatApi(async (content: string) => {
+      const chatId = get().activeChatId;
+      if (!chatId) return; // アクティブなしなら何もしない
+      const req: ChatMessageRequest = { chatId, content };
+      const res = await apiClient.post<ChatMessageResponse, ChatMessageRequest>(
+        `${API_ENDPOINTS.CHATS}/${chatId}/messages`,
+        req
+      );
+      const data = res?.data;
+      if (!data) return;
+
+      const appended: ChatMessage = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        chatId: data.chatId,
+        role: 'assistant',
+        content: data.content,
+        createdAt: new Date().toISOString(),
+      };
+      const st = get();
+      if (st.activeChatId === chatId) {
+        st.setChatMessages?.((prev) => [...prev, appended]);
+      }
     }),
   };
 };

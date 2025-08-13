@@ -62,13 +62,18 @@ export interface ItemsSlice {
 }
 
 export interface ChatSlice {
+  chatsLoading: boolean;
+  chatsError: string | null;
+  chats: Chat[];
+  chatMessagesMap: Record<string, ChatMessage[]>; // チャットID -> メッセージ配列 (PassiveChatSlice.chatMessages との競合回避)
+  activeChatId: string | null; // 現在アクティブなチャットID (画面切替で更新)
+  appendChatMessage: (chatId: string, message: ChatMessage) => void;
   fetchChats: () => Promise<void>;
   createChat: () => Promise<void>;
   updateChat: (id: string, title: string) => Promise<void>;
   deleteChat: (id: string) => Promise<void>;
-  chatsLoading: boolean;
-  chatsError: string | null;
-  chats: Chat[];
+  setActiveChatId: (id: string | null) => void;
+  sendMessage: (content: string) => Promise<void>; // activeChatId を内部利用
 }
 
 export interface Collection {
@@ -153,13 +158,15 @@ export interface AssistantSlice {
 }
 
 export interface ChatMessage {
+  // 一意メッセージID (クライアント生成 or サーバ返却)
   id: string;
   chatId: string;
   role: 'user' | 'assistant' | 'system';
   content: string;
   createdAt: string;
-  imagePaths?: string[]; // simple attachment preview
-  fileNames?: string[]; // placeholder for file attachment names
+  imagePaths?: string[];
+  fileNames?: string[];
+  parentMessageId?: string | null;
 }
 
 export interface ChatSettings {

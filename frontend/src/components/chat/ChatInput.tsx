@@ -34,7 +34,7 @@ export default function ChatInput() {
 
   const ensureChat = useCallback(() => {
     if (selectedChat) return selectedChat;
-    const newChat: Chat = { id: genId(), name: 'New Chat', createdAt: new Date().toISOString() };
+    const newChat: Chat = { id: genId(), title: 'New Chat' };
     setChats((prev: Chat[]) => [newChat, ...(prev || [])]);
     setSelectedChat(newChat);
     navigate(`${ROUTES.WORKSPACE}/${newChat.id}`, { replace: true });

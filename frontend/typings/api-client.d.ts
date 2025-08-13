@@ -38,6 +38,16 @@ export interface ChatListResponse {
 export interface ChatDeleteResquest {}
 export interface ChatDeleteResponse {}
 
+// Chat メッセージ送信
+export interface ChatMessageRequest {
+  chatId: string;
+  content: string;
+}
+export interface ChatMessageResponse {
+  chatId: string;
+  content: string;
+}
+
 // プリセット
 export interface CreatePresetRequest {
   name: string;
