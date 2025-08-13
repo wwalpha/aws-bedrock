@@ -1,4 +1,4 @@
-import type { PassiveChatSlice, Conversation, ChatMessage, ChatSettings, ChatFileItem } from 'typings';
+import type { PassiveChatSlice, Chat, ChatMessage, ChatSettings, ChatFileItem } from 'typings';
 import type { SliceSet } from 'typings/slice';
 import type { StateCreator } from 'zustand';
 
@@ -23,8 +23,8 @@ export const createPassiveChatSlice: StateCreator<PassiveChatSlice, [], [], Pass
   setChatSettings: (v: ChatSettings | ((prev: ChatSettings) => ChatSettings)) =>
     set((s) => ({ chatSettings: typeof v === 'function' ? (v as any)(s.chatSettings) : v })),
 
-  selectedChat: null as Conversation | null,
-  setSelectedChat: (v: Conversation | null | ((prev: Conversation | null) => Conversation | null)) =>
+  selectedChat: null as Chat | null,
+  setSelectedChat: (v: Chat | null | ((prev: Chat | null) => Chat | null)) =>
     set((s) => ({ selectedChat: typeof v === 'function' ? (v as any)(s.selectedChat) : v })),
 
   chatFileItems: [] as ChatFileItem[],

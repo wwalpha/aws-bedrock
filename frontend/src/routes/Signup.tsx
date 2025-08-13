@@ -10,30 +10,24 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const signup = useChatStore((s) => s.signup);
+  const authLoading = useChatStore((s) => s.authLoading);
+  const authMessage = useChatStore((s) => s.authMessage);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
-    setLoading(true);
     try {
       if (password !== confirmPassword) {
         setMessage('Passwords do not match');
         return;
       }
-      const ok = await signup(email, password);
-      if (!ok) {
-        setMessage('Sign up failed');
-        return;
-      }
+      await signup(email, password);
       setMessage('Account created. Please check your email for the verification code.');
       navigate(ROUTES.VERIFY, { state: { username: email } });
     } catch (e: any) {
       setMessage(e?.message || 'Sign up failed');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -70,11 +64,12 @@ export default function Signup() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating…' : 'Create account'}
+            <Button type="submit" className="w-full" disabled={authLoading}>
+              {authLoading ? 'Creating…' : 'Create account'}
             </Button>
           </form>
           {!!message && <p className="mt-3 text-sm">{message}</p>}
+          {!!authMessage && <p className="mt-2 text-xs text-blue-600">{authMessage}</p>}
           <p className="mt-4 text-center text-sm">
             Already have an account?{' '}
             <Link className="underline" to={ROUTES.LOGIN}>

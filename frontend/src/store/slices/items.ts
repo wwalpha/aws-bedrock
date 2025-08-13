@@ -1,6 +1,6 @@
 import type {
   ItemsSlice,
-  Conversation,
+  Chat,
   Preset,
   Assistant,
   Collection,
@@ -25,8 +25,8 @@ export const createItemsSlice: StateCreator<ItemsSlice, [], [], ItemsSlice> = (s
   setCollections: (v: Collection[] | ((prev: Collection[]) => Collection[])) =>
     set((s) => ({ collections: typeof v === 'function' ? (v as any)(s.collections) : v })),
 
-  chats: [] as Conversation[],
-  setChats: (v: Conversation[] | ((prev: Conversation[]) => Conversation[])) =>
+  chats: [] as Chat[],
+  setChats: (v: Chat[] | ((prev: Chat[]) => Chat[])) =>
     set((s) => ({ chats: typeof v === 'function' ? (v as any)(s.chats) : v })),
 
   files: [] as FileAsset[],

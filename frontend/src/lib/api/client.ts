@@ -1,14 +1,14 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import type { Preset, Workspace, Assistant, Prompt, Collection, Tool, ModelRef, ChatMessage } from 'typings';
 import type {
   ApiResult,
   ApiRequestConfig,
-  CreatePresetPayload,
-  UpdatePresetPayload,
-  CreateWorkspacePayload,
-  UpdateWorkspacePayload,
-  CreatePromptPayload,
-  UpdatePromptPayload,
+  CreatePresetRequest,
+  UpdatePresetRequest,
+  CreateWorkspaceRequest,
+  UpdateWorkspaceRequest,
+  CreatePromptRequest,
+  UpdatePromptRequest,
 } from 'typings/api-client';
 import { API_ENDPOINTS } from './endpoints';
 
@@ -17,9 +17,15 @@ async function run<T>(op: () => Promise<AxiosResponse<T>>): ApiResult<T> {
   try {
     const res = await op();
     return { data: res.data };
-  } catch (e: any) {
-    const status = e?.response?.status;
-    const msg = e?.response?.data?.error || e?.message || 'Request failed';
+  } catch (e: unknown) {
+    let status: number | undefined = undefined;
+    let msg = 'Request failed';
+    if (axios.isAxiosError(e)) {
+      status = e.response?.status;
+      msg = (e.response?.data as { error?: string })?.error || e.message || msg;
+    } else if (e instanceof Error) {
+      msg = e.message;
+    }
     return { error: msg, status };
   }
 }
@@ -54,10 +60,10 @@ export class ApiClient {
           const { idToken, accessToken } = state;
           const token = idToken || accessToken;
           if (token) {
-            if ((config.headers as any)?.set) {
-              (config.headers as any).set('Authorization', `Bearer ${token}`);
+            if (config.headers && typeof (config.headers as any).set === 'function') {
+              (config.headers as { set: (k: string, v: string) => void }).set('Authorization', `Bearer ${token}`);
             } else {
-              config.headers = { ...(config.headers as any), Authorization: `Bearer ${token}` } as any;
+              config.headers = { ...(config.headers || {}), Authorization: `Bearer ${token}` } as any;
             }
           }
         }
@@ -84,20 +90,49 @@ export class ApiClient {
     return this.axios.request<T, AxiosResponse<T>, D>(config);
   }
 
-  get<T = unknown>(url: string, config?: ApiRequestConfig) {
-    return this.axios.get<T>(url, config);
+  // NOTE: onError を渡した場合は swallow (例外で UI 制御しない方針)。onError 未指定時は従来通り throw。
+  async get<T = unknown>(url: string, onError?: (err: Error | AxiosError) => void) {
+    try {
+      return await this.axios.get<T>(url);
+    } catch (e) {
+      if (onError) {
+        onError(e as Error | AxiosError);
+      }
+      return { data: undefined } as AxiosResponse<T>;
+    }
   }
 
-  post<T = unknown, D = unknown>(url: string, data?: D, config?: ApiRequestConfig<D>) {
-    return this.axios.post<T, AxiosResponse<T>, D>(url, data, config);
+  async post<T = unknown, D = unknown>(url: string, data?: D, onError?: (err: Error | AxiosError) => void) {
+    try {
+      return await this.axios.post<T, AxiosResponse<T>, D>(url, data);
+    } catch (e) {
+      if (onError) {
+        onError(e as Error | AxiosError);
+      }
+      return { data: undefined } as AxiosResponse<T>;
+    }
   }
 
-  put<T = unknown, D = unknown>(url: string, data?: D, config?: ApiRequestConfig<D>) {
-    return this.axios.put<T, AxiosResponse<T>, D>(url, data, config);
+  async put<T = unknown, D = unknown>(url: string, data?: D, onError?: (err: Error | AxiosError) => void) {
+    try {
+      return await this.axios.put<T, AxiosResponse<T>, D>(url, data);
+    } catch (e) {
+      if (onError) {
+        onError(e as Error | AxiosError);
+      }
+      return { data: undefined } as AxiosResponse<T>;
+    }
   }
 
-  delete<T = unknown>(url: string, config?: ApiRequestConfig) {
-    return this.axios.delete<T>(url, config);
+  async delete<T = unknown>(url: string, onError?: (err: Error | AxiosError) => void) {
+    try {
+      return await this.axios.delete<T>(url);
+    } catch (e) {
+      if (onError) {
+        onError(e as Error | AxiosError);
+      }
+      return { data: undefined } as AxiosResponse<T>;
+    }
   }
 
   // High-level typed resource helpers (REST style)
@@ -111,11 +146,11 @@ export class ApiClient {
   listPresets(): ApiResult<Preset[]> {
     return run(() => this.get<Preset[]>(API_ENDPOINTS.PRESETS));
   }
-  createPreset(p: CreatePresetPayload): ApiResult<Preset> {
-    return run(() => this.post<Preset, CreatePresetPayload>(API_ENDPOINTS.PRESETS, p));
+  createPreset(p: CreatePresetRequest): ApiResult<Preset> {
+    return run(() => this.post<Preset, CreatePresetRequest>(API_ENDPOINTS.PRESETS, p));
   }
-  updatePreset(id: string, p: UpdatePresetPayload): ApiResult<Preset> {
-    return run(() => this.put<Preset, UpdatePresetPayload>(`${API_ENDPOINTS.PRESETS}/${id}`, p));
+  updatePreset(id: string, p: UpdatePresetRequest): ApiResult<Preset> {
+    return run(() => this.put<Preset, UpdatePresetRequest>(`${API_ENDPOINTS.PRESETS}/${id}`, p));
   }
   deletePreset(id: string): ApiResult<{ id: string }> {
     return run(() => this.delete<{ id: string }>(`${API_ENDPOINTS.PRESETS}/${id}`));
@@ -125,11 +160,11 @@ export class ApiClient {
   listWorkspaces(): ApiResult<Workspace[]> {
     return run(() => this.get<Workspace[]>(API_ENDPOINTS.WORKSPACES));
   }
-  createWorkspace(p: CreateWorkspacePayload): ApiResult<Workspace> {
-    return run(() => this.post<Workspace, CreateWorkspacePayload>(API_ENDPOINTS.WORKSPACES, p));
+  createWorkspace(p: CreateWorkspaceRequest): ApiResult<Workspace> {
+    return run(() => this.post<Workspace, CreateWorkspaceRequest>(API_ENDPOINTS.WORKSPACES, p));
   }
-  updateWorkspace(id: string, p: UpdateWorkspacePayload): ApiResult<Workspace> {
-    return run(() => this.put<Workspace, UpdateWorkspacePayload>(`${API_ENDPOINTS.WORKSPACES}/${id}`, p));
+  updateWorkspace(id: string, p: UpdateWorkspaceRequest): ApiResult<Workspace> {
+    return run(() => this.put<Workspace, UpdateWorkspaceRequest>(`${API_ENDPOINTS.WORKSPACES}/${id}`, p));
   }
   deleteWorkspace(id: string): ApiResult<{ id: string }> {
     return run(() => this.delete<{ id: string }>(`${API_ENDPOINTS.WORKSPACES}/${id}`));
@@ -149,11 +184,11 @@ export class ApiClient {
   listPrompts(): ApiResult<Prompt[]> {
     return run(() => this.get<Prompt[]>(API_ENDPOINTS.PROMPTS));
   }
-  createPrompt(p: CreatePromptPayload): ApiResult<Prompt> {
-    return run(() => this.post<Prompt, CreatePromptPayload>(API_ENDPOINTS.PROMPTS, p));
+  createPrompt(p: CreatePromptRequest): ApiResult<Prompt> {
+    return run(() => this.post<Prompt, CreatePromptRequest>(API_ENDPOINTS.PROMPTS, p));
   }
-  updatePrompt(id: string, p: UpdatePromptPayload): ApiResult<Prompt> {
-    return run(() => this.put<Prompt, UpdatePromptPayload>(`${API_ENDPOINTS.PROMPTS}/${id}`, p));
+  updatePrompt(id: string, p: UpdatePromptRequest): ApiResult<Prompt> {
+    return run(() => this.put<Prompt, UpdatePromptRequest>(`${API_ENDPOINTS.PROMPTS}/${id}`, p));
   }
   deletePrompt(id: string): ApiResult<{ id: string }> {
     return run(() => this.delete<{ id: string }>(`${API_ENDPOINTS.PROMPTS}/${id}`));

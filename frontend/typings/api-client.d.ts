@@ -1,5 +1,9 @@
+// axios error型
+import type { AxiosError } from 'axios';
+
+export type ErrorLike = Error | AxiosError | unknown;
 import type { AxiosRequestConfig } from 'axios';
-import type { Conversation } from '.';
+import type { Chat } from '.';
 
 // 共通 API 型定義
 export type ApiRequestConfig<T = unknown> = AxiosRequestConfig<T>;
@@ -15,46 +19,49 @@ export interface ApiFailure {
 }
 export type ApiResult<T> = Promise<ApiSuccess<T> | ApiFailure>;
 
-// 会話(Conversation)関連
-export interface CreateConversationPayload {
-  name: string;
-}
-export interface UpdateConversationPayload {
-  name?: string;
-}
-export interface ConversationListResponse {
-  items: Conversation[]; // if backend returns plain array, adjust slice mapping
-}
-export interface ConversationCreateResponse extends Conversation {}
-export interface ConversationUpdateResponse extends Conversation {}
-export interface ConversationDeleteResponse {
+// Chat 関連
+export interface ChatCreateRequest {
   id: string;
 }
+export interface ChatCreateResponse {}
+
+export interface ChatUpdateRequest {
+  id: string;
+  title: string;
+}
+export interface ChatUpdateResponse {}
+
+export interface ChatListRequest {}
+export interface ChatListResponse {
+  items: Chat[];
+}
+export interface ChatDeleteResquest {}
+export interface ChatDeleteResponse {}
 
 // プリセット
-export interface CreatePresetPayload {
+export interface CreatePresetRequest {
   name: string;
   model?: string;
 }
-export interface UpdatePresetPayload {
+export interface UpdatePresetRequest {
   name?: string;
   model?: string;
 }
 
 // ワークスペース
-export interface CreateWorkspacePayload {
+export interface CreateWorkspaceRequest {
   name: string;
 }
-export interface UpdateWorkspacePayload {
+export interface UpdateWorkspaceRequest {
   name?: string;
 }
 
 // プロンプト
-export interface CreatePromptPayload {
+export interface CreatePromptRequest {
   name: string;
   content: string;
 }
-export interface UpdatePromptPayload {
+export interface UpdatePromptRequest {
   name?: string;
   content?: string;
 }

@@ -18,11 +18,9 @@ export interface ProfileSlice {
   setProfile: (v: Profile | null | ((prev: Profile | null) => Profile | null)) => void;
 }
 
-export interface Conversation {
+export interface Chat {
   id: string;
-  name: string;
-  createdAt: string; // ISO date
-  updatedAt?: string;
+  title: string;
 }
 
 export interface Preset {
@@ -45,8 +43,8 @@ export interface ItemsSlice {
   setAssistants: (v: Assistant[] | ((prev: Assistant[]) => Assistant[])) => void;
   collections: Collection[];
   setCollections: (v: Collection[] | ((prev: Collection[]) => Collection[])) => void;
-  chats: Conversation[];
-  setChats: (v: Conversation[] | ((prev: Conversation[]) => Conversation[])) => void;
+  chats: Chat[];
+  setChats: (v: Chat[] | ((prev: Chat[]) => Chat[])) => void;
   files: FileAsset[];
   setFiles: (v: FileAsset[] | ((prev: FileAsset[]) => FileAsset[])) => void;
   folders: Folder[];
@@ -64,12 +62,13 @@ export interface ItemsSlice {
 }
 
 export interface ChatSlice {
-  fetchChats: () => Promise<void>; // 状態 (chats / chatsLoading / chatsError) で UI 反映
-  createChat: (payload: { name: string }) => Promise<void>;
-  updateChat: (id: string, payload: { name?: string }) => Promise<void>;
+  fetchChats: () => Promise<void>;
+  createChat: () => Promise<void>;
+  updateChat: (id: string, title: string) => Promise<void>;
   deleteChat: (id: string) => Promise<void>;
   chatsLoading: boolean;
   chatsError: string | null;
+  chats: Chat[];
 }
 
 export interface Collection {
@@ -184,8 +183,8 @@ export interface PassiveChatSlice {
   setChatMessages: (v: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => void;
   chatSettings: ChatSettings;
   setChatSettings: (v: ChatSettings | ((prev: ChatSettings) => ChatSettings)) => void;
-  selectedChat: Conversation | null;
-  setSelectedChat: (v: Conversation | null | ((prev: Conversation | null) => Conversation | null)) => void;
+  selectedChat: Chat | null;
+  setSelectedChat: (v: Chat | null | ((prev: Chat | null) => Chat | null)) => void;
   chatFileItems: ChatFileItem[];
   setChatFileItems: (v: ChatFileItem[] | ((prev: ChatFileItem[]) => ChatFileItem[])) => void;
 }
@@ -280,9 +279,11 @@ export interface AppSlice {
   accessToken: string | null;
   refreshToken: string | null;
   isLoggined: boolean;
+  authLoading: boolean;
+  authMessage: string | null;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string) => Promise<boolean>;
-  confirmSignup: (email: string, code: string) => Promise<boolean>;
+  signup: (email: string, password: string) => Promise<void>;
+  confirmSignup: (email: string, code: string) => Promise<void>;
   logout: () => void;
   logoutApi: () => Promise<void>;
 }

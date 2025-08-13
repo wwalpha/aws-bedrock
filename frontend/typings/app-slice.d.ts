@@ -6,9 +6,11 @@ export interface AppSlice {
   accessToken: string | null;
   refreshToken: string | null;
   isLoggined: boolean;
+  authLoading: boolean;
+  authMessage: string | null;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string) => Promise<boolean>;
-  confirmSignup: (email: string, code: string) => Promise<boolean>;
+  signup: (email: string, password: string) => Promise<void>;
+  confirmSignup: (email: string, code: string) => Promise<void>;
   logout: () => void;
   logoutApi: () => Promise<void>;
 }

@@ -3,7 +3,7 @@ import { store } from '@/store';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Send, Square, X } from 'lucide-react';
 import TextareaAutosize from 'react-textarea-autosize';
-import type { Conversation, ChatMessage } from 'typings';
+import type { Chat, ChatMessage } from 'typings';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/lib/routes';
 
@@ -13,9 +13,9 @@ function genId() {
 
 export default function ChatInput() {
   const navigate = useNavigate();
-  const chats = store((s: any) => s.chats as Conversation[]);
+  const chats = store((s: any) => s.chats as Chat[]);
   const setChats = store((s: any) => s.setChats);
-  const selectedChat = store((s: any) => s.selectedChat as Conversation | null);
+  const selectedChat = store((s: any) => s.selectedChat as Chat | null);
   const setSelectedChat = store((s: any) => s.setSelectedChat);
   const userInput = store((s: any) => s.userInput as string);
   const setUserInput = store((s: any) => s.setUserInput);
@@ -34,8 +34,8 @@ export default function ChatInput() {
 
   const ensureChat = useCallback(() => {
     if (selectedChat) return selectedChat;
-    const newChat: Conversation = { id: genId(), name: 'New Chat', createdAt: new Date().toISOString() };
-    setChats((prev: Conversation[]) => [newChat, ...(prev || [])]);
+    const newChat: Chat = { id: genId(), name: 'New Chat', createdAt: new Date().toISOString() };
+    setChats((prev: Chat[]) => [newChat, ...(prev || [])]);
     setSelectedChat(newChat);
     navigate(`${ROUTES.WORKSPACE}/${newChat.id}`, { replace: true });
     return newChat;
