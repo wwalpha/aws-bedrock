@@ -1,5 +1,5 @@
 export interface ChatMeta {
-  id: string; // session_id
+  id: string; // conversation_id
   title?: string;
   createdAt: number; // epoch millis
 }
@@ -19,7 +19,7 @@ export interface UpdateTitleRequest {
 export type ChatRole = 'user' | 'assistant' | 'system';
 
 export interface ChatMessageItem {
-  id: string; // `${session_id}:${timestamp}` or timestamp string
+  id: string; // `${conversation_id}:${timestamp}` or timestamp string
   chatId: string;
   timestamp: number;
   role: ChatRole;

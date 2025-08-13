@@ -32,9 +32,7 @@ export class ChatsService {
     this.ddb = DynamoDBDocumentClient.from(client, {
       marshallOptions: { removeUndefinedValues: true },
     });
-    this.chatTable =
-      Environment.CHAT_HISTORY_TABLE_NAME ||
-      `${Environment.PROJECT_NAME || 'app'}_chat_history`;
+    this.chatTable = Environment.TABLE_NAME_CHAT_HISTORY;
   }
 
   // Create a new chat (stores a metadata record with the first message timestamp)
@@ -42,12 +40,12 @@ export class ChatsService {
     const id = body.id || crypto.randomUUID();
     const now = Date.now();
 
-    // Put a metadata row using a synthetic first timestamp 0 record for title only
+    // Put metadata row
     await this.ddb.send(
       new PutCommand({
         TableName: this.chatTable,
         Item: {
-          session_id: id,
+          conversation_id: id,
           timestamp: now,
           type: 'meta',
           title: body.title,
@@ -55,7 +53,7 @@ export class ChatsService {
           user_id: body.userId,
         },
         ConditionExpression:
-          'attribute_not_exists(session_id) AND attribute_not_exists(timestamp)',
+          'attribute_not_exists(conversation_id) AND attribute_not_exists(timestamp)',
       }),
     );
 
@@ -83,7 +81,7 @@ export class ChatsService {
     return items
       .filter((it: any) => it.type === 'meta')
       .map((it: any) => ({
-        id: it.session_id,
+        id: it.conversation_id,
         title: it.title,
         createdAt: it.createdAt || it.timestamp,
       }));
@@ -94,8 +92,8 @@ export class ChatsService {
     const res = await this.ddb.send(
       new QueryCommand({
         TableName: this.chatTable,
-        KeyConditionExpression: 'session_id = :sid',
-        ExpressionAttributeValues: { ':sid': chatId },
+        KeyConditionExpression: 'conversation_id = :cid',
+        ExpressionAttributeValues: { ':cid': chatId },
         FilterExpression: '#t = :meta',
         ExpressionAttributeNames: { '#t': 'type' },
         ScanIndexForward: false,
@@ -116,8 +114,8 @@ export class ChatsService {
     const meta = await this.ddb.send(
       new QueryCommand({
         TableName: this.chatTable,
-        KeyConditionExpression: 'session_id = :sid',
-        ExpressionAttributeValues: { ':sid': chatId },
+        KeyConditionExpression: 'conversation_id = :cid',
+        ExpressionAttributeValues: { ':cid': chatId },
         FilterExpression: '#t = :meta',
         ExpressionAttributeNames: { '#t': 'type' },
         ScanIndexForward: false,
@@ -129,7 +127,7 @@ export class ChatsService {
     await this.ddb.send(
       new DeleteCommand({
         TableName: this.chatTable,
-        Key: { session_id: chatId, timestamp: item.timestamp },
+        Key: { conversation_id: chatId, timestamp: item.timestamp },
       }),
     );
     return { message: 'Chat deleted' };
@@ -144,8 +142,8 @@ export class ChatsService {
     const meta = await this.ddb.send(
       new QueryCommand({
         TableName: this.chatTable,
-        KeyConditionExpression: 'session_id = :sid',
-        ExpressionAttributeValues: { ':sid': chatId },
+        KeyConditionExpression: 'conversation_id = :cid',
+        ExpressionAttributeValues: { ':cid': chatId },
         FilterExpression: '#t = :meta',
         ExpressionAttributeNames: { '#t': 'type' },
         ScanIndexForward: false,
@@ -157,7 +155,7 @@ export class ChatsService {
     await this.ddb.send(
       new UpdateCommand({
         TableName: this.chatTable,
-        Key: { session_id: chatId, timestamp: item.timestamp },
+        Key: { conversation_id: chatId, timestamp: item.timestamp },
         UpdateExpression: 'SET #title = :title',
         ExpressionAttributeNames: { '#title': 'title' },
         ExpressionAttributeValues: { ':title': body.title },
@@ -170,8 +168,8 @@ export class ChatsService {
     const res = await this.ddb.send(
       new QueryCommand({
         TableName: this.chatTable,
-        KeyConditionExpression: 'session_id = :sid',
-        ExpressionAttributeValues: { ':sid': chatId },
+        KeyConditionExpression: 'conversation_id = :cid',
+        ExpressionAttributeValues: { ':cid': chatId },
         ScanIndexForward: true,
         Limit: limit,
       }),
@@ -180,8 +178,8 @@ export class ChatsService {
     return items
       .filter((it: any) => it.type !== 'meta')
       .map((it: any) => ({
-        id: `${it.session_id}:${it.timestamp}`,
-        chatId: it.session_id,
+        id: `${it.conversation_id}:${it.timestamp}`,
+        chatId: it.conversation_id,
         timestamp: it.timestamp,
         role: (it.role || 'user') as any,
         content: it.content || '',
@@ -195,7 +193,7 @@ export class ChatsService {
     if (!body?.content) throw new BadRequestException('content is required');
     const now = Date.now();
     const item = {
-      session_id: chatId,
+      conversation_id: chatId,
       timestamp: now,
       type: 'message',
       role: body.role || 'user',
@@ -206,8 +204,8 @@ export class ChatsService {
     const check = await this.ddb.send(
       new QueryCommand({
         TableName: this.chatTable,
-        KeyConditionExpression: 'session_id = :sid',
-        ExpressionAttributeValues: { ':sid': chatId },
+        KeyConditionExpression: 'conversation_id = :cid',
+        ExpressionAttributeValues: { ':cid': chatId },
         Limit: 1,
       }),
     );

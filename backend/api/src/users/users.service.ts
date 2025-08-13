@@ -25,12 +25,8 @@ export class UsersService {
       marshallOptions: { removeUndefinedValues: true },
     });
     // Expect table names from env. Fallback to Terraform naming convention if present.
-    this.userTable =
-      Environment.USER_TABLE_NAME ||
-      `${Environment.PROJECT_NAME || 'app'}_user`;
-    this.chatTable =
-      Environment.CHAT_HISTORY_TABLE_NAME ||
-      `${Environment.PROJECT_NAME || 'app'}_chat_history`;
+    this.userTable = Environment.TABLE_NAME_USER;
+    this.chatTable = Environment.TABLE_NAME_CHAT_HISTORY;
   }
 
   async getUser(id: string): Promise<UserProfile> {
@@ -66,20 +62,20 @@ export class UsersService {
   }
 
   async listSessions(id: string): Promise<UserSessionSummary[]> {
-    // session_id is the partition key, timestamp is sort key in chat_history table.
+    // conversation_id is the partition key in chat_history; timestamp is sort key.
     const res = await this.ddbDoc.send(
       new QueryCommand({
         TableName: this.chatTable,
-        KeyConditionExpression: 'session_id = :sid',
-        ExpressionAttributeValues: { ':sid': id },
-        ProjectionExpression: 'session_id, timestamp',
+        KeyConditionExpression: 'conversation_id = :cid',
+        ExpressionAttributeValues: { ':cid': id },
+        ProjectionExpression: 'conversation_id, timestamp',
         ScanIndexForward: false,
         Limit: 50,
       }),
     );
     const items = res.Items || [];
     return items.map((it: any) => ({
-      id: it.session_id,
+      id: it.conversation_id,
       startedAt: String(it.timestamp),
     }));
   }

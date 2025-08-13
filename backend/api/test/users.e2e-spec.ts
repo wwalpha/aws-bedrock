@@ -27,11 +27,11 @@ describe('UsersController (e2e)', () => {
         avatarUrl: 'https://example.test/a.png',
       },
     });
-    // Mock QueryCommand for listing sessions
+    // Mock QueryCommand for listing sessions (conversation_id schema)
     ddbDocMock.on(QueryCommand).resolves({
       Items: [
-        { session_id: 'sess2', timestamp: 1733740002 },
-        { session_id: 'sess1', timestamp: 1733740001 },
+        { conversation_id: 'conv2', timestamp: 1733740002 },
+        { conversation_id: 'conv1', timestamp: 1733740001 },
       ],
     });
 
@@ -59,12 +59,10 @@ describe('UsersController (e2e)', () => {
   });
 
   it('PATCH /users/:id should update in-memory profile stub', async () => {
-    const res = await request(app.getHttpServer())
-      .patch('/users/user1')
-      .send({
-        name: 'Renamed User',
-        avatarUrl: 'https://example.test/new.png',
-      });
+    const res = await request(app.getHttpServer()).patch('/users/user1').send({
+      name: 'Renamed User',
+      avatarUrl: 'https://example.test/new.png',
+    });
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({
       id: 'user1',

@@ -1,11 +1,10 @@
 export const Environment = {
-  // Prefer AWS_REGION, fallback to AWS_DEFAULT_REGION, then default
   AWS_REGION:
     process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1',
   COGNITO_CLIENT_ID: process.env.COGNITO_CLIENT_ID as string,
-  USER_TABLE_NAME: process.env.USER_TABLE_NAME as string,
-  CHAT_HISTORY_TABLE_NAME: process.env.CHAT_HISTORY_TABLE_NAME as string,
-  KNOWLEDGE_TABLE_NAME: process.env.KNOWLEDGE_TABLE_NAME as string,
+  TABLE_NAME_USER: process.env.TABLE_NAME_USER as string,
+  TABLE_NAME_CHAT_HISTORY: process.env.TABLE_NAME_CHAT_HISTORY as string,
+  TABLE_NAME_CONVERSATIONS: process.env.TABLE_NAME_CONVERSATIONS as string,
+  TABLE_NAME_KNOWLEDGE: process.env.TABLE_NAME_KNOWLEDGE as string,
   KNOWLEDGE_BUCKET_NAME: process.env.KNOWLEDGE_BUCKET_NAME as string,
-  PROJECT_NAME: process.env.PROJECT_NAME as string,
 };

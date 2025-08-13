@@ -20,7 +20,7 @@ import {
 } from './knowledge.interfaces';
 
 // Data model (DynamoDB):
-// Table: Environment.KNOWLEDGE_TABLE_NAME
+// Table: Environment.TABLE_NAME_KNOWLEDGE
 //  - PK: user_id (S)
 //  - SK: knowledge_id (S) => format `kb#<id>`
 // Attributes: name, description, created_at (N), updated_at (N), doc_count (N)
@@ -38,7 +38,7 @@ export class KnowledgeService {
   }
 
   async list(userId: string): Promise<ListKnowledgeResponse> {
-    const tableName = Environment.KNOWLEDGE_TABLE_NAME!;
+    const tableName = Environment.TABLE_NAME_KNOWLEDGE!;
     const res = await this.ddbDoc.send(
       new QueryCommand({
         TableName: tableName,
@@ -72,7 +72,7 @@ export class KnowledgeService {
     };
     await this.ddbDoc.send(
       new PutCommand({
-        TableName: Environment.KNOWLEDGE_TABLE_NAME!,
+        TableName: Environment.TABLE_NAME_KNOWLEDGE!,
         Item: item,
         ConditionExpression:
           'attribute_not_exists(user_id) AND attribute_not_exists(knowledge_id)',
@@ -112,7 +112,7 @@ export class KnowledgeService {
 
     const res = await this.ddbDoc.send(
       new UpdateCommand({
-        TableName: Environment.KNOWLEDGE_TABLE_NAME!,
+        TableName: Environment.TABLE_NAME_KNOWLEDGE!,
         Key: { user_id: userId, knowledge_id: id },
         UpdateExpression: 'SET ' + updates.join(', '),
         ExpressionAttributeNames: Object.keys(names).length ? names : undefined,
@@ -138,7 +138,7 @@ export class KnowledgeService {
   async remove(userId: string, id: string): Promise<void> {
     await this.ddbDoc.send(
       new DeleteCommand({
-        TableName: Environment.KNOWLEDGE_TABLE_NAME!,
+        TableName: Environment.TABLE_NAME_KNOWLEDGE!,
         Key: { user_id: userId, knowledge_id: id },
         ConditionExpression:
           'attribute_exists(user_id) AND attribute_exists(knowledge_id)',
@@ -169,7 +169,7 @@ export class KnowledgeService {
     // For now, stats are derived from the item; can be extended to maintain a separate stats entity.
     const list = await this.ddbDoc.send(
       new QueryCommand({
-        TableName: Environment.KNOWLEDGE_TABLE_NAME!,
+        TableName: Environment.TABLE_NAME_KNOWLEDGE!,
         KeyConditionExpression: 'user_id = :uid AND knowledge_id = :kid',
         ExpressionAttributeValues: { ':uid': userId, ':kid': id },
       }),
@@ -186,9 +186,7 @@ export class KnowledgeService {
     };
   }
 
-  async query(
-    req: QueryKnowledgeRequest,
-  ): Promise<{
+  async query(req: QueryKnowledgeRequest): Promise<{
     results: Array<{ text: string; score: number }>;
     model: string;
   }> {
